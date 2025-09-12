@@ -56,7 +56,7 @@
 | 인증/보안 | OAuth2 (Kakao, Naver), JWT, Email 인증 |
 | DB 관리 | Oracle SQL, ERD 설계, 정규화 |
 | 기타 기술 | FCM (웹푸시), OCR (Tesseract), SweetAlert2 |
-| 협업 도구 | GitHub, Figma, draw.io |
+| 협업 도구 | GitHub, Figma, ERDCloud |
 
 ---
 
