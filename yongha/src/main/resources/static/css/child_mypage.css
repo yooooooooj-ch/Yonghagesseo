@@ -1,0 +1,267 @@
+/* ===============================
+   공통 토큰
+   =============================== */
+:root {
+  --primary-500: #6FAEFF;
+  --primary-600: #4F8FEF;
+  --border-blue: #CFE4FF;
+
+  --card-radius: 16px;
+  --card-shadow: 0 10px 26px rgba(15,23,42,.06);
+
+  --text-900: #111827;
+  --text-700: #374151;
+  --text-500: #6B7280;
+}
+
+/* ===============================
+   공통 레이아웃
+   =============================== */
+.mypage-container,
+.child-charging-box,
+.parent-mypage-guide,
+.consume-card {
+  box-sizing: border-box;
+}
+
+/* ===============================
+   프로필 카드
+   =============================== */
+.mypage-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: linear-gradient(135deg, #f3f9ff, #e0f0ff);
+  border: 1.5px solid rgba(120,170,255,0.3);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,80,180,0.08);
+  padding: 32px 40px;
+  margin: 0 auto 20px;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 150px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  margin-right: 18px;
+}
+.profile-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  object-fit: cover;
+}
+.username {
+  margin-left: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  line-height: 1.2;
+}
+
+/* 가운데 세로 구분선 */
+.profile-divider {
+  width: 1.5px;
+  height: 80px;
+  margin: 0 24px;
+  background: rgba(0,80,180,0.2);
+  border-radius: 2px;
+}
+
+/* 오른쪽 잔액 */
+.balance-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: auto;
+  gap: 6px;
+  position: relative;
+}
+.balance-box::before {
+  content: "";
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.5px;
+  height: 80px;
+  background: rgba(0,80,180,0.2);
+  border-radius: 2px;
+}
+
+.balance-title { font-size: 14px; font-weight: 700; color: #444; }
+.balance-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 12px;
+}
+.balance-amount::before {
+  content: '₩';
+  margin-right: 4px;
+  color: #2D9CDB;
+  font-size: 1.1em;
+}
+.bank-name { font-size: 14px; color: #444; }
+
+.change-bank button {
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary-500);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+.change-bank button:hover { background: var(--primary-600); }
+
+/* 반응형 - 프로필 카드 */
+@media (max-width:980px) {
+  .mypage-container { flex-direction: column; align-items: flex-start; padding: 24px; }
+  .balance-box { margin-left: 0; align-items: flex-start; }
+  .balance-box::before {
+    position: static;
+    transform: none;
+    width: 100%;
+    height: 1px;
+    margin: 12px 0;
+  }
+  .balance-amount { font-size: 30px; }
+}
+
+
+
+/* ===============================
+   상단 탭
+   =============================== */
+.section-switch-buttons {
+  width: 100%;
+  max-width: 1000px;
+  margin: 12px auto 18px;
+}
+.showSection {
+  display: flex;
+  border: 2px solid var(--primary-500);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.showSection span {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  font-weight: 700;
+  color: var(--primary-600);
+  background: #fff;
+  cursor: pointer;
+  transition: all .2s;
+}
+.showSection span.active { background: var(--primary-500); color: #fff; }
+.showSection span:hover:not(.active) { background: #F0F7FF; }
+.section-switch-buttons + hr {
+  max-width: 1000px;
+  margin: 12px auto 18px;
+  border: none;
+  border-top: 1px solid #EDF3FF;
+}
+
+/* ===============================
+   카드 공통
+   =============================== */
+.child-charging-box,
+.parent-mypage-guide,
+.consume-card {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 24px;
+  background: #fff;
+  border: 1.5px solid #E2EEFF;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 24px 28px;
+}
+
+/* ===============================
+   목표 달성 카드
+   =============================== */
+.goal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-900);
+  margin: 0 0 14px;
+}
+.child-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  color: var(--text-700);
+  margin-bottom: 10px;
+}
+.child-info .child-name { font-weight: 800; color: var(--text-900); }
+.child-info .child-balance { font-weight: 800; color: var(--primary-600); }
+.child-info .child-trans { color: var(--text-500); }
+
+.goal-progress { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.progress-track {
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #F1F5FB;
+  border: 1px solid #E7EFFA;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+  transition: width .4s ease;
+}
+.progress-percent {
+  text-align: right;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary-600);
+  margin-top: 8px;
+}
+
+/* ===============================
+   부모 가이드 카드
+   =============================== */
+.parent-mypage-guide .guide-title { font-size: 22px; font-weight: 900; margin-bottom: 22px; }
+.parent-mypage-guide .essay-title { font-size: 18px; font-weight: 800; margin: 12px 0 10px; }
+.parent-mypage-guide .guide-quote {
+  background: #F3F6FB;
+  padding: 18px 20px;
+  border-left: 4px solid var(--primary-600);
+  border-radius: 8px;
+  margin: 18px 0;
+  color: #444;
+}
+.parent-mypage-guide .guide-points { margin: 12px 0 6px 18px; }
+.parent-mypage-guide .guide-points li { margin: 4px 0; }
+
+/* ===============================
+   소비 내역 카드
+   =============================== */
+.consume-card .used-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-900);
+}
+.consume-card .used-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-700);
+  margin: 6px 0 14px;
+}
+.consume-card .chart-wrapper { display: flex; justify-content: center; margin-bottom: 14px; }
+.consume-card img { max-width: 600px; width: 100%; height: auto; border-radius: 8px; }
+.consume-card .chart-note { font-size: 13px; color: var(--text-500); margin-top: 10px; text-align: center; }
+

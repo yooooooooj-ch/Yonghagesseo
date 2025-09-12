@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
+<head>
+<meta charset="UTF-8" />
+<title>회사 소개</title>
+<link rel="stylesheet" th:href="@{/css/company_profile.css}" />
+</head>
+
+<body>
+	<main layout:fragment="content" class="company-profile-container">
+
+		<!-- 1. 회사 소개 -->
+
+		<section class="hero-section">
+			<div class="hero-overlay">
+				<div class="hero-content">
+					<h1 class="hero-title">YONG HA</h1>
+					<p class="hero-subtitle">
+						Yongha는 혁신적인 기술과 창의적 솔루션으로 가족 중심의 금융 경험을 재정의합니다.<br> 디지털 시대의 빠르게 변화하는 금융 환경 속에서, 고객 중심의 가치를 실현하고 지속 가능한 금융 교육을 선도합니다.
+					</p>
+				</div>
+			</div>
+			</div>
+		</section>
+
+		<!-- 2. 비전 & 미션 -->
+		<section class="company-section">
+			<div class="card-wrapper">
+				<!--왼쪽 이미지-->
+				<div class="card left-card">
+					<img src="/img/service7.png" alt="Vision Image" style="background-size: contain;" />
+				</div>
+				<!--중앙 텍스트-->
+				<div class="center-text">
+					<h2 class="section-title">비전 & 미션</h2>
+					<p class="subtitle">
+						Yongha는 <strong>가족 단위 금융 교육의 새로운 패러다임</strong>을 제시하며, 디지털 금융 혁신을 통해 부모와 자녀가 함께 성장하는 미래를 만듭니다.
+					</p>
+					<p class="subtitle">부모는 데이터 기반으로 자녀의 금융 습관을 체계적으로 관리하고, 자녀는 책임감 있는 금융 생활을 경험하며 스스로 목표를 달성합니다.</p>
+					<p class="subtitle">이를 통해 Yongha는 지속 가능한 성장과 사회적 책임을 실현하며, 가족 중심의 금융 혁신을 선도하는 글로벌 리더가 됩니다.</p>
+				</div>
+
+				<div class="card right-card">
+					<img src="/img/service6.png" alt="Mission Image" />
+				</div>
+			</div>
+		</section>
+
+
+		<!-- 3. 로고와 회사 이름 소개 -->
+		<section class="company-intro-section">
+			<div class="intro-container">
+				<div class="logo-box">
+					<img src="/img/Yongha.png" alt="Yongha 로고" class="company-logo">
+				</div>
+				<div class="intro-text-box">
+					<h2 class="company-name">용하게써 Yongha</h2>
+					<p class="slogan">함께 성장하는 금융 교육, Yongha가 만듭니다</p>
+					<p class="description">
+						‘용하게써’는 단순한 이름이 아닙니다. ‘용돈을 용(用)하게 써라’, ‘용돈 써라’, ‘용돈, 요렇게 써!’라는 의미를 담은 이름으로, Yongha는 자녀가 책임 있게 돈을 쓰는 습관을 배우고 부모는 함께 금융교육을 이끌어가는 <strong>가족 중심의 핀테크 플랫폼</strong>입니다. ✔ 용돈 기록부터 저축 목표까지, 자녀의 경제생활을 직접 설계하고 ✔ 실시간 소비 리포트와 피드백으로 부모의 역할을 강화하며 ✔ 자연스럽게 이루어지는 ‘가족 간 금융 대화’를 가능하게 합니다. 복잡한 금융은 이제 그만. Yongha는 누구나 쉽게 시작하고, 오래도록 함께할 수 있는 <strong>가족의 금융 동반자</strong>입니다.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- 4. 연혁 -->
+		<section class="company-section">
+			<h2 class="section-title">연혁</h2>
+			<div class="history-cards">
+
+				<div class="history-card">
+					<h3>2025</h3>
+					<p>‘용하게써 Yongha’ 설립 및 금융 교육 플랫폼 정식 출시</p>
+				</div>
+
+				<div class="history-card">
+					<h3>2026</h3>
+					<p>정부 인증 우수 스타트업 선정 & 서비스 안정화</p>
+				</div>
+
+				<div class="history-card">
+					<h3>2028</h3>
+					<p>누적 가입자 100만 명 돌파, 가족형 금융 플랫폼으로 성장</p>
+				</div>
+
+				<div class="history-card">
+					<h3>2030</h3>
+					<p>AI 기반 맞춤형 금융 교육 서비스 도입 및 해외 진출</p>
+				</div>
+
+			</div>
+		</section>
+
+		<!-- 5. 핵심 가치 -->
+		<section class="company-section">
+			<h2 class="section-title">핵심 가치</h2>
+			<div class="core-values">
+
+				<div class="value-item">
+					<h4>가족 중심</h4>
+					<p>모든 금융 교육은 가족 간의 소통에서 시작된다고 믿습니다.</p>
+				</div>
+
+				<div class="value-item">
+					<h4>생활 속 금융 교육</h4>
+					<p>일상에서 자연스럽게 배우는 금융 습관이 진짜 교육입니다.</p>
+				</div>
+
+				<div class="value-item">
+					<h4>신뢰와 책임</h4>
+					<p>아이와 부모 모두에게 신뢰받는 플랫폼으로서 책임을 다합니다.</p>
+				</div>
+
+			</div>
+		</section>
+
+		<!-- 6. 팀 소개 -->
+		<section class="company-section">
+			<h2 class="section-title">팀 소개</h2>
+			<div class="team-container">
+				<div class="team-member">
+					<img src="/img/yong3.png" alt="CEO">
+					<h4>김용돈</h4>
+					<p>CEO / Founder</p>
+				</div>
+				<div class="team-member">
+					<img src="/img/Yongha.png" alt="CTO">
+					<h4>최유진</h4>
+					<p>CTO</p>
+				</div>
+				<div class="team-member">
+					<img src="/img/yongv3.png" alt="CMO">
+					<h4>김성진</h4>
+					<p>CMO</p>
+				</div>
+				<div class="team-member">
+					<img src="/img/Yongha.png" alt="CMO">
+					<h4>신미나</h4>
+					<p>CTO</p>
+				</div>
+				<div class="team-member">
+					<img src="/img/yongv3.png" alt="CMO">
+					<h4>이소진</h4>
+					<p>CMO</p>
+				</div>
+				<div class="team-member">
+					<img src="/img/Yongha.png" alt="CMO">
+					<h4>김동주</h4>
+					<p>CTO</p>
+				</div>
+
+
+			</div>
+		</section>
+
+
+
+	</main>
+</body>
+
+</html>

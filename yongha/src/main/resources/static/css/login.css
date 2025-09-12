@@ -1,0 +1,368 @@
+@charset "UTF-8";
+
+/* =========================================================
+   Login — Pastel Blue + Yellow, Cards aligned (CSS only)
+   ========================================================= */
+
+/* ===== Theme ===== */
+:root{
+  --ink:#0F172A;
+  --muted:#6B7280;
+  --line:#E9EDF5;
+
+  /* 파스텔 블루/옐로우 */
+  --primary:#6FAEFF;
+  --primary-600:#5F9EF7;
+  --primary-700:#4F8FEF;
+  --accent:#FFD768;
+
+  --bg: linear-gradient(160deg, #EAF3FF 0%, #D5E9FF 40%, #CBE3FF 70%, #F3F8FF 100%);
+  --card: rgba(255,255,255,.78);   /* 은은한 투명 */
+  --radius-card:20px;
+  --radius-input:12px;
+  --shadow-lg:0 22px 60px rgba(15,23,42,.10);
+  --shadow-md:0 12px 30px rgba(15,23,42,.08);
+}
+
+/* ===== Page base ===== */
+body{ background:var(--bg); }
+.content{
+  min-height: calc(100vh - 120px);
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  gap:24px;
+  padding:32px 16px;
+}
+
+/* =========================================================
+   Main card (좌 히어로 + 우 폼)
+   ========================================================= */
+.login-sections{
+  position:relative;
+  width:min(1120px, 94vw);
+  min-height:620px;
+  background:var(--card);
+  border-radius:var(--radius-card);
+  border: 2px solid rgba(111,174,255,0.6);  /* 파스텔 블루, 두께 2px */
+  box-shadow:var(--shadow-lg);
+  overflow:hidden;
+}
+
+/* Left hero — 배경 (흰색 + 연한 블루 그라데이션) */
+.login-sections::before{
+  content:"";
+  position:absolute; inset:0 auto 0 0; width:50%;
+  background: linear-gradient(160deg, #ffffff 0%, #eaf4ff 100%);
+}
+
+/* Left hero — Yongha 이미지 */
+.login-sections::after{
+  content:"";
+  position:absolute; left:0; top:0; width:50%; height:100%;
+  background: url("/img/Yongha.png") no-repeat 60% 72% / 420px auto;
+  pointer-events:none;
+  opacity:1;
+}
+
+/* Right form stack */
+.login-card{
+  position:relative;
+  width:50%;
+  margin-left:50%;
+  box-sizing:border-box;
+  padding:40px 48px 16px;
+  overflow:visible;
+}
+.login-card + .login-card{ padding-top:0; margin-top:-8px; }
+
+/* Titles */
+.login-title{
+  margin:4px 0 20px;
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:var(--ink);
+  text-align:center;
+  width:100%;
+}
+
+/* =========================================================
+   Inputs
+   ========================================================= */
+.login-inline{ display:block; margin:6px 0 -30px; color:var(--muted); font-size:13px; }
+.login-inline > input.login-input {
+  width:95%;
+  height:36px;
+  padding:10px 14px;
+  border: 1.8px solid rgba(111,174,255,0.4); 
+  border-radius: var(--radius-input);
+  outline:0;
+  background:#fff;
+  font-size:16px; 
+  color:var(--ink);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.login-inline > input.login-input:focus {
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 4px rgba(111,174,255,.25);
+}
+
+.login-inline br{ display:none; }
+
+/* =========================================================
+   Primary button (Outline Gradient → Hover fill) — clean
+   ========================================================= */
+.login-btn{
+  --btn-grad: linear-gradient(90deg, var(--primary) 0%, var(--primary-700) 100%);
+  --btn-stroke: 1.5px;                 /* 외곽선 두께 (필요하면 1.25px로 줄여도 깔끔) */
+
+  display: inline-flex;                 /* 텍스트 완전 중앙정렬 */
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  cursor: pointer;
+
+  position: relative;
+  isolation: isolate;
+  background: #fff;
+  color: var(--primary-700);
+
+  border: none;                         /* 진짜 border 제거 */
+  outline: none;                        /* 브라우저 기본 파란 포커스 제거 */
+  box-shadow: var(--shadow-md);
+  transition: color .15s, background .15s, box-shadow .15s, transform .06s;
+}
+
+/* 그라디언트 외곽선은 ::before 한 번만 그림 */
+.login-btn::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--btn-stroke);
+  background: var(--btn-grad);
+
+  /* 안쪽 비우기(테두리만 보이게) */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+
+  pointer-events: none;
+  transition: opacity .15s;
+}
+
+/* hover 시 내부 채움 */
+.login-btn:hover{
+  background: var(--btn-grad);
+  color: #fff;
+  filter: none;
+  box-shadow: 0 12px 26px rgba(15,23,42,.10);
+}
+.login-btn:hover::before{ opacity: 0; }
+
+.login-btn:active{ transform: translateY(1px); }
+
+/* 포커스는 box-shadow로만 (겹침 방지) */
+.login-btn:focus,
+.login-btn:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(111,174,255,.25), var(--shadow-md);
+}
+
+/* Firefox 기본 inner focus 없애기 (겹침 방지) */
+.login-btn::-moz-focus-inner{ border: 0; }
+
+/* 하단 작은 버튼에도 동일 규칙 적용(크기만 조정) */
+.nonlogin-section .login-btn{
+  --btn-stroke: 1.5px;       /* 두께 동일 유지 */
+  width: auto;
+  height: 42px;
+  padding: 0 18px;
+}
+/* =========================================================
+   Social login (버튼 크기/정렬 통일 + SVG 아이콘)
+   ========================================================= */
+   /* 소셜 로그인 구역과 위 폼 사이 간격 */
+   .social-login{
+     margin-top: 30px;
+   }
+
+   /* "소셜 로그인" + 양옆 라인 (Flex 기반) */
+   .social-login .login-title{
+     display:flex;
+     align-items:center;
+     justify-content:center;
+     gap: 16px;                 /* 텍스트와 라인 사이 간격 */
+     margin: 10px 0 18px;       /* 위/아래 여백 */
+     font-size:16px;
+     color:var(--muted);
+     text-align:center;
+   }
+
+   .social-login .login-title::before,
+   .social-login .login-title::after{
+     content:"";
+     flex:1;                    /* 양쪽 라인이 자동으로 늘어남 */
+     height:1px;
+     background: rgba(111,174,255,.35);
+   }
+
+/* ================================================
+   소셜 버튼 하드코딩 블록 (요구로 유지)
+   - wrapper가 form/div여도 폭 100%로 펴짐
+   - 내부 노드 숨김, ::before 아이콘, ::after 텍스트
+   ================================================ */
+.social-login > div,
+.social-login > form{
+  display: contents;
+}
+.social-login a,
+.social-login button{
+  width:100%;
+  height:48px;              /* 로그인 버튼과 동일 */
+  border-radius:12px;       /* 동일 */
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  gap:10px;
+  box-sizing:border-box;
+  margin-top:20px;
+  padding-left:44px;        /* 왼쪽 아이콘 자리 */
+  font-weight:700; font-size:15px; line-height:1;
+  text-decoration:none;
+  border:none;
+  transition:transform .06s ease, filter .15s ease, box-shadow .15s ease;
+}
+.social-login a:active,
+.social-login button:active{
+  transform:translateY(1px);
+}
+/* 내부에 있던 이미지/텍스트는 숨기고(접근성은 부모가 담당) */
+.social-login a > *,
+.social-login button > *{
+  display:none !important;
+}
+/* 아이콘 슬롯 */
+.social-login a::before,
+.social-login button::before{
+  content:"";
+  position:absolute; left:16px; top:50%; transform:translateY(-50%);
+  width:22px; height:22px;
+  background-repeat:no-repeat; background-position:center; background-size:contain;
+}
+/* Kakao */
+.social-login a[id*="kakao"],
+.social-login a[class*="kakao"],
+.social-login a[href*="kakao"],
+.social-login button[id*="kakao"],
+.social-login button[class*="kakao"],
+.social-login [data-social="kakao"]{
+  background:#FEE500; color:#191600; border:none;
+  box-shadow:0 8px 20px rgba(254,229,0,.25);
+}
+.social-login a[id*="kakao"]::before,
+.social-login a[class*="kakao"]::before,
+.social-login a[href*="kakao"]::before,
+.social-login button[id*="kakao"]::before,
+.social-login button[class*="kakao"]::before,
+.social-login [data-social="kakao"]::before{
+  background-image:url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'>\
+    <path fill='%23191600' d='M18 6c-7.7 0-13.5 4.6-13.5 10.1 0 4.1 2.9 7.6 7.3 9.2-.3 1.1-1.1 4.1-1.2 4.8-.1.6.4.8.9.5.4-.3 4.7-3.2 6.5-4.4.7.1 1.5.1 2.3.1 7.7 0 13.7-4.6 13.7-10.2C34 10.6 25.7 6 18 6z'/>\
+  </svg>");
+}
+/* 텍스트(하드코딩 문구) */
+.social-login a[id*="kakao"]::after,
+.social-login a[class*="kakao"]::after,
+.social-login a[href*="kakao"]::after,
+.social-login button[id*="kakao"]::after,
+.social-login button[class*="kakao"]::after,
+.social-login [data-social="kakao"]::after{
+  content:"카카오 로그인";
+}
+
+/* Naver */
+.social-login a[id*="naver"],
+.social-login a[class*="naver"],
+.social-login a[href*="naver"],
+.social-login button[id*="naver"],
+.social-login button[class*="naver"],
+.social-login [data-social="naver"]{
+  background:#03C75A; color:#fff; border:none;
+  box-shadow:0 8px 20px rgba(3,199,90,.25);
+}
+.social-login a[id*="naver"]::before,
+.social-login a[class*="naver"]::before,
+.social-login a[href*="naver"]::before,
+.social-login button[id*="naver"]::before,
+.social-login button[class*="naver"]::before,
+.social-login [data-social="naver"]::before{
+  background-image:url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'>\
+    <path fill='%23ffffff' d='M10 26V10h5.3l5.7 8.6V10H26v16h-5.3L15 17.4V26z'/>\
+  </svg>");
+}
+.social-login a[id*="naver"]::after,
+.social-login a[class*="naver"]::after,
+.social-login a[href*="naver"]::after,
+.social-login button[id*="naver"]::after,
+.social-login button[class*="naver"]::after,
+.social-login [data-social="naver"]::after{
+  content:"네이버 아이디로 로그인";
+}
+/* hover 공통 */
+.social-login a:hover,
+.social-login button:hover{
+  box-shadow:0 12px 26px rgba(15,23,42,.10);
+  filter:brightness(1.02);
+}
+
+/* (참고) 다른 소셜 기본 톤 */
+.social-login [class*="google"]{ background:#fff; border-color:#E2E6EF; color:#111; }
+.social-login [class*="github"]{ background:#111827; border-color:#111827; color:#fff; }
+
+/* =========================================================
+   Bottom card (안내)
+   ========================================================= */
+.nonlogin-section{
+  width:min(1120px, 94vw);
+  margin:0 auto;
+}
+.nonlogin-wrapper{
+  background:var(--card);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-md);
+  padding:18px 20px;
+  display:grid; gap:14px;
+}
+.nonlogin-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; }
+.nonlogin-text{ color:var(--ink); }
+.nonlogin-actions{ display:flex; gap:10px; }
+.nonlogin-section .login-btn{ width:auto; padding:0 18px; height:42px; }
+
+/* Debug */
+.debugging{ width:min(1120px, 94vw); margin:0 auto; color:#64748b; font-size:13px; }
+#result, #userNoArea{ word-break:break-all; }
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 1024px){
+  .login-sections{ min-height: 0; }  /* 모바일에서만 낮춤 */
+  .login-card{ width:100%; margin:0; padding:28px 22px; }
+  .login-title{ font-size:24px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .login-btn, .social-login button, .social-login a{ transition:none; }
+}

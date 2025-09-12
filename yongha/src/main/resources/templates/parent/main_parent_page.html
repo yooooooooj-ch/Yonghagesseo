@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title></title>
+<link rel="stylesheet" th:href="@{/css/main_parent_page.css}" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script th:src="@{/js/logout.js}"></script>
+
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+
+		<!-- 🌀 Content 1: Swiper 이벤트 영역 -->
+		<section class="content1">
+
+			<div class="content1-inner">
+				<!-- 🎞️ 왼쪽: Swiper 슬라이드 -->
+				<div class="left-section">
+					<!-- Swiper -->
+					<div class="swiper mySwiper">
+						<div class="swiper-wrapper">
+							<!-- 배너 목록 반복 -->
+							<th:block th:each="banner : ${bannerList}">
+								<div class="swiper-slide">
+									<img th:src="@{${banner.imgPath}}" alt="배너 이미지" />
+<!-- 									<div class="event-info"> -->
+<!-- 										<h3 th:text="${banner.title}"></h3> -->
+<!-- 										<p th:text="${banner.description}"></p> -->
+<!-- 										<button th:text="${banner.button}">자세히 보기</button> -->
+<!-- 									</div> -->
+								</div>
+							</th:block>
+						</div>
+						<!-- swiper-wrapper -->
+						<!-- 페이징 버튼 -->
+						<div class="swiper-pagination"></div>
+					</div>
+
+				</div>
+				<!-- left-section -->
+
+				<!-- 상단 프로필 & 요약 -->
+				<div class="right-section">
+
+					<div class="profile-info">
+						<h2 class="child-name" th:text="${userInfo.user_name}"></h2>
+						<p class="child-balance">
+							현재 잔액: <strong>₩ <span th:text="${#numbers.formatInteger(userInfo.balance ?: 0, 1, 'COMMA')}"></span></strong>
+						</p>
+						
+
+						<!--#########이 GO 부분은 목표 페이지인 '꿈 저금통용' 쪽으로 가면 됩니다#########	-->
+						<button class="go-btn" onclick="location.href='/goals/parent'">GO →</button>
+					</div>
+
+					<div class="login-box">
+						<img th:src="@{'/img/profile/profile' + ${userInfo.profile} + '.png'}" alt="프로필 이미지" class="profile-img" id="profile-img" />
+						<button class="login-btn" onclick="logout()">로그아웃</button>
+					</div>
+				</div>
+
+
+
+
+				<!-- Swiper JS -->
+				<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+				<script>
+					document.addEventListener("DOMContentLoaded", function() {
+						var swiper = new Swiper(".mySwiper", {
+							slidesPerView : 1,
+							spaceBetween : 30,
+							centeredSlides : true,
+							loop : true,
+							effect : "fade", // 부드러운 페이드 전환
+							fadeEffect : {
+								crossFade : true
+							},
+							autoplay : {
+								delay : 4000,
+								disableOnInteraction : false
+							},
+							pagination : {
+								el : ".swiper-pagination",
+								clickable : true
+							},
+							navigation : {
+								nextEl : ".swiper-button-next",
+								prevEl : ".swiper-button-prev"
+							}
+						});
+					});
+				</script>
+
+
+			</div>
+			<!-- content1-inner 닫기 -->
+		</section>
+
+		<div class="parent-page-container">
+			
+
+			<!-- 1. 공지사항 + 부모 꿀팁 섹션 -->
+			<section class="parent-section-wrap">
+				<!-- 공지사항 -->
+								<div class="child-notice">
+									<h3>📢 공지사항 & 알림</h3>
+
+									<div class="notice-fixed">
+										<div class="notice-card">
+											<p>🔔 [고정] 서비스 점검 안내 - 8월 30일 02시 ~ 05시</p>
+										</div>
+										<div class="notice-card">
+											<p>🔔 [고정] 개인정보 처리방침이 변경되었습니다.</p>
+										</div>
+									</div>
+
+									<div class="notice-new">
+										<div class="notice-card">
+											<p>8월 가계부 분석 리포트가 발송되었습니다.</p>
+										</div>
+										<div class="notice-card">
+											<p>금융 교육 세미나 사전 신청이 시작되었습니다.</p>
+										</div>
+										<div class="notice-card">
+											<p>고객 만족도 설문 참여 안내</p>
+										</div>
+									</div>
+
+									<button class="notice-more-btn" aria-label="새 알림 추가">＋</button>
+								</div>
+
+
+			    <!-- 우측: 부모 꿀팁 -->
+			    <div class="tips-section">
+			        <h2 class="section-title">📌 이번 주 부모 꿀팁</h2>
+
+			        <div class="tips-grid">
+			            <article class="tip-card" data-tip-title="용돈 주는 날, 규칙을 정하세요" data-tip-detail="작은 보상 표를 함께 만들어보세요. 아이가 성취감을 느끼고 스스로 계획하게 됩니다.">
+			                <h3>용돈 주는 날, 규칙을 정하세요</h3>
+			                <p>매주 같은 날에 용돈을 주면 아이가 예측하고 계획하는 습관을 배웁니다.</p>
+			                <button class="tip-more">자세히 보기</button>
+			            </article>
+
+			            <article class="tip-card" data-tip-title="쓰기 전 세 가지 질문" data-tip-detail="아이와 함께 질문지를 만들어서 스스로 체크하도록 해보세요. 습관 형성에 큰 도움이 됩니다.">
+			                <h3>쓰기 전 세 가지 질문</h3>
+			                <p>① 이것이 정말 필요한가요? ② 다른 걸 포기할 의향이 있나요? ③ 얼마나 오래 만족할까요?</p>
+			                <button class="tip-more">자세히 보기</button>
+			            </article>
+
+			            <article class="tip-card" data-tip-title="저축 목표 시각화" data-tip-detail="목표 달성 시 작은 보상을 주거나 달성률을 표시하면 아이가 동기 부여를 받습니다.">
+			                <h3>저축 목표 시각화</h3>
+			                <p>목표 이미지를 프린트하거나 작은 그림판을 만들어 목표 금액과 남은 기간을 시각적으로 보여주세요.</p>
+			                <button class="tip-more">자세히 보기</button>
+			            </article>
+			        </div>
+			    </div>
+			</section>
+
+			<!-- 모달 팝업 -->
+			<div class="modal" id="tipModal">
+			    <div class="modal-content">
+			        <span class="close">&times;</span>
+			        <h3 id="modalTitle"></h3>
+			        <p id="modalDetail"></p>
+			    </div>
+			</div>
+			<script>
+				const tipButtons = document.querySelectorAll('.tip-more');
+				const modal = document.getElementById('tipModal');
+				const modalTitle = document.getElementById('modalTitle');
+				const modalDetail = document.getElementById('modalDetail');
+				const closeBtn = document.querySelector('.modal .close');
+
+				tipButtons.forEach(btn => {
+				    btn.addEventListener('click', () => {
+				        const card = btn.parentElement;
+				        modalTitle.textContent = card.dataset.tipTitle;
+				        modalDetail.textContent = card.dataset.tipDetail;
+				        modal.style.display = 'block';
+				    });
+				});
+
+				closeBtn.addEventListener('click', () => modal.style.display = 'none');
+				window.addEventListener('click', e => {
+				    if(e.target == modal) modal.style.display = 'none';
+				});
+			</script>
+
+		</div>
+
+
+		
+		
+		
+		
+		
+					
+					
+					
+					
+			<!--부모 공감 스토리-->				  
+			<section class="parent-section story-section">
+			  <h2 class="section-title">💬 부모 공감 스토리</h2>
+
+			  <div class="story-list">
+			    <!-- 왼쪽 카드 2개 -->
+			    <div class="story-column">
+			      <article class="story-card">
+			        <div class="story-header">작은 성공이 자신감으로</div>
+			        <div class="story-subtitle">10살 민수의 기록</div>
+			        <div class="story-body">
+			          <p>처음엔 1,000원도 아까워하던 민수가 목표를 달성하고 스스로 계획을 세우며 자랑스러워하더라고요.</p>
+			          <p>부모로서 기다려주고 칭찬해주는 것이 무엇보다 큰 교육이었습니다.</p>
+			        </div>
+			        <div class="story-footer">작성자: 엄마 / 2025-07-28</div>
+			      </article>
+
+			      <article class="story-card">
+			        <div class="story-header">용돈 기입장이 만든 대화</div>
+			        <div class="story-subtitle">8살 지우 이야기</div>
+			        <div class="story-body">
+			          <p>지우와 매주 용돈 내역을 기록하면서 소비 습관에 대해 자연스럽게 대화하게 되었어요.</p>
+			          <p>쓰는 이유를 묻는 시간이 아이의 판단력을 키웠습니다.</p>
+			        </div>
+			        <div class="story-footer">작성자: 아빠 / 2025-07-11</div>
+			      </article>
+			    </div>
+
+			    <!-- 중앙 아이콘 -->
+			    <div class="story-icon"></div>
+
+			    <!-- 오른쪽 카드 2개 -->
+			    <div class="story-column">
+			      <article class="story-card">
+			        <div class="story-header">스스로 세운 목표 달성</div>
+			        <div class="story-subtitle">11살 수아 이야기</div>
+			        <div class="story-body">
+			          <p>매주 조금씩 저축하던 수아가 원하던 책을 직접 구매했을 때, 아이 눈빛이 반짝였어요.</p>
+			          <p>스스로 선택하고 노력한 성과가 아이에게 큰 자신감을 주었습니다.</p>
+			        </div>
+			        <div class="story-footer">작성자: 엄마 / 2025-07-05</div>
+			      </article>
+
+			      <article class="story-card">
+			        <div class="story-header">친구와 함께한 도전</div>
+			        <div class="story-subtitle">9살 지훈 이야기</div>
+			        <div class="story-body">
+			          <p>지훈이가 친구와 함께 과학 실험 프로젝트를 완성했어요. 서로 의견을 나누며 문제를 해결하는 과정에서 협동심을 배웠습니다.</p>
+			          <p>작은 성공 경험이 지훈이에게 큰 동기부여가 되었습니다.</p>
+			        </div>
+			        <div class="story-footer">작성자: 아빠 / 2025-07-12</div>
+			      </article>
+			    </div>
+			  </div>
+
+			  <div class="story-cta">
+			    <button class="cta-start" onclick="location.href='/create-story'">
+			      나도 스토리 공유하기
+			    </button>
+			  </div>
+			</section>
+
+
+		<!-- ====== 간단한 인터랙션 스크립트 ====== -->
+		<script>
+			  // 팁 모달 간단 구현
+			  const tips = {
+			    tip1: { title: "용돈 주는 날, 규칙을 정하세요", text: "규칙을 정하면 아이가 예측 가능해지고 계획을 세워요. 예: '용돈은 매주 토요일, 저축 30%는 자동저금' 같은 규칙." },
+			    tip2: { title: "쓰기 전 세 가지 질문", text: "1) 정말 필요한가? 2) 다른 걸 포기할 의향이 있는가? 3) 오래 만족할까? 부모가 질문을 유도하면 사고력이 자라요." },
+			    tip3: { title: "저축 목표 시각화", text: "목표 이미지를 사용해 시각적으로 남은 금액을 표시해 주세요. 스티커 보상 시스템을 병행하면 효과적입니다." }
+			  };
+
+			  document.querySelectorAll('.tip-more').forEach(btn=>{
+			    btn.addEventListener('click', ()=> {
+			      const key = btn.dataset.tip;
+			      const m = document.getElementById('tip-modal');
+			      const body = document.getElementById('modal-body');
+			      body.innerHTML = '<h3>'+tips[key].title+'</h3><p>'+tips[key].text+'</p>';
+			      m.setAttribute('aria-hidden','false');
+			    });
+			  });
+
+			  document.getElementById('modal-close').addEventListener('click', ()=> {
+			    document.getElementById('tip-modal').setAttribute('aria-hidden','true');
+			  });
+
+			  // 모달 바깥 클릭시 닫기
+			  document.getElementById('tip-modal').addEventListener('click', (e)=>{
+			    if(e.target === e.currentTarget) document.getElementById('tip-modal').setAttribute('aria-hidden','true');
+			  });
+			  
+		</script>
+		
+		
+		
+		<!-- ================= 7. 자녀 성장 & 학습 비용 트래커 ================= -->
+		<h2 class="growth-expense-title">📊 자녀 성장 & 학습 비용 트래커</h2>
+		
+		<section class="growth-expense-section">
+		  
+
+		  <div class="growth-expense-chart">
+		    <div class="bar-container">
+		      <div class="bar" style="--value: 600000;" data-value="₩600,000">
+		        <span>₩600,000</span>
+		      </div>
+		      <div class="bar-label">초등학교</div>
+		    </div>
+		    <div class="bar-container">
+		      <div class="bar" style="--value: 800000;" data-value="₩800,000">
+		        <span>₩800,000</span>
+		      </div>
+		      <div class="bar-label">중학교</div>
+		    </div>
+		    <div class="bar-container">
+		      <div class="bar" style="--value: 500000;" data-value="₩500,000">
+		        <span>₩500,000</span>
+		      </div>
+		      <div class="bar-label">고등학교</div>
+		    </div>
+		  </div>
+
+		  <div class="x-axis-labels">
+		    <span>₩0</span>
+		    <span>₩200,000</span>
+		    <span>₩400,000</span>
+		    <span>₩600,000</span>
+		    <span>₩800,000</span>
+		    <span>₩1,000,000</span>
+		  </div>
+		</section>
+		
+		<script>
+		// 가로 막대 길이 애니메이션
+		window.addEventListener('DOMContentLoaded', () => {
+		  const bars = document.querySelectorAll('.bar');
+		  const maxValue = 1000000; // 최대 금액 기준
+		  bars.forEach(bar => {
+		    const value = parseInt(bar.style.getPropertyValue('--value'));
+		    const percent = (value / maxValue) * 100;
+		    bar.style.width = percent + '%';
+		    setTimeout(() => {
+		      bar.querySelector('span').style.opacity = 1;
+		    }, 1200);
+		  });
+		});
+		</script>
+		
+
+		
+		
+		
+		
+		
+	</main>
+
+
+
+
+</body>
+</html>

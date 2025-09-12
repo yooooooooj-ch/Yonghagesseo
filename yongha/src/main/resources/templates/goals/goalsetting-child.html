@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>아이용 목표 설정 | Yongha</title>
+<th:block layout:fragment="head">
+	<link rel="stylesheet" th:href="@{/css/goal.css}">
+</th:block>
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+
+		<!-- HERO -->
+		<section class="hero-yg" aria-label="yongha-hero">
+			<div class="hero-inner">
+				<div class="hero-copy">
+					<span class="badge">My Goals</span>
+					<h1>
+						내 목표를 <b>직접 만들고</b> 달성해요
+					</h1>
+					<p>작게 시작해서 꾸준히 채우면 어느새 도착!</p>
+					<div class="hero-actions">
+						<button type="button" class="btn-pill btn-yellow" id="cta-start">+
+							새 목표 만들기</button>
+						<a href="#gs-list" class="btn-pill btn-outline">내 목표 보기</a>
+					</div>
+				</div>
+				<div class="hero-visual" aria-hidden="true">
+					<img th:src="@{/img/familyyong.png}" src="/img/familyyong.png"
+						alt="용하 가족" width="640" height="640" loading="eager"
+						decoding="async" sizes="(max-width: 960px) 80vw, 420px">
+				</div>
+			</div>
+		</section>
+
+		<!-- 아이 선택(단일이면 숨겨도 OK) + KPI + 추가버튼 -->
+		<section class="gs-wrap">
+			<header class="gs-header">
+				<div class="gs-title">
+					<h1>아이용 — 목표 설정</h1>
+					<p class="gs-muted">목표를 만들고, 적립하고, 달성해 보세요.</p>
+				</div>
+				<div class="gs-stats">
+<!-- 					<label class="gs-field" style="margin-right: 12px;"> <span -->
+<!-- 						style="font-size: 12px; color: #64748b;">내 ID</span> <select -->
+<!-- 						id="childId"> -->
+<!-- 							<option value="kid1">kid1</option> -->
+<!-- 					</select> -->
+<!-- 					</label>  -->
+					<span class="gs-pill" id="gs-pill-total">총 0개</span> <span
+						class="gs-pill" id="gs-pill-progress">진행 0개</span> <span
+						class="gs-pill" id="gs-pill-done">달성 0개</span>
+					<button class="gs-btn gs-primary" id="gs-btn-add" type="button">+
+						새 목표</button>
+				</div>
+			</header>
+
+			<div class="gs-card">
+				<div id="gs-list" class="gs-grid"></div>
+				<div id="gs-empty" class="gs-empty" hidden>
+					아직 목표가 없어요. <b>+ 새 목표</b>로 시작해요! 🐣
+				</div>
+			</div>
+
+			<aside class="gs-help" style="margin-top: 12px;">
+				<div class="gs-card gs-help-card">
+					<h3>TIP</h3>
+					<ul>
+						<li>목표 금액은 너무 크게 잡지 않기!</li>
+						<li>이미지를 올리면 더 보기 좋아요.</li>
+						<li>완료하면 자동으로 100%가 됩니다.</li>
+					</ul>
+				</div>
+			</aside>
+		</section>
+
+		<!-- 새 목표 모달 -->
+		<dialog id="gs-dlg" class="gs-dialog" aria-labelledby="gs-dlg-title">
+		<form method="dialog" id="gs-form">
+			<div class="gs-dlg-h">
+				<strong id="gs-dlg-title">새 목표</strong>
+				<!-- 닫기 버튼 -->
+				<button class="gs-btn" type="button" aria-label="닫기"
+					onclick="document.getElementById('gs-dlg').close()">닫기</button>
+			</div>
+			<div class="gs-dlg-b">
+				<label class="gs-field"> <span>목표 이름</span> <input
+					id="gs-title" name="title" placeholder="예) 과학책 사기" required />
+				</label>
+		        <label class="gs-field">
+		          <span>목표 금액 (원)</span>
+		          <input id="gs-target" name="target" type="number" min="1000" step="100" placeholder="20000" required/>
+		        </label>
+				<label class="gs-field"> <span>아이콘</span> <select
+					id="gs-icon" name="icon">
+						<option th:each="g : ${GOAL_TYPE_CODES}" th:value="${g.value}"
+							th:text="${(g.desc != null ? g.desc + ' ' : '') + g.label}">
+						</option>
+				</select>
+				</label>
+			</div>
+			<div class="gs-dlg-a">
+				<button class="gs-btn gs-primary" value="default" type="submit">저장</button>
+			</div>
+		</form>
+		</dialog>
+
+		<!-- JS (아이용: full control) -->
+		<script>
+		/* ==== Helpers ==== */
+		const $ = (s, el = document) => el.querySelector(s);
+		const esc = s => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+		const won = n => (Number(n)||0).toLocaleString('ko-KR') + '원';
+		
+		const listEl      = $('#gs-list');
+		const emptyEl     = $('#gs-empty');
+		const pillTotal   = $('#gs-pill-total');
+		const pillProgress= $('#gs-pill-progress');
+		const pillDone    = $('#gs-pill-done');
+		const btnAdd      = $('#gs-btn-add');
+		const dlg         = $('#gs-dlg');
+		const form        = $('#gs-form');
+		const titleEl     = $('#gs-title');
+		const iconEl      = $('#gs-icon');
+		const targetEl    = $('#gs-target'); // (child UI에선 주석 처리되어 있을 수 있음)
+		const hasTargetEl = !!targetEl;
+		
+		let goalsCache = [];
+		let editingId = null;
+		let editingGoalSnapshot = null; // 수정 시 기존 값 보관
+		
+		/* ==== API (goalsetting.html과 동일 패턴) ==== */
+		const api = {
+		  async list() {
+		    const res = await fetch('/api/goals', { credentials: 'same-origin' });
+		    if (!res.ok) throw new Error(await res.text());
+		    return res.json();
+		  },
+		  async create({ goal_name, target_amount, goal_type }) {
+		    const res = await fetch('/api/goals', {
+		      method: 'POST',
+		      headers: { 'Content-Type': 'application/json' },
+		      credentials: 'same-origin',
+		      body: JSON.stringify({ goal_name, target_amount, goal_type })
+		    });
+		    if (res.status === 409) {
+		      const msg = await res.text();
+		      const e = new Error(msg || '이미 진행 중인 목표가 있습니다.');
+		      e.code = 409; throw e;
+		    }
+		    if (!res.ok) throw new Error((await res.text()) || '저장 실패');
+		    return res.text();
+		  },
+		  async patch(goalNo, { goal_name, target_amount, goal_type }) {
+		    const res = await fetch(`/api/goals/${goalNo}`, {
+		      method: 'PATCH',
+		      headers: { 'Content-Type': 'application/json' },
+		      credentials: 'same-origin',
+		      body: JSON.stringify({ goal_name, target_amount, goal_type })
+		    });
+		    if (!res.ok) throw new Error((await res.text()) || '수정 실패');
+		    return res.text();
+		  },
+		  async remove(goalNo) {
+		    const res = await fetch(`/api/goals/${goalNo}`, {
+		      method: 'DELETE', credentials: 'same-origin'
+		    });
+		    if (!res.ok) throw new Error((await res.text()) || '삭제 실패');
+		    return res.text();
+		  },
+		  async complete(goalNo) {
+		    const res = await fetch(`/api/goals/${goalNo}/complete`, {
+		      method: 'POST', credentials: 'same-origin'
+		    });
+		    if (!res.ok) throw new Error((await res.text()) || '달성 실패');
+		    return res.text();
+		  }
+		};
+		
+		// <select id="gs-icon"> 옵션을 그대로 읽어 코드→라벨(예: "🎮 게임") 매핑
+		const goalTypeLabelByCode = (() => {
+		  const map = {};
+		  const sel = document.getElementById('gs-icon');
+		  if (sel) [...sel.options].forEach(o => map[String(o.value)] = (o.text || '').trim());
+		  return map;
+		})();
+
+		// 코드값으로 이모지/라벨 얻기
+		const getEmojiByCode = (code) => {
+		  const txt = goalTypeLabelByCode[String(code)] || '';
+		  const m = txt.match(/^\p{Extended_Pictographic}/u);
+		  return m ? m[0] : '🎯';
+		};
+		const getLabelByCode = (code) =>
+		  (goalTypeLabelByCode[String(code)] || '').replace(/^\p{Extended_Pictographic}\s*/u, '') || '기타';
+
+		
+		/* ==== Mapping (goalsetting.html과 동일) ==== */
+		function mapRow(row) {
+		  const achieved = Number(row.achieved) === 1;
+		  const target   = Number(row.target_amount) || 0;
+		  const balance  = Number(row.balance) || 0;
+		  const saved    = achieved ? target : Math.min(balance, target);
+		  const ready    = Number(row.ready_to_complete) === 1;
+		  return {
+		    id: row.goal_no,
+		    title: row.goal_name,
+		    icon: row.goal_type,   // 숫자 코드
+		    target,
+		    done: achieved,
+		    saved,
+		    ready,
+		    img: ''
+		  };
+		}
+		
+		async function reload() {
+		  const rows = await api.list();
+		  goalsCache = (rows || []).map(mapRow);
+		  render();
+		  // 모달에서 이전 편집 스냅샷은 더 이상 유효하지 않으므로 초기화
+		  editingGoalSnapshot = null;
+		}
+		
+		function render() {
+		  const goals = [...goalsCache];
+		
+		  pillTotal.textContent    = `총 ${goals.length}개`;
+		  const progressing        = goals.filter(g => !g.done).length;
+		  pillProgress.textContent = `진행 ${progressing}개`;
+		  const completed          = goals.filter(g => g.done).length;
+		  pillDone.textContent     = `달성 ${completed}개`;
+		
+		  listEl.innerHTML = '';
+		  emptyEl.hidden = goals.length > 0;
+		
+		  goals.sort((a,b) => Number(a.done) - Number(b.done));
+		  goals.forEach(g => listEl.appendChild(goalCard(g)));
+		
+		  // 진행중 목표 있으면 새 목표 버튼 요소 숨김처리
+		  const hasActive = goals.some(g => !g.done);
+		  if (hasActive) {
+		    btnAdd.style.display = 'none';
+		    document.getElementById('cta-start').style.display = 'none';
+		  } else {
+		    btnAdd.style.display = '';
+		    document.getElementById('cta-start').style.display = '';
+		  }
+		}
+		
+		function goalCard(g) {
+		  const p = g.target ? Math.round((g.saved / g.target) * 100) : 0;
+		  const manualDoneOnlyTarget = g.done;
+
+		  // ⬇ 추가
+		  const emoji = getEmojiByCode(g.icon);
+		  const label = getLabelByCode(g.icon);
+
+		  const wrap = document.createElement('article');
+		  wrap.className = 'ge-item' + (g.done ? ' is-done' : '');
+
+		  wrap.innerHTML = `
+		    ${g.done ? `<span class="ge-stamp">CLEAR</span>` : ``}
+		    <header class="ge-head">
+		      <h3 class="ge-title">${esc(g.title)}</h3>
+		      <span class="ge-state ${g.done ? 'done':''}">${g.done ? '달성 완료' : '진행중'}</span>
+		    </header>
+		    <div class="ge-body">
+		      <div class="ge-media">
+		        <div class="ge-emoji" title="${esc(label)}" aria-label="${esc(label)}">${emoji}</div>
+		      </div>
+		      <div class="ge-main">
+		        ${
+		          manualDoneOnlyTarget
+		          ? `<div class="ge-meta">목표금액: ${won(g.target)}</div>`
+		          : `
+		            <div class="ge-meta">${won(g.saved)} / ${won(g.target)} 
+		              <span class="ge-percent">(${p}%)</span>
+		            </div>
+		            <div class="ge-progress"><span style="--p:${Math.min(100, Math.max(0, p))}%"></span></div>
+		          `
+		        }
+		        <div class="ge-actions-row">
+		          ${g.done
+		            ? `<span class="gs-pill ok">✅ 달성 완료</span>`
+		            : `<button class="ge-btn" data-done type="button">완료</button>`
+		          }
+		          <div class="ge-actions-right">
+		            <button class="ge-btn" data-edit type="button">수정</button>
+		            <button class="ge-btn danger" data-del type="button">삭제</button>
+		          </div>
+		        </div>
+		      </div>
+		    </div>
+		  `;
+		
+		  wrap.querySelector('[data-edit]')?.addEventListener('click', () => openEdit(g.id, g));
+		  wrap.querySelector('[data-del]')?.addEventListener('click', () => removeGoal(g.id));
+		  wrap.querySelector('[data-done]')?.addEventListener('click', () => markDone(g.id));
+		
+		  return wrap;
+		}
+		
+		/* ==== Modal(Create/Update) ==== */
+		btnAdd?.addEventListener('click', async () => {
+		  if (goalsCache.some(g => !g.done)) {
+		    await showAlert({
+		      title: '진행 중 목표',
+		      text: '이미 진행 중인 목표가 있어요.\n먼저 달성/삭제한 뒤 새 목표를 만들 수 있습니다.',
+		      icon: 'warning'
+		    });
+		    return;
+		  }
+		  editingId = null;
+		  editingGoalSnapshot = null;
+		  form.reset();
+		  dlg.showModal ? dlg.showModal() : dlg.removeAttribute('hidden');
+		});
+
+		// Top Layer flush helper: 다이얼로그 닫힌 뒤 한 프레임(정확히 두 프레임) 대기
+		async function closeDialogAndWait(dlg) {
+		  if (dlg?.open) dlg.close();
+		  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+		}
+
+		form.addEventListener('submit', async (e) => {
+		  e.preventDefault();
+
+		  const title = (titleEl?.value || '').trim();
+		  let target;
+		  if (hasTargetEl) {
+		    target = Number(targetEl.value);
+		  } else {
+		    const defaultTarget = editingId && editingGoalSnapshot ? editingGoalSnapshot.target : 20000;
+		    const raw = window.prompt('목표 금액(원)을 입력하세요.', String(defaultTarget));
+		    if (raw === null) return;
+		    target = Number(String(raw).replaceAll(',', '').trim());
+		  }
+		  const goalType = Number.parseInt(iconEl?.value ?? '', 10);
+
+		  if (!title || !Number.isFinite(target) || target <= 0 || !Number.isFinite(goalType)) {
+		    // 다이얼로그를 닫지 않고 경고를 띄워야 할 때는 target을 dlg로 지정
+		    await showAlert({
+		      title: '입력값 확인',
+		      text: '제목/금액/아이콘을 올바르게 입력하세요.',
+		      icon: 'warning',
+		      target: dlg       // ← SweetAlert을 다이얼로그 내부에 렌더
+		    });
+		    return;
+		  }
+
+		  const payload = { goal_name: title, target_amount: target, goal_type: goalType };
+
+		  try {
+		    if (editingId) {
+		      await api.patch(editingId, payload);
+		      await closeDialogAndWait(dlg); // ← 먼저 닫기
+		      await showAlert({ title: '수정 완료', text: '목표가 수정되었습니다.', icon: 'success' });
+		    } else {
+		      await api.create(payload);
+		      await closeDialogAndWait(dlg); // ← 먼저 닫기
+		      await showAlert({ title: '저장 성공', text: '새 목표가 저장되었습니다.', icon: 'success' });
+		    }
+		    await reload();
+		  } catch (err) {
+		    // 에러는 다이얼로그를 유지하고, 다이얼로그 내부에 알림을 붙이면 뒤로 깔리지 않음
+		    await showAlert({
+		      title: err?.code === 409 ? '생성 불가' : '오류',
+		      text: (err?.message) || (err?.toString()) || '알 수 없는 오류',
+		      icon: err?.code === 409 ? 'warning' : 'error',
+		      target: dlg
+		    });
+		  }
+		});
+
+		function openEdit(id, g) {
+		  editingId = id;
+		  editingGoalSnapshot = { ...g }; // target 등 기존 값 보관
+		  if (titleEl) titleEl.value = g.title || '';
+		  if (targetEl) targetEl.value = g.target || '';
+		  if (iconEl)  iconEl.value  = String(g.icon ?? '');
+		  dlg.showModal ? dlg.showModal() : dlg.removeAttribute('hidden');
+		}
+
+		/* ==== Actions ==== */
+		async function removeGoal(id) {
+		  const { isConfirmed } = await showConfirm({
+		    title: '삭제 확인',
+		    text: '정말 삭제할까요?',
+		    icon: 'warning',
+		    confirmButtonText: '삭제',
+		    cancelButtonText: '취소'
+		  });
+		  if (!isConfirmed) return;
+
+		  try {
+		    await api.remove(id);
+		    await showAlert({ title: '삭제 완료', text: '목표가 삭제되었습니다.', icon: 'success' });
+		    await reload();
+		  } catch (err) {
+		    await showAlert({
+		      title: '오류',
+		      text: (err && err.message) ? err.message : String(err),
+		      icon: 'error'
+		    });
+		  }
+		}
+
+		async function markDone(id) {
+		  try {
+		    await api.complete(id);
+		    await showAlert({ title: '달성 처리', text: '달성 처리되었습니다.', icon: 'success' });
+		    await reload();
+		  } catch (err) {
+		    await showAlert({
+		      title: '오류',
+		      text: (err && err.message) ? err.message : String(err),
+		      icon: 'error'
+		    });
+		  }
+		}
+
+		/* ==== Start ==== */
+		document.getElementById('cta-start')?.addEventListener('click', () => btnAdd?.click());
+		reload();
+	</script>
+
+	</main>
+</body>
+</html>

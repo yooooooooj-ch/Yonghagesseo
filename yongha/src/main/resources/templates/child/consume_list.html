@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>용돈이 흐르는 곳</title>
+  <link rel="stylesheet" th:href="@{/css/consume-list.css}" />
+
+  <style>
+    /* 스무스 스크롤 */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+
+<body>
+<main layout:fragment="content" class="content">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-inner">
+      <!-- 왼쪽 텍스트 -->
+      <div class="hero-content">
+        <h1>내 소비, 한눈에 보기 👀</h1>
+        <p>소비 내역을 한눈에 확인하고<br>스스로 관리해 보세요</p>
+        <!-- Hero Section 안쪽 -->
+        <a href="#consume-list" class="btn-hero">소비 내역 확인하기</a>
+      </div>
+
+      <!-- 오른쪽 캐릭터 -->
+      <div class="hero-illustration">
+        <img src="/img/yongv3.png" alt="용하 캐릭터" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 중간 타이핑 섹션 -->
+  <section class="mid-section">
+    <h2><span id="typing"></span></h2>
+    <p>내 소비 습관을 돌아보고, 더 현명하게 관리하세요.</p>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      new Typed("#typing", {
+        strings: [
+          "소비 내역을 한눈에 확인 👀",
+          "카테고리별로 분석 📂",
+          "내일은 더 스마트한 소비 💡"
+        ],
+        typeSpeed: 60,
+        backSpeed: 30,
+        loop: true
+      });
+    });
+  </script>
+
+  <!-- 🔥 Dashboard Cards Section -->
+  <section class="dashboard-cards">
+    <div class="cards-inner">
+
+      <!-- 오늘 지출 내역 (메인 카드) -->
+      <div class="card main-card">
+        <h3>오늘 지출 내역</h3>
+        <ul>
+          <li th:each="row : ${todayList}">
+            <span th:text="${#temporals.format(row.cons_date, 'HH:mm')}"></span> ·
+            <span th:text="${row.cons_desc}"></span> -
+            <b th:text="${#numbers.formatInteger(row.amount ?: 0, 1, 'COMMA')} + '원'"></b>
+          </li>
+          <li th:if="${#lists.isEmpty(todayList)}">오늘 등록된 소비가 없습니다.</li>
+        </ul>
+        <a href="#consume-list" class="btn">전체보기</a>
+      </div>
+
+      <!-- 바로가기 카드들 -->
+      <div class="card small-card">
+        <h4>📊 소비 전체보기</h4>
+        <p>모든 내역을 한눈에 확인</p>
+        <a href="#consume-list" class="link">바로가기 →</a>
+      </div>
+
+      <div class="card small-card">
+        <h4>📂 카테고리별 소비</h4>
+        <p>카테고리별 상세 분석</p>
+        <a href="#category-section" class="link">확인하기 →</a>
+      </div>
+
+      <div class="card small-card">
+        <h4>💡 소비 피드백</h4>
+        <p>AI 피드백 & 조언</p>
+        <a href="#advice-section" class="link">보러가기 →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 🔥 리스트 컨테이너 -->
+  <section id="consume-list" class="dashboard-cards">
+    <div class="card table-card">
+      <h3 class="section-title">📒 소비 내역 확인</h3>
+
+      <!-- 필터 -->
+      <form method="get" th:action="@{/consume/list}" class="filters">
+        <input type="date" name="fromDate" th:value="${fromDate}">
+        <input type="date" name="toDate" th:value="${toDate}">
+        <select name="consType">
+          <option value="" th:selected="${consType == null}">전체</option>
+          <option th:each="c : ${CONS_TYPE_CODES}"
+                  th:value="${c.value}"
+                  th:text="${(c.desc != null ? c.desc + ' ' : '') + c.label}"
+                  th:selected="${consType != null and consType == c.value}">
+          </option>
+        </select>
+        <input type="text" name="keyword" placeholder="설명 검색" th:value="${keyword}">
+        <button type="submit">조회</button>
+      </form>
+
+      <!-- 요약 -->
+      <div style="margin: 10px 0; color: #555;">
+        <b th:text="'총 ' + ${total} + '건'">총 0건</b> · 합계
+        <b th:text="${#numbers.formatInteger(sumAmount ?: 0, 1, 'COMMA')}">0</b>원
+      </div>
+
+      <!-- 📌 테이블 -->
+      <table>
+        <thead>
+        <tr>
+          <th>날짜</th>
+          <th>타입</th>
+          <th>설명</th>
+          <th>금액</th>
+          <th>사용 포인트</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(list)}">
+          <td colspan="5">데이터가 없습니다.</td>
+        </tr>
+        <tr th:each="row : ${list}">
+          <td th:text="${#temporals.format(row.cons_date, 'yyyy-MM-dd HH:mm')}">2025-08-18 12:00</td>
+          <td>
+            <span th:each="c : ${CONS_TYPE_CODES}"
+                  th:if="${c.value == row.cons_type}"
+                  th:text="${c.desc}">🔖</span>
+          </td>
+          <td>
+            <a th:href="@{/consume/edit(cons_no=${row.cons_no})}"
+               th:text="${row.cons_desc}">설명</a>
+          </td>
+          <td th:text="${#numbers.formatInteger(row.amount ?: 0, 1, 'COMMA')}">0</td>
+          <td th:text="${#numbers.formatInteger(row.used_point ?: 0, 1, 'COMMA')}">0</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- 페이징 -->
+      <div class="paging" th:if="${total > 0}">
+        <a th:if="${page > 0}"
+           th:href="@{/consume/list(page=${page-1}, size=${size}, fromDate=${fromDate}, toDate=${toDate}, consType=${consType}, keyword=${keyword})}">
+          이전
+        </a>
+        <span th:text="${displayPage}">1</span> 
+        <span th:text="${totalPages}">1</span>
+        <a th:if="${page + 1 < totalPages}"
+           th:href="@{/consume/list(page=${page+1}, size=${size}, fromDate=${fromDate}, toDate=${toDate}, consType=${consType}, keyword=${keyword})}">
+          다음
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 🔥 카테고리별 소비 -->
+  <section id="category-section" class="category-section">
+    <div class="category-inner">
+
+      <!-- 좌측 타이포그래피 -->
+      <div class="category-text">
+        <h2>카테고리별 소비</h2>
+        <p>최근 1주일간 어디에 가장 많이 썼을까요?<br>
+        한눈에 비율을 확인해 보세요.</p>
+      </div>
+
+      <!-- 우측 4개 박스 -->
+      <div class="category-grid">
+        <div class="category-box" th:each="row : ${ratioByType7d}">
+          <div class="percent" th:text="${row.value} + '%'">45%</div>
+          <div class="label" th:each="c : ${CONS_TYPE_CODES}" th:if="${c.value == row.key}" th:text="${c.label}">식비</div>
+          <div class="icon" th:each="c : ${CONS_TYPE_CODES}" th:if="${c.value == row.key}" th:text="${c.desc}">🍔</div>
+        </div>
+<!--         <div class="category-box"> -->
+<!--           <div class="percent">20%</div> -->
+<!--           <div class="label">교통비</div> -->
+<!--           <div class="icon">🚌</div> -->
+<!--         </div> -->
+<!--         <div class="category-box"> -->
+<!--           <div class="percent">25%</div> -->
+<!--           <div class="label">취미/여가</div> -->
+<!--           <div class="icon">🎮</div> -->
+<!--         </div> -->
+<!--         <div class="category-box"> -->
+<!--           <div class="percent">10%</div> -->
+<!--           <div class="label">기타</div> -->
+<!--           <div class="icon">👜</div> -->
+<!--         </div> -->
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- 🔥 소비 피드백 -->
+    <section id="advice-section" class="analysis-section">
+      <div class="feedback-bubble">
+        <h3>💡 소비 피드백</h3>
+        <ul>
+          <li>점심 외식비가 많아요! 주 1회는 도시락으로 절약해보는 건 어때요?</li>
+          <li>교통비 비율이 높습니다. 정기권/버스카드를 활용해 보세요.</li>
+          <li>취미/게임 결제가 잦습니다. 월 예산 상한을 정해보세요.</li>
+        </ul>
+      </div>
+    </section>
+
+
+</main>
+</body>
+</html>

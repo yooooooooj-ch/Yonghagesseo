@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>부모페이지</title>
+<link rel="stylesheet" th:href="@{/css/mypage-common.css}" />
+<link rel="stylesheet" th:href="@{/css/parent_mypage.css}" />
+<script th:src="@{/js/popup.js}"></script>
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+
+
+		<!-- ✅ 사이드바 + 본문 레이아웃 -->
+		<div class="parent-mypage-layout">
+
+			<!-- 좌측 사이드바 -->
+			<aside class="parent-mypage-sidebar">
+				<h1>용맘, 용대디 ZONE</h1>
+				<hr class="sidebar-divider" />
+				<nav class="mypage-nav">
+					<a href="/parent_page" class="nav-item active">마이페이지</a> <a href="/users/my-info" class="nav-item">내 정보 수정</a>
+				</nav>
+			</aside>
+			<!-- 우측 본문 -->
+			<section class="parent-mypage-content">
+
+				<!-- 1. 프로필 영역 -->
+				<div class="mypage-container">
+					<!-- 1. 프로필 -->
+					<div class="profile" onclick="changeProfile()">
+						<img th:src="@{'/img/profile/profile' + ${userInfo.profile} + '.png'}" alt="프로필 이미지" class="profile-img" id="profile-img" />
+						<div class="username" th:text="${userInfo.user_name}"></div>
+					</div>
+
+					<!-- 프로필 변경 팝업 -->
+					<div class="popup-layer" id="popup-profile">
+						<div class="popup-content">
+							<h3 class="popup-title">프로필변경</h3>
+							<ul class="popup-list-profile">
+								<li th:each="p : ${PROFILE_CODES}"><img th:src="@{'/img/profile/profile' + ${p.value} + '.png'}" th:attr="onclick=|selectProfile(${p.value})|" th:attrappend="title=${p.label}, alt=${p.label}" /></li>
+							</ul>
+							<button class="popup-close">닫기</button>
+						</div>
+					</div>
+
+					<!-- 2. 현재 잔액 -->
+					<div class="balance-box">
+						<!-- 연결된 계좌가 있을 때 -->
+						<div th:if="${userInfo.account_id} != null">
+							<div class="balance-title" th:text="${userInfo.account_id} + ' | ' + ${userInfo.bank_name}">123456 | 은행명</div>
+							<div class="balance-amount" th:text="${#numbers.formatInteger(userInfo.balance ?: 0, 1, 'COMMA')}"></div>
+							<div class="change-bank">
+								<button onclick="accountSuggest()">계좌 변경</button>
+							</div>
+						</div>
+
+						<!-- 연결된 계좌가 없을 때 -->
+						<div th:if="${userInfo.account_id} == null">
+							<span>연결된 계좌가 없습니다</span>
+							<div class="change-bank">
+								<button onclick="accountSuggest()">계좌등록하기</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- ✅ 계좌 선택 팝업 -->
+				<div class="popup-layer" id="popup-account">
+					<div class="popup-content">
+						<h3 class="popup-title">계좌 선택</h3>
+						<table class="account-table">
+							<thead>
+								<tr>
+									<th>은행명</th>
+									<th>계좌번호</th>
+									<th>잔액</th>
+									<th>선택</th>
+								</tr>
+							</thead>
+							<tbody id="account-list">
+								<!-- accountSuggest()가 불러온 계좌들이 append -->
+							</tbody>
+						</table>
+						<div class="popup-actions">
+							<button class="popup-close">닫기</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- 버튼 영역 -->
+				<div class="section-switch-buttons">
+					<div class="showSection">
+						<span class="tab-btn active" type="button" onclick="showSection('goal')">아기 용돈 충전</span> <span class="tab-btn" type="button" onclick="showSection('consume')">부모 가이드 큐레이션</span>
+					</div>
+					<hr>
+				</div>
+
+				<!-- 3. 아기용 용돈 충전 영역 -->
+				<div class="mypage-container2">
+					<div class="child-charging-box">
+						<div class="charging-list">
+							<div class="charging-item" th:each="child : ${childsInfo}" th:data-child-no="${child.user_no}">
+								<input type="hidden" name="child_no" th:value="${child.user_no}" /> <img th:src="@{'/img/profile/profile' + ${child.profile} + '.png'}" alt="프로필 이미지" class="child-profile-img" />
+
+								<div class="child-info">
+									<span class="child-name" th:text="${child.user_name}"></span> <span class="child-balance" th:text="${child.balance} != null ? ${#numbers.formatInteger(child.balance ?: 0, 1, 'COMMA')} : '연결된 계좌가 없습니다'"></span> <span class="child-trans" th:if="${child.dday} == -1">예약된 이체가 없습니다</span> <span class="child-trans" th:if="${child.dday} >= 0" th:text="'다음 용돈 이체일 : ' + ${child.nextTransDate} + ' (D-' + ${child.dday} + ')'"></span>
+								</div>
+
+								<div class="child-actions">
+									<button class="btn-allowance" th:if="${userInfo.balance} != null" th:onclick="'location.href=\'/transferAllowance?child_no=' + ${child.user_no} + '\';'">용돈 주러가기</button>
+									<button class="btn-remove-family" type="button" th:onclick="|removeFamily(${child.user_no})|">가족관계 삭제</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- 4. 아기용 추가 버튼 -->
+						<div class="child-switch-bar">
+							<button class="child-btn" onclick="location.href='/invite_family'">➕</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- mypage밑에 있는 부모 가이드 큐레이션 -->
+				<div class="parent-mypage-guide">
+					<h2 class="guide-title">📚 오늘의 부모 인사이트</h2>
+					<div class="guide-essay">
+						<h3 class="essay-title">“용돈은 아이에게 첫 번째 금융 선생님입니다.”</h3>
+						<p>
+							우리는 아이에게 ‘경제 교육’이라고 하면 흔히 용돈을 주고 저축을 가르치는 정도로 생각합니다. 하지만 진짜 금융 교육은 숫자 계산이나 돈의 흐름을 아는 것보다, <strong>스스로 선택하고 책임지는 경험</strong>에서 시작됩니다.
+						</p>
+						<p>
+							Yongha는 단순한 핀테크 앱이 아닙니다. 부모와 자녀가 함께 성장하는 금융 교육의 장입니다. 용돈을 어떻게 주는지, 얼마를 주는지보다 더 중요한 것은, <strong>그 돈을 두고 아이와 어떤 대화를 나누는가</strong>입니다.
+						</p>
+						<blockquote class="guide-quote">
+							“우리 아이는 매달 용돈을 받기 전, 꼭 예산 계획표를 먼저 써요. <br> 사고 싶은 물건도 적고, 저축도 계획하죠. 덕분에 계획성도 생기고 대화도 많아졌어요.” <span class="quote-author">– Yongha를 사용하는 부모님의 이야기</span>
+						</blockquote>
+						<p>Yongha는 이렇게 도와줍니다:</p>
+						<ul class="guide-points">
+							<li>💳 부모가 자녀에게 용돈을 입금하면,</li>
+							<li>📘 자녀는 지출 내역을 기록하고 저축 목표를 세웁니다.</li>
+							<li>📊 부모는 소비 리포트를 실시간으로 확인하며 칭찬과 피드백을 남깁니다.</li>
+						</ul>
+						<p>매일매일 반복되는 이 작은 습관이, 아이의 자율성과 책임감을 키우고, 부모와 자녀 사이에 자연스러운 금융 대화를 만들어냅니다.</p>
+						<p class="guide-cta-text">복잡한 금융 교육, 어렵게 생각하지 마세요. Yongha가 함께하면 누구나 쉽게 시작할 수 있습니다.</p>
+					</div>
+				</div>
+
+			</section>
+		</div>
+	</main>
+
+
+
+	<div layout:fragment="script">
+		<script>
+		
+		//토글
+		function showSection(section) {
+		    const chargingBox = document.querySelector('.child-charging-box');
+		    const guideBox = document.querySelector('.parent-mypage-guide');
+
+		    if (section === 'goal') {   // ← HTML과 동일하게 맞춤
+		        chargingBox.style.display = 'block';
+		        guideBox.style.display = 'none';
+		    } else if (section === 'consume') {
+		        chargingBox.style.display = 'none';
+		        guideBox.style.display = 'block';
+		    }
+
+		    // 버튼 active 토글도 추가
+		    document.querySelectorAll('.showSection span').forEach(btn => btn.classList.remove('active'));
+		    document.querySelector(`.showSection span[onclick="showSection('${section}')"]`).classList.add('active');
+		}
+		
+		
+		// 프로필 변경 팝업 열기
+		function changeProfile() {
+		    openPopup('#popup-profile');
+		}
+
+		async function selectProfile(id) {
+		    const response = await fetch('/users/changeProfile', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		        body: 'profile=' + id
+		    });
+
+		    closePopup('#popup-profile');
+
+		    if (response.ok) {
+		        await showAlert({
+		            text: '프로필이 변경되었습니다.',
+		            icon: 'success'
+		        });
+		        location.reload();
+		    } else {
+		        await showAlert({
+		            text: '프로필 변경 실패',
+		            icon: 'warning'
+		        });
+		    }
+		}
+		    
+		    
+		// 계좌 목록 팝업
+		function accountSuggest() {
+		    fetch("/api/accounts/suggestions")
+		        .then(async res => {
+		            if (!res.ok) throw new Error(await res.text());
+		            return res.json();
+		        })
+		        .then(data => {
+		            const list = document.getElementById("account-list");
+		            list.innerHTML = "";
+		            data.forEach(account => {
+		                const tr = document.createElement("tr");
+		                tr.innerHTML = `
+		                	<td>${account.bank_name}</td>
+		                    <td>${account.account_id}</td>
+		                    <td>${account.balance.toLocaleString()}원</td>
+		                    <td><button onclick="registerAccount('${account.account_id}', '${account.bank_name}', ${account.balance})">선택</button></td>`;
+		                list.appendChild(tr);
+		            });
+		            openPopup('#popup-account');
+		        })
+		        .catch(err => {
+		            showAlert({
+		                text: err.message,
+		                icon: 'warning'
+		            });
+		        });
+		}
+		
+
+		function registerAccount(account_id, bank_name, balance) {
+		    fetch("/api/accounts/register", {
+		        method: "POST",
+		        headers: { "Content-Type": "application/json" },
+		        body: JSON.stringify({ account_id, bank_name, balance })
+		    })
+		    .then(async res => {
+		        closePopup('#popup-account');
+		        if (res.ok) {
+		            await showAlert({
+		                text: '등록 완료',
+		                icon: 'success'
+		            });
+		            location.reload();
+		        } else {
+		            throw new Error(await res.text());
+		        }
+		    })
+		    .catch(err => {
+		        showAlert({
+		            text: err.message,
+		            icon: 'warning'
+		        });
+		    });
+		}
+		
+		async function removeFamily(childNo) {
+			const result = await showConfirm({
+		        title: '가족관계 삭제',
+		        text: '정말 가족관계를 삭제하시겠습니까?',
+		        confirmButtonText: '네, 삭제합니다',
+		        cancelButtonText: '아니요'
+		    });
+
+		    if (!result.isConfirmed) return;
+		    
+			await fetch(`/rest/users/family`, { 
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ childNo })
+			})
+			
+			.then(async res => {
+				const resBody = await res.json();
+			
+				if (res.ok) { 
+					await showAlert({
+						title: '삭제 완료',
+						text: resBody.message,
+						icon: 'success'
+					});
+					location.reload(); }
+				else { 
+					showAlert({
+						title: '가족 삭제하기에 실패했습니다.',
+						text: resBody.message,
+						icon: 'warning'
+					}); 
+					console.warn(resBody.message);
+				}
+			})
+			.catch(err => {
+				console.error("요청 실패:", err);
+				showAlert({
+					text: "알 수 없는 오류가 발생했습니다.",
+					icon: 'error'
+				});
+			});
+		}
+		
+		
+		
+		/* //아기용돈충전, 부모 가이드 큐레이션 부분 */
+	/* 	function showSection(sectionName, el) {
+    // 1) 기존 active 제거
+    const buttons = document.querySelectorAll('.showSection span');
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    // 2) 클릭한 버튼에 active 추가
+    el.classList.add('active');
+
+    // 3) 실제 섹션 표시 토글 코드 (필요하면 여기에)
+    // 예) document.querySelectorAll('.section-content').forEach(sec => sec.style.display = 'none');
+    // document.getElementById(sectionName).style.display = 'block';
+} */
+
+
+
+		</script>
+	</div>
+
+
+</body>
+</html>

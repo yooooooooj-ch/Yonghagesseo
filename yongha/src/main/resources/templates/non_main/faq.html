@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title></title>
+<link rel="stylesheet" th:href="@{/css/main.css}" />
+<link rel="stylesheet" th:href="@{/css/learning_outcomes.css}" />
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+		<section class="lo-faq">
+			<h2 class="lo-faq-title">자주 묻는 질문 (FAQ)</h2>
+			<p class="lo-faq-description">Yongha와 금융 교육에 대해 자주 문의하시는 질문들을 모았습니다. 궁금한 점이 해결되지 않으면 언제든지 문의해 주세요.</p>
+
+			<dl class="lo-faq-list">
+				<dt class="lo-faq-question">Yongha는 어떤 연령대의 아이들에게 적합한가요?</dt>
+				<dd class="lo-faq-answer">Yongha는 초등학생부터 중학생까지 금융 교육을 시작하기에 적합하도록 설계된 웹 플랫폼입니다.</dd>
+
+				<dt class="lo-faq-question">서비스 이용에 별도의 비용이 드나요?</dt>
+				<dd class="lo-faq-answer">기본 기능은 무료로 제공되며, 일부 프리미엄 콘텐츠는 유료로 이용할 수 있습니다.</dd>
+
+				<dt class="lo-faq-question">부모가 자녀의 금융 활동 내역을 확인할 수 있나요?</dt>
+				<dd class="lo-faq-answer">네, 부모님은 자녀의 금융 활동 내역을 실시간으로 확인할 수 있어 금융 대화에 적극 활용할 수 있습니다.</dd>
+
+				<dt class="lo-faq-question">여러 기기에서 동시에 이용할 수 있나요?</dt>
+				<dd class="lo-faq-answer">네, 동일 계정으로 로그인하면 PC, 스마트폰, 태블릿 등 다양한 기기에서 사용할 수 있습니다.</dd>
+
+				<dt class="lo-faq-question">데이터는 안전하게 보호되나요?</dt>
+				<dd class="lo-faq-answer">Yongha는 최신 보안 기술을 적용하여 사용자 데이터를 안전하게 보호합니다.</dd>
+
+				<dt class="lo-faq-question">어떤 금융 용어를 배울 수 있나요?</dt>
+				<dd class="lo-faq-answer">예산, 저축, 소비, 투자 등 일상생활에 필요한 기본 금융 용어들을 쉽게 배울 수 있습니다.</dd>
+
+				<dt class="lo-faq-question">자녀가 서비스 이용을 거부할 때 어떻게 해야 하나요?</dt>
+				<dd class="lo-faq-answer">흥미를 유발하는 미션과 보상 시스템이 마련되어 있어 점차 자연스럽게 참여하도록 도와줍니다.</dd>
+
+				<dt class="lo-faq-question">지원하는 금융 교육 콘텐츠 종류는 무엇인가요?</dt>
+				<dd class="lo-faq-answer">용돈 관리, 목표 저축, 소비 기록, 가족 금융 대화 가이드 등 다양한 콘텐츠가 포함되어 있습니다.</dd>
+
+				<dt class="lo-faq-question">부모가 별도로 공부할 수 있는 자료도 제공되나요?</dt>
+				<dd class="lo-faq-answer">네, 부모님용 가이드와 교육 자료를 웹사이트에서 제공합니다.</dd>
+
+				<dt class="lo-faq-question">사용자 개인정보는 어떻게 관리되나요?</dt>
+				<dd class="lo-faq-answer">개인정보 보호 정책에 따라 엄격히 관리되며, 제3자와 공유하지 않습니다.</dd>
+
+				<dt class="lo-faq-question">웹 내에서 직접 금융 거래가 가능한가요?</dt>
+				<dd class="lo-faq-answer">아니요, 금융 거래 기능은 제공하지 않으며 교육 및 관리에 집중합니다.</dd>
+
+				<dt class="lo-faq-question">서비스 탈퇴 시 데이터는 어떻게 되나요?</dt>
+				<dd class="lo-faq-answer">계정을 삭제하지 않는 이상 클라우드에 데이터가 안전하게 저장됩니다.</dd>
+
+				<dt class="lo-faq-question">이용 중 문제가 발생하면 어떻게 하나요?</dt>
+				<dd class="lo-faq-answer">웹사이트 내 고객센터 또는 이메일을 통해 문의하시면 빠르게 지원해 드립니다.</dd>
+
+				<dt class="lo-faq-question">어떤 운영체제에서 사용할 수 있나요?</dt>
+				<dd class="lo-faq-answer">PC만 지원하며, 최신 웹 브라우저 이용을 권장합니다.</dd>
+
+				<dt class="lo-faq-question">자녀의 금융 습관을 기록하고 추적할 수 있나요?</dt>
+				<dd class="lo-faq-answer">네, 금융 활동 내역과 저축 목표 달성 현황을 기록하고 쉽게 확인할 수 있습니다.</dd>
+			</dl>
+		</section>
+	</main>
+
+	<div layout:fragment="script">
+		<script type="text/javascript">
+	
+			document.querySelectorAll('.lo-faq-question').forEach((q) => {
+			  q.addEventListener('click', () => {
+			    q.classList.toggle('active');
+			    const answer = q.nextElementSibling;
+			    answer.classList.toggle('active');
+			  });
+			});
+		</script>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddak.yongha.mapper.ConsumeMapper">
+
+	<!-- 소비 등록 -->
+	<insert id="insertConsume" parameterType="ConsumeVO">
+		INSERT INTO Consume (account_no, amount, used_point, cons_desc, cons_type, cons_date)
+		VALUES (
+			#{account_no},
+			#{amount},
+			#{used_point},
+			#{cons_desc},
+			#{cons_type},
+			NVL(#{cons_date,
+			jdbcType=TIMESTAMP}, SYSDATE)
+		)
+	</insert>
+
+	<!-- 포인트/잔액 차감: 포인트 잠금 조회 -->
+	<select id="selectPointForUpdate" parameterType="int" resultType="long">
+		SELECT NVL(point,0) FROM Childuser
+		WHERE
+		child_no = #{userNo}
+		FOR UPDATE
+	</select>
+
+	<!-- 포인트 차감 -->
+	<update id="deductPoint" parameterType="map">
+		/* params: userNo, usedPoint */
+		UPDATE Childuser
+		SET point = point - #{usedPoint}
+		WHERE child_no = #{userNo}
+	</update>
+
+	<!-- 잔액 차감 (마이너스 방지 조건 포함) -->
+	<update id="deductBalance" parameterType="map">
+		/* params: accountNo, chargeAmount */
+		UPDATE Accounts
+		SET balance = balance - #{chargeAmount}
+		WHERE account_no = #{accountNo}
+			AND balance >= #{chargeAmount}
+	</update>
+
+	<!-- ############################################################################# -->
+
+	<!-- 단건 조회 (수정/삭제용 원본 조회에 사용) -->
+	<select id="selectConsumeById" parameterType="long" resultType="ConsumeVO">
+		SELECT c.cons_no, c.account_no, c.amount,
+			c.used_point, c.cons_desc, c.cons_type, c.cons_date,
+			a.user_no, a.account_id, a.bank_name
+		FROM Consume c
+		JOIN Accounts a
+			ON a.account_no = c.account_no
+		WHERE c.cons_no = #{consNo}
+	</select>
+
+	<!-- 목록(필터: 날짜/타입/키워드), 간단 페이징 -->
+	<select id="selectConsumeList" resultType="ConsumeVO">
+		/* params: userNo, fromDate(yyyy-MM-dd), toDate(yyyy-MM-dd), consType(Integer), keyword(String), offset, limit */
+		SELECT * FROM (
+			SELECT t.*, ROWNUM rn FROM (
+				SELECT
+					c.cons_no, c.account_no, c.amount, c.used_point,
+					c.cons_desc,
+					c.cons_type, c.cons_date,
+					a.user_no, a.account_id, a.bank_name
+				FROM Consume c
+				JOIN Accounts a 
+					ON a.account_no = c.account_no
+				WHERE a.user_no = #{userNo}
+				<if test="fromDate != null and fromDate != ''">
+					AND c.cons_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+				</if>
+				<if test="toDate != null and toDate != ''">
+					AND c.cons_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+				</if>
+				<if test="consType != null">
+					AND c.cons_type = #{consType}
+				</if>
+				<if test="keyword != null and keyword != ''">
+					AND ( c.cons_desc LIKE '%' || #{keyword} || '%' )
+				</if>
+				ORDER BY c.cons_date DESC, c.cons_no DESC
+				
+			) t WHERE ROWNUM &lt;= #{offset} + #{limit}
+			
+		) WHERE rn &gt; #{offset}
+	</select>
+
+	<select id="countConsumeList" resultType="int">
+		SELECT COUNT(*)
+		FROM Consume c JOIN Accounts a ON a.account_no = c.account_no
+		WHERE a.user_no = #{userNo}
+		<if test="fromDate != null and fromDate != ''">
+			AND c.cons_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="toDate != null and toDate != ''">
+			AND c.cons_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="consType != null">
+			AND c.cons_type = #{consType}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			AND ( c.cons_desc LIKE '%' || #{keyword} || '%' )
+		</if>
+	</select>
+
+	<!-- 합계 (필터 동일 적용: 기존 selectConsumeList/countConsumeList와 같은 조건) -->
+	<select id="sumConsumeAmount" resultType="long">
+		/* params: userNo, fromDate, toDate, consType, keyword */
+		SELECT NVL(SUM(c.amount), 0)
+		FROM Consume c
+		JOIN Accounts a ON a.account_no = c.account_no
+		WHERE a.user_no = #{userNo}
+		<if test="fromDate != null and fromDate != ''">
+			AND c.cons_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="toDate != null and toDate != ''">
+			AND c.cons_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="consType != null">
+			AND c.cons_type = #{consType}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			AND ( c.cons_desc LIKE '%' || #{keyword} || '%' )
+		</if>
+	</select>
+
+	<!-- ############################################################################# -->
+
+	<!-- 사용 포인트 수정 -->
+	<update id="creditPoint" parameterType="map">
+		UPDATE Childuser
+		SET point = point + #{addPoint}
+		WHERE child_no = #{userNo}
+	</update>
+
+	<!-- 사용 잔액 수정 -->
+	<update id="creditBalance" parameterType="map">
+		UPDATE Accounts
+		SET balance = balance + #{addAmount}
+		WHERE account_no = #{accountNo}
+	</update>
+
+	<!-- 소비 업데이트(used_point 포함) -->
+	<update id="updateConsumeAll" parameterType="ConsumeVO">
+		UPDATE Consume
+		SET amount = #{amount},
+			used_point = #{used_point},
+			cons_desc = #{cons_desc},
+			cons_type = #{cons_type},
+			cons_date = NVL(#{cons_date, jdbcType=TIMESTAMP}, cons_date)
+		WHERE cons_no = #{cons_no}
+	</update>
+
+	<!-- 소비 삭제 -->
+	<delete id="deleteConsume" parameterType="long">
+		DELETE FROM Consume WHERE cons_no = #{cons_no}
+	</delete>
+	
+	<!-- parent -->
+	<!-- 권한 체크 -->
+	<select id="countChildOfParent" resultType="int">
+		SELECT COUNT(*)
+		FROM Family
+		WHERE parent_no = #{parentNo}
+			AND child_no = #{childNo}
+	</select>
+
+	<!-- 합계 (필터 동일 적용: 기존 selectConsumeList/countConsumeList와 같은 조건) -->
+	<select id="sumConsumeAmountByUserNo" resultType="long">
+		/* params: userNo, fromDate, toDate, consType, keyword */
+		SELECT NVL(SUM(c.amount), 0)
+		FROM Consume c
+			JOIN Accounts a ON a.account_no = c.account_no
+		WHERE a.user_no = #{userNo}
+		<if test="fromDate != null and fromDate != ''">
+			AND c.cons_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="toDate != null and toDate != ''">
+			AND c.cons_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="consType != null">
+			AND c.cons_type = #{consType}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			AND ( c.cons_desc LIKE '%' || #{keyword} || '%' )
+		</if>
+	</select>
+	
+	<!-- 이하 김동주 작성 -->
+	
+	<select id="selectRecentConsumesByUserNo" resultType="ConsumeVO">
+		SELECT cons_no, account_no, amount, cons_desc, cons_type, cons_date
+		FROM Consume
+		WHERE account_no = (SELECT account_no FROM Accounts WHERE user_no = #{userNo})
+			AND cons_date BETWEEN #{fromDate} AND #{toDate}
+		ORDER BY cons_date ASC
+	</select>
+	
+
+</mapper>

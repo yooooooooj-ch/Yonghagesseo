@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>회원가입 페이지</title>
+<link rel="stylesheet" th:href="@{/css/signup.css}" />
+<!--<link rel="manifest" href="/manifest.json" />-->
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+		<section class="signup-section">
+			<!-- 필요하면 ui-scale-80 추가로 80% 배율 적용 -->
+			<form id="signupForm" class="signup-form ui-scale-80" method="post"
+				action="/users/signup" novalidate>
+				<h2 class="signup-title">일반 회원가입</h2>
+
+				<!-- 3단계 카드 레이아웃 -->
+				<div class="wizard">
+
+					<!-- STEP 1: 계정 정보 -->
+					<section class="step-card" aria-label="계정 정보">
+						<table class="step-table">
+							<tbody>
+								<!-- 아이디 -->
+								<tr id="idRow">
+									<td class="cell-label">* 아이디 <input type="text"
+										name="user_id" class="signup-input" maxlength="20" required
+										pattern="^[a-z][a-z0-9_]{4,19}$"
+										title="영문 소문자로 시작, 영문/숫자/_만 사용, 5~20자" />
+									</td>
+									<td class="cell-action">
+										<button type="button" class="signup-btn"
+											onclick="checkUserIdDuplication()">중복확인</button>
+									</td>
+								</tr>
+								<!-- 비밀번호 -->
+								<tr id="pwRow">
+									<td class="cell-label">* 비밀번호 <!-- 비밀번호 --> <input
+										type="password" name="password" id="pwInput"
+										class="signup-input" required
+										pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[{\]}\\|;:'&quot;,.&lt;&gt;/?`~])[^\s]{8,20}$"
+										title="8~20자, 영문/숫자/특수문자 각 1개 이상, 공백 불가" />
+									</td>
+								</tr>
+								<!-- 이름 -->
+								<tr>
+									<td class="cell-label">* 이름 <input type="text"
+										name="user_name" class="signup-input" required
+										pattern="^[가-힣]{2,17}$" title="한글 2~17자" />
+									</td>
+								</tr>
+								<!-- 생년월일 (분할 UI) -->
+								<tr id="birthdayRow1">
+									<td class="cell-label">* 생년월일 <span class="signup-inline">
+											<select id="birth-year" class="signup-input" required>
+												<option value="">YYYY</option>
+										</select> <select id="birth-month" class="signup-input" required>
+												<option value="">MM</option>
+										</select> <select id="birth-day" class="signup-input" required>
+												<option value="">DD</option>
+										</select>
+									</span>
+									</td>
+								</tr>
+								<!-- (소셜 간편가입 시 사용) -->
+								<tr id="birthdayRow2" style="display: none;">
+									<td class="cell-label">* 생년월일 <input type="text"
+										id="birthday-full" name="birthday" class="signup-input" />
+									</td>
+								</tr>
+
+								<!-- 이메일 (분할 UI) -->
+								<tr id="emailRow1">
+									<td class="cell-label">* 이메일 <span
+										class="signup-inline email-inline"> <input type="text"
+											id="email-user" class="signup-input" required /> <span
+											class="at">@</span> <input type="text" id="email-domain"
+											class="signup-input" required /> <select
+											id="email-domain-select" class="signup-input">
+												<option value="">직접입력</option>
+												<option value="gmail.com">gmail.com</option>
+												<option value="naver.com">naver.com</option>
+												<option value="daum.net">daum.net</option>
+												<option value="kakao.com">kakao.com</option>
+												<option value="hanmail.net">hanmail.net</option>
+												<option value="nate.com">nate.com</option>
+										</select>
+									</span> <input type="hidden" id="email-hidden" name="email" />
+									</td>
+									<td class="cell-action">
+										<button type="button" class="signup-btn"
+											onclick="checkEmailDuplication()">중복확인</button>
+									</td>
+								</tr>
+
+								<!-- (소셜 간편가입 시 사용) -->
+								<tr id="emailRow2" style="display: none;">
+									<td class="cell-label">* 이메일 <input type="text"
+										id="email-full" name="email" class="signup-input" readonly />
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+					</section>
+
+					<!-- STEP 2: 연락처/주소 -->
+					<section class="step-card" aria-label="연락처 및 주소">
+						<table class="step-table">
+							<tbody>
+								<tr>
+									<td class="cell-label">주소 <input type="text"
+										id="sample6_postcode" class="signup-input" placeholder="우편번호" />
+									</td>
+									<td class="cell-action"><input type="button"
+										class="signup-btn" onclick="sample6_execDaumPostcode()"
+										value="우편번호 찾기" /></td>
+								</tr>
+								<tr>
+									<td class="cell-label" colspan="2"><input type="text"
+										id="sample6_address" class="signup-input" placeholder="주소" /></td>
+								</tr>
+								<tr>
+									<td class="cell-label" colspan="2"><input type="text"
+										id="sample6_detailAddress" class="signup-input"
+										placeholder="상세주소" /></td>
+								</tr>
+								<tr>
+									<td class="cell-label" colspan="2">전화번호 <input type="text"
+										name="tel" class="signup-input" />
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<!-- 주소 전체 문자열 서버전송용 -->
+						<input type="hidden" id="full_address" name="address" />
+					</section>
+
+					<!-- STEP 3: 역할 & 인증 -->
+					<section class="step-card" aria-label="역할 선택 및 이메일 인증">
+						<!-- 역할(부모/자녀) -->
+						<div class="signup-radio-group">
+							<label> <input type="radio" name="user_type" value="0"
+								class="signup-radio" required /> 부모로 가입합니다
+							</label> <label> <input type="radio" name="user_type" value="1"
+								class="signup-radio" /> 자녀로 가입합니다
+							</label>
+						</div>
+
+						<!-- 이메일 인증 -->
+						<div id="emailAuthDiv" class="verify-card">
+							<h4 class="verify-title">이메일 인증</h4>
+							<button type="button" class="signup-btn"
+								onclick="sendAuthEmail()">이메일로 인증코드 전송</button>
+							<div id="authCodeArea" style="display: none;">
+								<input type="text" id="authCodeInput" class="signup-input"
+									placeholder="인증코드 6자리를 입력해주세요." />
+								<button type="button" class="signup-btn"
+									onclick="checkAuthCode()">인증코드 확인</button>
+							</div>
+						</div>
+
+						<!-- 푸시 동의 -->
+						<label class="consent-row"> <input type="checkbox"
+							id="push-consent" /> 알림받기 (브라우저 푸시 허용)
+						</label> <input type="hidden" name="fcm_token" id="fcmTokenField" />
+
+						<!-- 제출 -->
+						<button type="submit" class="signup-btn submit-btn">가입하기</button>
+					</section>
+
+				</div>
+			</form>
+		</section>
+	</main>
+
+	<div layout:fragment="script">
+		<!-- 다음 주소검색 api -->
+		<script
+			src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+		<!-- Firebase SDK -->
+		<script
+			src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+		<script
+			src="https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging-compat.js"></script>
+
+		<script>
+		// flags
+		let idDuplicateCheck = true; // 아이디 중복확인(true가 기본: 중복상태)
+		let emailDuplicateCheck = true; // 이메일 중복확인(true가 기본: 중복상태)
+		let authCodeCheck = false; // 인증코드 확인
+		
+		// 카카오/네이버 소셜 회원 데이터 
+		const socialData = JSON.parse(localStorage.getItem('socialData') || '{}');
+		
+		// 생년월일
+		const byear  = document.getElementById('birth-year');
+		const bmonth = document.getElementById('birth-month');
+		const bday   = document.getElementById('birth-day');
+		const bfull  = document.getElementById('birthday-full');
+		const birthdayRow = document.getElementById('birthdayRow');
+		
+		// 이메일
+		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // 이메일 정규표현식
+		const emailUser = document.getElementById('email-user')
+		const emailDomain = document.getElementById('email-domain')
+		const emailDomainSelect = document.getElementById('email-domain-select')
+		const emailFull = document.getElementById('email-full')
+		
+		// 소셜로그인 아이디 글자제한(2차방지)
+		function clampUserId20(raw) {
+		    const s = String(raw || '').trim();
+		    return s.length > 20 ? s.slice(-20) : s; // 뒷부분 20자 자르기
+		}
+
+		// 소셜 로그인 데이터 input에 자동입력
+		function setReadOnly(field, value) {
+			const el = document.querySelector(`input[name="${field}"]`);
+			if (el) {
+				el.value = value || '';
+				el.readOnly = true; // 입력값 수정 불가 & 서버 전송 가능
+			}
+		}
+
+		(function applySocialMode(){
+		  const sd = JSON.parse(localStorage.getItem('socialData') || '{}');
+		  if (!sd || !sd.user_id) return;  // 일반가입이면 그대로(= 일반 회원가입)
+
+		  // 제목만 소셜 회원가입으로 변경
+		  const titleEl = document.querySelector('.signup-title');
+		  if (titleEl) titleEl.textContent = '소셜 회원가입';
+		  
+		  // --- 1) 프리필 ---
+		  const clamp = s => (s = String(s||'').trim(), s.length>20 ? s.slice(-20) : s);
+		  const setRO = (name,val)=>{
+		    const el = document.querySelector(`input[name="${name}"]`);
+		    if (el) { el.value = val || ''; el.readOnly = true; }
+		  };
+		  const fmtBirth = s => {
+		    s = String(s||'').trim();
+		    return /^\d{8}$/.test(s) ? `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6)}`
+		                             : s.replace(/[./]/g,'-');
+		  };
+
+		  setRO('user_id', clamp(sd.user_id));
+		  setRO('user_name', sd.user_name);
+		  setRO('tel', sd.tel);
+
+		  const bfull = document.getElementById('birthday-full');
+		  if (bfull) { bfull.value = fmtBirth(sd.birthday); bfull.readOnly = true; }
+
+		  const emailFull = document.getElementById('email-full');     // 소셜 단일 이메일
+		  if (emailFull) { emailFull.value = (sd.email || '').trim(); emailFull.readOnly = true; }
+
+		  // --- 2) UI 토글 (tr는 table-row로) ---
+		  const hide = id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; };
+		  const showRow = id => { const el = document.getElementById(id); if (el) el.style.display = 'table-row'; };
+
+		  // 아이디는 보이되 '중복확인' 버튼만 숨기고 입력칸은 읽기전용
+		  const idInput = document.querySelector('input[name="user_id"]');
+		  if (idInput) idInput.readOnly = true;
+		  const idAction = document.querySelector('#idRow .cell-action');
+		  if (idAction) idAction.style.display = 'none';
+
+		  // 비밀번호 행은 소셜에서 숨김
+		  hide('pwRow');
+
+		  // 생일: 분할 숨김 → 단일 노출
+		  hide('birthdayRow1');  showRow('birthdayRow2');
+
+		  // 이메일: 분할/중복확인 숨김 → 단일 노출
+		  hide('emailRow1');     
+		  showRow('emailRow2');
+
+		  // ✅ 방탄: DOM에서 emailRow1 자체 삭제
+		  const emailRow1El = document.getElementById('emailRow1');
+		  if (emailRow1El) emailRow1El.remove();
+
+		  const emailHidden = document.getElementById('email-hidden');   // 일반용 hidden 충돌 방지
+		  if (emailHidden) emailHidden.removeAttribute('name');
+
+		  // 이메일 인증 카드 숨김(소셜 전용)
+		  const emailAuthDiv = document.getElementById('emailAuthDiv');
+		  if (emailAuthDiv) emailAuthDiv.style.display = 'none';
+
+		  // --- 3) required 제거(숨겨진 필드 때문에 제출 막히지 않도록) ---
+		  document.getElementById('birth-year')?.removeAttribute('required');
+		  document.getElementById('birth-month')?.removeAttribute('required');
+		  document.getElementById('birth-day')?.removeAttribute('required');
+		  document.getElementById('pwInput')?.removeAttribute('required');
+
+		  // --- 4) 검증 플래그: 소셜 경로는 통과 ---
+		  window.idDuplicateCheck = false;
+		  window.emailDuplicateCheck = false;
+		  window.authCodeCheck = true;
+		})();
+
+		// 회원가입 폼 제출 리스너
+		document.getElementById('signupForm').addEventListener('submit', async (e) => {
+			e.preventDefault(); // 기본 제출 막기
+			
+			// 정규식 
+			if (!validateAll()) return;
+			
+			
+			// 토큰 먼저 확보
+			let token = null;
+			const consent = document.getElementById("push-consent").checked;
+			
+			
+			if (consent) {
+		      try {
+		        if (
+		          "Notification" in window &&
+		          Notification.permission !== "granted"
+		        ) {
+		          const permission = await Notification.requestPermission();
+		          if (permission !== "granted") throw new Error("권한 거부됨");
+		        }
+		        token = await FcmInit.getFcmToken();
+		      } catch (err) {
+		        console.warn("토큰 발급 실패:", err);
+		      }
+		    }
+		
+		    if (token) {
+		      document.getElementById("fcmTokenField").value = token;
+		    }
+
+		    // 유효성 검사 (idDuplicateCheck, emailDuplicateCheck, authCodeCheck) SweetAlert 오류창
+		    if (!(socialData && socialData.user_id)) {
+		        if (idDuplicateCheck) {
+		            return Swal.fire('아이디 중복확인을 체크해주세요.', '', 'warning');
+		        }
+		        if (emailDuplicateCheck) {
+		            return Swal.fire('이메일 중복확인을 체크해주세요.', '', 'warning');
+		        }
+		        if (!authCodeCheck) {
+		            return Swal.fire('이메일 인증을 진행해주세요.', '', 'warning');
+		        }
+		    }
+			
+		    const form = document.getElementById('signupForm');
+		    if (!form || !(form instanceof HTMLFormElement)) {
+				console.error('signupForm not found or not a form:', form);
+				return;
+    		}
+		    const formData = new FormData(form);
+		    
+		    fetch('/users/signup', {
+		        method: 'POST',
+		        body: formData
+		    })
+		    .then(res => {
+		        if (!res.ok) throw new Error('회원가입 요청 실패');
+		        return res.json();
+		    })
+		    .then(data => {
+		        if (data.success) {
+		            Swal.fire({
+		                icon: 'success',
+		                title: '가입 완료!',
+		                text: '메인으로 돌아갑니다.',
+		                timer: 1500,
+		                showConfirmButton: false
+		            }).then(() => {
+		                window.location.href = '/login'; // 메인으로 이동
+		            });
+		        } else {
+		            Swal.fire('회원가입 실패', data.msg || '다시 시도해주세요.', 'error');
+		        }
+		    })
+		    .catch(err => {
+		        console.error(err);
+		        Swal.fire('오류', '회원가입 중 오류가 발생했습니다.', 'error');
+		    });
+		});
+
+
+		// 아이디 중복 확인
+		function checkUserIdDuplication() {
+		    const userIdInput = document.querySelector('input[name="user_id"]');
+		    const user_id = userIdInput.value.trim();
+		    if (!user_id) {
+		        Swal.fire({
+		            icon: 'warning',
+		            title: '입력 필요',
+		            text: '아이디를 입력하세요.',
+		            confirmButtonColor: '#F6D110'
+		        }).then(() => {
+		            userIdInput.focus();
+		        });
+		        return;
+		    }
+
+		    fetch(`/users/check-id-duplicate?user_id=${encodeURIComponent(user_id)}`)
+		        .then(response => {
+		            if (!response.ok) throw new Error('서버 오류');
+		            return response.json();
+		        })
+		        .then(data => {
+		            if (data.duplicate) {
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: '중복된 아이디',
+		                    text: '이미 사용 중인 아이디입니다.',
+		                    confirmButtonColor: '#F6D110'
+		                }).then(() => {
+		                    userIdInput.focus();
+		                });
+		            } else {
+		                Swal.fire({
+		                    icon: 'success',
+		                    title: '사용 가능',
+		                    text: '사용 가능한 아이디입니다!',
+		                    confirmButtonColor: '#F6D110'
+		                });
+		            }
+		            idDuplicateCheck = data.duplicate; // 응답 결과 전역변수에 저장
+		        })
+		        .catch(error => {
+		            Swal.fire({
+		                icon: 'error',
+		                title: '오류',
+		                text: '중복 확인 중 오류가 발생했습니다.',
+		                confirmButtonColor: '#F6D110'
+		            });
+		            console.error(error);
+		        });
+		}
+
+		
+		// 아이디 입력이 감지 시 중복확인 재필요
+		document.querySelector('input[name="user_id"]').addEventListener('input', function() {
+			idDuplicateCheck = true;
+		});
+		
+
+		// 생년월일 refs
+// 		const byear  = document.getElementById('birth-year');
+// 		const bmonth = document.getElementById('birth-month');
+// 		const bday   = document.getElementById('birth-day');
+// 		const bfull  = document.getElementById('birthday-full');
+// 		const birthdayRow = document.getElementById('birthdayRow');
+
+		// 숫자를 2자리 문자열로 변환
+		function pad2(n) { 
+			return String(n).padStart(2,'0'); 
+		}
+
+		// <select>에 <option> 하나 추가 (값: v, 표시 텍스트: t)
+		function addOpt(sel, v, t) { 
+			const o=document.createElement('option'); 
+			o.value=v; 
+			o.textContent=t; 
+			sel.appendChild(o);
+		}
+		
+		// <select>의 옵션을 정리
+		function clearOpts(sel, keep=1) {
+			while(sel.options.length>keep) 
+				sel.remove(keep); 
+		}
+		
+		// 특정 연/월의 마지막 일(= 그 달의 일수) 반환 로직
+		function daysInMonth(y,m) { 
+			return new Date(Number(y), Number(m), 0).getDate(); // m=1~12
+		} 
+
+		// 연도-YYYY select 채우기
+		function populateYears(start, end) {
+		  clearOpts(byear, 1);
+		  for(let y=end; y>=start; y--) 
+			  addOpt(byear, String(y), String(y));
+		}
+		
+		// 월-MM select 채우기
+		function populateMonths(){
+		  clearOpts(bmonth, 1);
+		  for(let m=1; m<=12; m++) 
+			  addOpt(bmonth, pad2(m), pad2(m));
+		}
+		
+		// 일-DD select 채우기
+		function populateDays(y, m){
+		  clearOpts(bday, 1);
+		  // 연도나 월을 select하지 않으면 리턴
+		  if(!y || !m) 
+			  return;
+		  const dmax = daysInMonth(y, m);
+		  for(let d=1; d<=dmax; d++) 
+			  addOpt(bday, pad2(d), pad2(d));
+		}
+
+		// 생년월일 조합
+		function composeBirthday(){
+		  const y = byear.value, m = bmonth.value, d = bday.value;
+		  bfull.value = (y && m && d) ? `${y}-${m}-${d}` : '';
+		}
+
+		// init options
+		const currentYear = new Date().getFullYear();
+		populateYears(1900, currentYear);
+		populateMonths();
+
+		// 연도/월/일 입력이 들어올 때마다 select options 갱신 및 재조합
+		byear.addEventListener('change', () => { 
+			populateDays(byear.value, bmonth.value); 
+			composeBirthday(); 
+		});
+		
+		bmonth.addEventListener('change', () => { 
+			populateDays(byear.value, bmonth.value); 
+			composeBirthday(); 
+		});
+		
+		bday.addEventListener('change', composeBirthday);
+
+		// 기존 hidden 값/소셜 값으로 프리필 
+		(function prefillBirthday() {
+			const pre = (socialData && socialData.birthday) || bfull.value || '';
+		    
+		    if(!pre) 
+		    	return;
+		    
+		    const [yy, mm, dd] = pre.split('-');
+		    if(yy && mm) { 
+		    	populateDays(yy, mm); 
+		    }
+		    if(yy) byear.value = yy;
+		    if(mm) bmonth.value = mm;
+		    if(dd) bday.value = dd;
+		    composeBirthday();
+		}) ();
+		
+		// 이메일 refs
+// 		const emailUser = document.getElementById('email-user')
+// 		const emailDomain = document.getElementById('email-domain')
+// 		const emailDomainSelect = document.getElementById('email-domain-select')
+// 		const emailFull = document.getElementById('email-full')
+		
+		emailDomainSelect.addEventListener('change', () => {
+			  if (emailDomainSelect.value) {
+			    // 선택한 도메인을 input에 세팅
+			    emailDomain.value = emailDomainSelect.value;
+			    emailDomain.readOnly = true;              
+			  } else {
+			    // 직접입력 모드
+			    emailDomain.readOnly = false;
+			    emailDomain.value = '';
+			    emailDomain.focus();
+			  }
+			  composeEmail();
+		});
+		
+		// 이메일 조합 (일반가입용)
+		function composeEmail() {
+		  const local  = (emailUser.value || '').trim();
+		  const domain = (emailDomain.value || '').trim().toLowerCase();
+		  const hidden = document.getElementById('email-hidden');
+		  if (hidden) hidden.value = (local && domain) ? `${local}@${domain}` : '';
+		}
+
+		
+		// 이메일 입력 감지 시마다 바인딩
+		emailUser.addEventListener('input', composeEmail);
+		emailDomain.addEventListener('input', composeEmail);
+
+		emailDomainSelect.addEventListener('change', () => {
+		    if (emailDomainSelect.value) {
+		        // 선택형 도메인 입력
+		        emailDomain.value = emailDomainSelect.value;
+		        emailDomain.readOnly = true;
+		    } else {
+		        // 직접입력 가능
+		        emailDomain.readOnly = false;
+		        emailDomain.value = '';
+		    }
+		    composeEmail();
+		});
+		
+		// 이메일 중복 확인 
+		function checkEmailDuplication() {
+			// 항상 최신 email-full 값 세팅
+		    composeEmail(); 
+			
+		    const authEmailInput = document.querySelector('input[name="email"]');
+		    const authEmail = authEmailInput.value.trim();
+		    
+		    if (!authEmail) {
+		        Swal.fire({
+		            icon: 'warning',
+		            title: '입력 필요',
+		            text: '이메일을 입력하세요.',
+		            confirmButtonColor: '#F6D110'
+		        }).then(() => authEmailInput.focus());
+		        return;
+		    }
+		    
+		    if (!emailRegex.test(authEmail)) {
+		        Swal.fire({
+		            icon: 'warning',
+		            title: '형식 오류',
+		            text: '이메일을 올바르게 입력해주세요.',
+		            confirmButtonColor: '#F6D110'
+		        }).then(() => authEmailInput.focus());
+		        return;
+		    }
+		    
+		    fetch(`/users/check-email-duplicate?email=${encodeURIComponent(authEmail)}`)
+		        .then(response => {
+		            if (!response.ok) throw new Error('서버 오류');
+		            return response.json();
+		        })
+		        .then(data => {
+		            if (data.duplicate) {
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: '중복된 이메일',
+		                    text: '이미 사용 중인 이메일입니다.',
+		                    confirmButtonColor: '#F6D110'
+		                }).then(() => authEmailInput.focus());
+		            } else {
+		                Swal.fire({
+		                    icon: 'success',
+		                    title: '사용 가능',
+		                    text: '사용 가능한 이메일입니다!',
+		                    confirmButtonColor: '#F6D110'
+		                });
+		            }
+		            emailDuplicateCheck = data.duplicate; // 전역 상태 업데이트
+		        })
+		        .catch(error => {
+		            Swal.fire({
+		                icon: 'error',
+		                title: '오류',
+		                text: '중복 확인 중 오류가 발생했습니다.',
+		                confirmButtonColor: '#F6D110'
+		            });
+		            console.error(error);
+		        });
+		}
+
+		
+		// 이메일 입력이 감지 시 중복확인 재필요
+		document.querySelector('input[name="email"]').addEventListener('input', function() {
+			emailDuplicateCheck = true;
+		});
+		
+		// 주소 검색 (출처: https://postcode.map.daum.net/guide#usage sample6)
+		function sample6_execDaumPostcode() {
+	        new daum.Postcode({
+	            oncomplete: function(data) {
+	                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+	
+	                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+	                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+	                var addr = ''; // 주소 변수
+	                var extraAddr = ''; // 참고항목 변수
+	
+	                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+	                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+	                    addr = data.roadAddress;
+	                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+	                    addr = data.jibunAddress;
+	                }
+	
+	                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+	                if(data.userSelectedType === 'R'){
+	                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+	                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+	                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+	                        extraAddr += data.bname;
+	                    }
+	                    // 건물명이 있고, 공동주택일 경우 추가한다.
+	                    if(data.buildingName !== '' && data.apartment === 'Y'){
+	                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+	                    }
+	                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+	                    if(extraAddr !== ''){
+	                        extraAddr = ' (' + extraAddr + ')';
+	                    }
+	                    // 조합된 참고항목을 해당 필드에 넣는다.
+// 	                    document.getElementById("sample6_extraAddress").value = extraAddr;
+	                
+	                } else {
+	                    document.getElementById("sample6_extraAddress").value = '';
+	                }
+	
+// 	                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+	                document.getElementById('sample6_postcode').value = data.zonecode;
+	                document.getElementById("sample6_address").value = addr;
+	                // 커서를 상세주소 필드로 이동한다.
+	                document.getElementById("sample6_detailAddress").focus();
+	                
+// 	                // 전체 주소 문자열 : 주소(검색결과) + 상세주소(사용자입력)
+// 	                document.getElementById('full_address').value = addr + extraAddr;
+
+	             	// 주소 입력란 채우기
+	                document.getElementById('sample6_postcode').value = data.zonecode;
+	                document.getElementById("sample6_address").value = addr;
+	                document.getElementById("sample6_detailAddress").value = ""; // 상세주소 비우기
+	                document.getElementById("sample6_detailAddress").focus();
+
+	                // full_address에 기본 주소만 우선 입력
+	                document.getElementById('full_address').value = addr;
+
+	                // 상세주소 입력될 때마다 full_address에 전체 주소 반영
+	                document.getElementById("sample6_detailAddress").addEventListener("input", function() {
+	                    document.getElementById('full_address').value = addr + " " + this.value;
+	                });
+	            }
+	        }).open();
+	    }
+		
+		// 본인인증 이메일 전송
+		function sendAuthEmail() {
+		    const auth_email = document.querySelector('input[name="email"]').value.trim();
+		    // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // 이메일 정규표현식
+		
+		    if (emailRegex.test(auth_email) && !emailDuplicateCheck) {
+		        fetch('/api/auth/veri/send-email-code', {
+		            method: 'POST',
+		            headers: { 'Content-Type': 'application/json' },
+		            body: JSON.stringify({ email: auth_email })
+		        })
+		        .then(response => response.json())
+		        .then(data => {
+		            if (data.success) {
+		                Swal.fire({
+		                    icon: 'success',
+		                    title: '전송 완료',
+		                    text: '이메일로 인증코드를 전송했습니다.',
+		                    confirmButtonColor: '#F6D110'
+		                });
+		                document.querySelector('#authCodeArea').style.display = 'block';
+		            } else {
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: '전송 실패',
+		                    text: data.msg || '이메일 전송에 실패했습니다.',
+		                    confirmButtonColor: '#F6D110'
+		                });
+		            }
+		        })
+		        .catch(err => {
+		            Swal.fire({
+		                icon: 'error',
+		                title: '오류',
+		                text: '인증코드 전송 요청 중 오류가 발생했습니다.',
+		                confirmButtonColor: '#F6D110'
+		            });
+		        });
+		    } else {
+		        if (!emailRegex.test(auth_email)) {
+		            Swal.fire({
+		                icon: 'warning',
+		                title: '입력 오류',
+		                text: '이메일을 올바르게 입력해 주세요.',
+		                confirmButtonColor: '#F6D110'
+		            });
+		        } else if (emailDuplicateCheck) {
+		            Swal.fire({
+		                icon: 'warning',
+		                title: '중복 확인 필요',
+		                text: '이메일 중복 확인을 해주세요.',
+		                confirmButtonColor: '#F6D110'
+		            });
+		        }
+		    }
+		}
+		
+		// 본인인증 이메일 인증코드 검증
+		function checkAuthCode() {
+		    const inputCode = document.getElementById('authCodeInput').value.trim();
+		    if (!inputCode) {
+		        Swal.fire({
+		            icon: 'warning',
+		            title: '입력 필요',
+		            text: '인증코드를 입력해 주세요.',
+		            confirmButtonColor: '#F6D110'
+		        });
+		        return;
+		    }
+		
+		    fetch('/api/auth/veri/check-email-code', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/json' },
+		        body: JSON.stringify({ authCode: inputCode })
+		    })
+		    .then(response => response.json())
+		    .then(data => {
+		        if (data.success) {
+		            Swal.fire({
+		                icon: 'success',
+		                title: '인증 완료',
+		                text: '이메일 인증이 완료되었습니다!',
+		                confirmButtonColor: '#F6D110'
+		            });
+		            authCodeCheck = true;
+		            document.getElementById('authCodeInput').readOnly = true;
+		        } else {
+		            Swal.fire({
+		                icon: 'error',
+		                title: '인증 실패',
+		                text: data.msg || '인증에 실패했습니다.',
+		                confirmButtonColor: '#F6D110'
+		            });
+		        }
+		    })
+		    .catch(err => {
+		        Swal.fire({
+		            icon: 'error',
+		            title: '오류',
+		            text: '인증코드 검증 요청 중 오류가 발생했습니다.',
+		            confirmButtonColor: '#F6D110'
+		        });
+		    });
+		}
+		
+		// === 일반가입-아이디 금지어 예약 === 
+		const RESERVED_ID_PREFIXES = ['kakao', 'naver'];
+
+		function startsWithReservedPrefix(id) {
+		  const v = String(id || '').trim().toLowerCase();
+		  return RESERVED_ID_PREFIXES.some(p => v.startsWith(p));
+		}
+
+		async function alertReservedId() {
+		  await Swal.fire({
+		    icon: 'warning',
+		    title: '입력 오류',
+		    text: '아이디에 포함할 수 없는 문자가 있습니다.',
+		    confirmButtonColor: '#F6D110'
+		  });
+		}
+		
+		// ==== 1) 정규식 모음 ====
+		const RegexRules = {
+		  user_id: {
+			re: /^[a-z][a-zA-Z0-9_]{4,19}$/,
+			msg: '아이디는 영문 소문자로 시작하며, 5~20자의 영문/숫자/_만 사용할 수 있습니다.'
+		  },
+		  password: {
+		    re: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_\-+\[\]{}\\|;:'",.<>/?`~])[^\s]{8,20}$/,
+		    msg: '비밀번호는 8~20자, 공백 없이 영문/숫자/특수문자를 모두 포함해야 합니다.'
+		  },
+		  user_name: {
+		    re: /^[가-힣]{2,17}$/,
+		    msg: '이름은 한글 2~17자로 입력해주세요.'
+		  },
+		  email: {
+		    re: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+		    msg: '올바른 이메일 주소를 입력해주세요.'
+		  }
+		};
+
+
+		// ==== 2) 필드별 값 추출기 ====
+		function getFieldValue(name) {
+		  const el = document.querySelector(`input[name="${name}"]`);
+		  if (!el) return '';
+		  return (el.value || '').trim();
+		}
+
+		// ==== 3) 검사 함수 (필드 1개) ====
+		function validateOne(name) {
+		  const rule = RegexRules[name];
+		  if (!rule) return true; // 정의 없으면 패스
+		  
+		  // 아이디의 경우 예약 프리픽스 차단
+		  if (name === 'user_id') {
+		    const el = document.querySelector('input[name="user_id"]');
+		    const v  = getFieldValue('user_id');
+		    if (startsWithReservedPrefix(v)) {
+		      // HTML5 검증과 시각적 표시
+		      el?.setCustomValidity('아이디에 포함할 수 없는 문자');
+		      el?.classList.add('is-invalid');
+		      alertReservedId();
+		      return false;
+		    } else {
+		      el?.setCustomValidity('');
+		    }
+		  }
+
+		  const v = getFieldValue(name);
+		  if (!v) return true; // required는 HTML이 처리
+
+		  const ok = rule.re.test(v);
+		  const el = document.querySelector(`input[name="${name}"]`);
+		  if (el) {
+		    el.classList.toggle('is-invalid', !ok);
+		  }
+		  return ok;
+		}
+
+		// ==== 4) 묶음 검사 ====
+		function validateAll() {
+		  const isSocial = socialData && socialData.user_id; // 소셜가입 여부
+		  // 아이디 금지어 2차 방지
+		  if (!isSocial) {
+			  const uid = getFieldValue('user_id');
+			  const el  = document.querySelector('input[name="user_id"]');
+			  if (startsWithReservedPrefix(uid)) {
+			    el?.setCustomValidity('아이디에 포함할 수 없는 문자');
+			    el?.classList.add('is-invalid');
+			    alertReservedId();
+			    return false;
+			  } else {
+			    el?.setCustomValidity('');
+			  }
+			}
+		  
+		  const targets = isSocial 
+		    ? []   // 소셜로 간편가입 시 정규식검사 제외
+		    : ['user_id','password','user_name','email'];
+		
+		  for (const name of targets) {
+		    const rule = RegexRules[name];
+		    const v = getFieldValue(name);
+		    if (!rule.re.test(v)) {
+		      Swal.fire({
+		        icon: 'warning',
+		        title: '입력 오류',
+		        text: rule.msg,
+		        confirmButtonColor: '#F6D110'
+		      });
+		      return false;
+		    }
+		  }
+		  return true;
+		}
+
+
+
+
+		// ==== 5) blur 시 즉시 피드백 ====
+		['user_id','password','user_name','email'].forEach(n => {
+		  const el = document.querySelector(`input[name="${n}"]`);
+		  if (el) {
+		    el.addEventListener('blur', () => validateOne(n));
+		    el.addEventListener('input', () => el.classList.remove('is-invalid'));
+		  }
+		});
+
+		// ==== 6) 제출 직전 최종 검사 – 기존 submit 리스너 안 맨 앞쪽에 추가 ====
+		// 이미 submit 리스너가 있으므로, 그 함수 안 가장 위에 아래 코드 한 덩어리만 삽입하세요.
+		// (아래 블록을 기존 submit 핸들러의 e.preventDefault() 바로 아래에 추가하면 됩니다)
+
+		
+
+	</script>
+
+	</div>
+</body>
+</html>

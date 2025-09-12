@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>용돈 송금</title>
+	<link rel="stylesheet" th:href="@{/css/transfer.css}" />
+	<script th:src="@{/js/transfer.js}"></script>
+</head>
+
+<body>
+	<main layout:fragment="content" class="content">
+
+
+		<!-- 상단 배너 섹션 -->
+		<section class="transfer-banner">
+		  <div class="banner-inner">
+		    <div class="banner-text">
+		      
+				<h2><strong>아이 용돈</strong>, <span>스마트하게 관리</span></h2>
+				<p>지원 내역과 사용 현황을 한눈에 확인하고, 올바른 금융 습관을 길러주세요.</p>
+				<!-- 버튼 누르면 #allowance-section으로 이동 -->
+				      <a href="#allowance-section" class="btn-secondary">목록 보기</a>
+		      
+		    </div>
+		    <div class="banner-img-wrap">
+		      <img src="/img/familyyong.png" alt="캐릭터 이미지" class="banner-img">
+		    </div>
+		  </div>
+		  
+		  
+		</section>
+		
+		
+
+		
+		<div class="allowance-wrapper">
+			<!-- 용돈 지원실 헤더 -->
+			<section class="allowance-section1">
+			  <div class="allowance-header">
+			    <h2>💸 용돈 지원실</h2>
+			    <p>아이의 계좌를 확인하고 용돈을 관리할 수 있어요.</p>
+			  </div>
+			  <div class="info-card">
+			    <div class="info-item">
+			      <span class="emoji">👨‍👩‍👧</span>
+			      <p>매주 일정한 용돈을 지원하면 아이가 계획적으로 돈을 사용하고 저축하는 습관을 키울 수 있습니다.</p>
+			    </div>
+			    <div class="info-item">
+			      <span class="emoji">⏰</span>
+			      <p>정해진 시간에 자동으로 송금되기 때문에 부모님은 번거로움 없이 용돈을 관리할 수 있고, 아이는 꾸준한 지원을 받을 수 있어요.</p>
+			    </div>
+			    <div class="info-item">
+			      <span class="emoji">📖</span>
+			      <p>용돈 사용 내역과 저축 현황을 쉽게 확인하면서 자녀의 성장 과정을 함께 지켜볼 수 있습니다.</p>
+			    </div>
+			    <div class="info-item">
+			      <span class="emoji">🎯</span>
+			      <p>목표 금액을 설정하고 달성하면 아이가 성취감을 느끼고, 금융 계획 능력을 기를 수 있습니다.</p>
+			    </div>
+			    <div class="info-item">
+			      <span class="emoji">💡</span>
+			      <p>용돈 사용 습관을 기록하고 분석하면 자녀와 부모가 함께 금융 교육을 진행할 수 있습니다.</p>
+			    </div>
+			    <div class="info-item">
+			      <span class="emoji">🌱</span>
+			      <p>아이 스스로 용돈을 관리하고 계획을 세우며 금융 자기주도성을 키울 수 있습니다.</p>
+			    </div>
+			  </div>
+			</section>
+
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+	  const elements = [
+	    { selector: ".allowance-header h2", text: "💸 용돈 지원실" },
+	    { selector: ".allowance-header p", text: "아이의 계좌를 확인하고 용돈을 관리할 수 있어요." }
+	  ];
+
+	  let currentIndex = 0;
+	  let charIndex = 0;
+
+	  function type() {
+	    const element = document.querySelector(elements[currentIndex].selector);
+	    const fullText = elements[currentIndex].text;
+
+	    element.textContent = fullText.substring(0, charIndex + 1);
+	    charIndex++;
+
+	    if (charIndex === fullText.length) {
+	      // 현재 줄 다 치면
+	      currentIndex++;
+
+	      if (currentIndex < elements.length) {
+	        // 다음 줄로 넘어가기
+	        charIndex = 0;
+	        setTimeout(type, 800); // 다음 줄 시작 전 잠깐 멈춤
+	        return;
+	      } else {
+	        // 마지막 줄까지 끝나면 전체 리셋
+	        setTimeout(() => {
+	          currentIndex = 0;
+	          charIndex = 0;
+	          elements.forEach(el => {
+	            document.querySelector(el.selector).textContent = "";
+	          });
+	          type(); // 다시 시작
+	        }, 1500); // 전체 문장 끝나고 잠깐 멈춤
+	        return;
+	      }
+	    }
+
+	    setTimeout(type, 120); // 글자 속도
+	  }
+
+	  type();
+	});
+
+
+	
+	
+</script>
+
+
+
+
+
+
+
+
+
+<!-- 큰 카드 박스 -->
+				 
+				    <div class="allowance-card-header1">
+				      <h3>아이 목록</h3>
+				    </div>
+			<!--용돈 지원실 카드-->
+			<!-- 용돈 지원실 섹션 -->
+			<section class="allowance-section">
+			<div class="allowance-container">
+
+				
+
+				
+				
+				
+				<!-- 왼쪽: 아기 카드 -->
+				<div class="child-list-wrapper">
+					<button class="nav-btn prev-btn"  style="display:none">&lt;</button>
+					<div class="child-list">
+						<div class="child-card" th:each="child : ${childsInfo}"
+							th:attr="data-child-no=${child.user_no}, data-account-id=${child.account_id}, data-account-no=${child.account_no}">
+							<div class="child-avatar">
+								<img th:src="@{'/img/profile/profile' + ${child.profile} + '.png'}" alt="프로필" />
+							</div>
+							<div class="child-name" th:text="${child.user_name}">아기이름</div>
+							<div class="child-info">
+								<div>
+									계좌 번호: <span th:text="${child.account_id}"></span> <br>
+									잔여 금액: <span th:text="${#numbers.formatInteger(child.balance ?: 0, 1, 'COMMA')}"></span>원
+								</div>
+								
+							</div>
+							<button class="give-btn">용돈 지급</button>
+						</div>
+					</div>
+					<button class="nav-btn next-btn"  style="display:none">&gt;</button>
+				</div>
+
+				<!-- 오른쪽: 송금 폼 -->
+				<div class="transfer-panel" id="transfer-panel" style="display: none;">
+					<div class="transfer-header">
+						<div class="child-avatar small">
+							<img src="/img/profile/profile0.png" alt="프로필" id="transfer-child-img" />
+						</div>
+						<div class="transfer-child-name" id="transfer-child-name">아기이름</div>
+						<button class="close-panel-btn" onclick="closeTransferPanel()">×</button>
+					</div>
+
+					<div class="account-info">
+						<div>
+							내 잔액: <span id="my-balance" th:text="${userInfo.balance}"></span>원
+						</div>
+						<div>
+							출금 계좌: <span id="my-account" th:text="${userInfo.account_id}"></span>
+						</div>
+					</div>
+
+					<div class="amount-input">
+						<input type="number" id="amount" class="amount-field" placeholder="금액" />
+						<button id="amount-init" class="init">초기화</button>
+					</div>
+
+					<div class="amount-buttons">
+						<button type="button" onclick="setAmount(500)">500</button>
+						<button type="button" onclick="setAmount(1000)">1000</button>
+						<button type="button" onclick="setAmount(5000)">5000</button>
+						<button type="button" onclick="setAmount(10000)">10000</button>
+						<button type="button" onclick="setAmount(50000)">50000</button>
+					</div>
+
+					<div class="amount-input">
+						<input type="text" id="amount-desc" class="amount-field" placeholder="함께 전할 말" />
+					</div>
+
+					<input type="hidden" id="from_account_no" th:value="${userInfo.account_no}" /> <input type="hidden"
+						id="to_account_no" />
+
+					<button class="send-btn" onclick="sendAllowance()">보내기</button>
+				</div>
+
+				<div class="auto-transfer-panel" id="auto-transfer-panel" style="display: none;">
+
+					<!-- 자동이체 내역이 없을 때 -->
+					<div id="auto-transfer-form" style="display: none;">
+						<h3>자동이체 등록</h3>
+						<div class="amount-input">
+							<input type="number" id="auto-new-amount" class="amount-field" placeholder="금액" />
+							<button id="auto-new-init" class="init">초기화</button>
+						</div>
+						<div class="amount-buttons">
+							<button type="button" onclick="setAutoAmount('auto-new-amount',500)">500</button>
+							<button type="button" onclick="setAutoAmount('auto-new-amount',1000)">1000</button>
+							<button type="button" onclick="setAutoAmount('auto-new-amount',5000)">5000</button>
+							<button type="button" onclick="setAutoAmount('auto-new-amount',10000)">10000</button>
+							<button type="button" onclick="setAutoAmount('auto-new-amount',50000)">50000</button>
+						</div>
+						<div class="auto-cycle-options">
+							<label><input type="radio" name="auto-new-cycle" value="1" /> 매일</label> <label><input
+									type="radio" name="auto-new-cycle" value="3" /> 3일</label> <label><input
+									type="radio" name="auto-new-cycle" value="7" /> 매주</label> <label><input
+									type="radio" name="auto-new-cycle" value="30" /> 매달</label>
+						</div>
+						<button class="send-btn1" onclick="registerAutoTransfer()">등록</button>
+					</div>
+
+					<!-- 자동이체 내역이 있을 때 -->
+					<div id="auto-transfer-info" style="display: none;">
+						<h3>자동이체 정보</h3>
+						<div class="account-info">
+							<div>
+								금액: <span id="auto-current-amount"></span>원
+							</div>
+							<div>
+								주기: <span id="auto-current-cycle"></span>일
+							</div>
+						</div>
+						<div class="auto-edit">
+							<div class="amount-input">
+								<input type="number" id="auto-amount-input" class="amount-field" placeholder="금액" />
+								<button id="auto-edit-init" class="init">초기화</button>
+							</div>
+							<div class="amount-buttons">
+								<button type="button" onclick="setAutoAmount('auto-amount-input',500)">500</button>
+								<button type="button" onclick="setAutoAmount('auto-amount-input',1000)">1000</button>
+								<button type="button" onclick="setAutoAmount('auto-amount-input',5000)">5000</button>
+								<button type="button" onclick="setAutoAmount('auto-amount-input',10000)">10000</button>
+								<button type="button" onclick="setAutoAmount('auto-amount-input',50000)">50000</button>
+							</div>
+							<div class="auto-cycle-options">
+								<label><input type="radio" name="auto-edit-cycle" value="1" /> 매일</label> <label><input
+										type="radio" name="auto-edit-cycle" value="3" /> 3일</label> <label><input
+										type="radio" name="auto-edit-cycle" value="7" /> 매주</label> <label><input
+										type="radio" name="auto-edit-cycle" value="30" /> 매달</label>
+							</div>
+							
+						</div>
+						<div class="auto-btn-group">
+						    <button class="update-auto-btn" onclick="updateAutoTransfer()">변경</button>
+						    <button class="cancel-auto-btn" onclick="cancelAutoTransfer()">취소하기</button>
+						</div>
+					</div>
+				</div>
+				  </div> <!--아기 목록 포함하고있는 카드-->
+			</div>
+			
+		</section>
+		</div>
+	
+
+		<!-- 가이드 & 팁 섹션 -->
+		<section class="support-guide">
+		    <h3>💡 용돈 관리 꿀팁</h3>
+		    <div class="guide-list">
+		        
+		        <div class="guide-item">
+		            <span class="icon">👨‍👩‍👧</span>
+		            <p>자녀와 함께 소비 내역을 확인하면서 대화를 나누면 금융 교육에 효과적이에요.</p>
+		        </div>
+		        <div class="guide-item">
+		            <span class="icon">🎯</span>
+		            <p>저축 목표를 정해두면 아이가 동기부여를 받아 더 즐겁게 돈을 모을 수 있어요.</p>
+		        </div>
+		        <div class="guide-item">
+		            <span class="icon">💳</span>
+		            <p>소액부터 시작해 점차 금액을 늘리면 올바른 금융 습관을 키울 수 있습니다.</p>
+		        </div>
+		        <div class="guide-item">
+		            <span class="icon">📈</span>
+		            <p>용돈 기록을 시각화하면 아이가 자신의 소비 패턴을 쉽게 이해할 수 있어요.</p>
+		        </div>
+		        <div class="guide-item">
+		            <span class="icon">📝</span>
+		            <p>간단한 예산 계획표를 함께 작성하면 계획적인 소비 습관을 만들 수 있습니다.</p>
+		        </div>
+		        <div class="guide-item">
+		            <span class="icon">🏆</span>
+		            <p>작은 목표 달성 시 칭찬과 보상을 해주면 아이가 더 즐겁게 돈을 관리할 수 있어요.</p>
+		        </div>
+		    </div>
+		</section>
+		
+		
+		
+
+
+	</main>
+
+</body>
+
+</html>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddak.yongha.mapper.UsersMapper">
+
+	<!-- user_no로 특정유저의 정보 출력 -->
+	<select id="getUserInfoByNo" resultType="UsersVO">
+		SELECT *
+		FROM users u
+			LEFT OUTER JOIN accounts a ON u.user_no = a.user_no
+		WHERE u.user_no = #{user_no}
+	</select>
+
+	<!-- 유저 회원가입 insert -->
+	<insert id="insertUser" parameterType="UsersVO">
+		INSERT INTO users (
+			user_id,
+			password,
+			user_name,
+			birthday,
+			email,
+			address,
+			tel,
+			user_type,
+			fcm_token,
+			profile
+		) VALUES (
+			#{user_id},
+			#{password},
+			#{user_name},
+			#{birthday},
+			#{email},
+			#{address},
+			#{tel},
+			#{user_type},
+			#{fcm_token},
+			0
+		)
+	</insert>
+
+	<!-- 사용자 조회 - user_id -->
+	<!-- TODO : 탈퇴한 회원과 아이디 중복되는 예외 경우 처리 -->
+	<select id="findByUserId" resultType="UsersVO">
+		SELECT * FROM users WHERE user_id = #{user_id}
+	</select>
+
+	<!-- 사용자 조회 - user_no -->
+	<select id="findByUserNo" resultType="UsersVO">
+		SELECT * FROM users WHERE user_no = #{user_no}
+	</select>
+
+	<!-- 특정 부모유저의 자식 정보 출력 -->
+	<select id="getMyChildsInfo" resultType="UsersVO">
+		SELECT
+		u.user_no,
+			u.user_name,
+			u.profile,
+			a.account_no,
+			a.account_id,
+			a.balance,
+			at.trans_cycle,
+			at.last_trans_date
+		FROM Family f
+		JOIN Users u ON f.child_no = u.user_no
+			LEFT OUTER JOIN Accounts a ON u.user_no = a.user_no
+			LEFT OUTER JOIN (
+				SELECT at_inner.to_account_no,
+					at_inner.trans_cycle,
+					at_inner.last_trans_date
+				FROM (
+					SELECT to_account_no, trans_cycle, last_trans_date,
+					ROW_NUMBER() OVER (PARTITION BY to_account_no ORDER BY last_trans_date DESC) AS rn
+					FROM AutoTransfer
+				) at_inner
+				WHERE at_inner.rn = 1
+			) at ON at.to_account_no = a.account_no
+		WHERE f.parent_no = #{u.user_no}
+		ORDER BY u.user_no
+	</select>
+	
+	<!-- 특정 자녀유저의 부모 정보 출력: no, 이름, 프로필, fcm토큰 -->
+	<select id="getMyParentsInfo" resultType="UsersVO">
+		SELECT DISTINCT
+		    u.user_no,
+		    u.user_name,
+		    u.profile,
+		    u.fcm_token
+		FROM Family f
+		JOIN USERS u ON u.user_no = f.parent_no
+		WHERE f.child_no = #{childNo}
+	</select>
+	
+	<!-- 특정 자녀유서의 형재자매 정보 출력 -->
+	<select id="getMySiblingsInfo" resultType="UsersVO">
+		SELECT DISTINCT
+	         u.user_no,
+	         u.user_name,
+	         u.profile,
+	         u.fcm_token
+	    FROM Family f_me
+	    JOIN Family f_sib
+	      ON f_sib.parent_no = f_me.parent_no
+	    JOIN Users u
+	      ON u.user_no = f_sib.child_no
+	   WHERE f_me.child_no = #{childNo}
+	     AND f_me.parent_no IS NOT NULL
+	     AND u.user_no &lt;&gt; #{childNo}
+	</select>
+
+	<select id="getChildInfo" resultType="ChildInfoVO">
+		SELECT
+			u.user_no,
+			u.user_name,
+			u.profile,
+			u.user_type,
+	
+			a.account_no,
+			a.account_id,
+			a.balance,
+			a.bank_name,
+	
+			cu.point,
+	
+			gh.goal_no,
+			gh.goal_type,
+			gh.goal_name,
+			gh.target_amount,
+			gh.start_date,
+			gh.end_date,
+			gh.achieved
+		FROM Users u
+			LEFT JOIN Accounts a ON a.user_no = u.user_no
+			LEFT JOIN Childuser cu ON cu.child_no = u.user_no
+			LEFT JOIN
+		GoalHistory gh ON gh.goal_no = cu.current_goal_no
+		WHERE u.user_no = #{child_no}
+			AND u.user_type = 1
+	</select>
+
+	<!-- 가족관계가 존재하는지 검사 -->
+	<select id="isFamilyExist" resultType="int">
+		SELECT COUNT(*)
+		FROM Family
+		WHERE parent_no = #{parent_no} AND child_no = #{child_no}
+	</select>
+
+
+	<!-- 회원 정보 수정 -->
+	<update id="updateUser" parameterType="UsersVO">
+		UPDATE Users
+		SET
+			user_id = #{user_id},
+			user_name = #{user_name},
+			birthday = #{birthday},
+			email = #{email},
+			address = #{address},
+			tel = #{tel},
+			fcm_token = #{fcm_token, jdbcType=VARCHAR}
+		WHERE
+			user_no = #{user_no}
+	</update>
+	
+	<!-- 관리자 페이지에서 총건수 -->
+	<select id="countUsers" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM users
+		WHERE user_type != 2
+		<if test="keyword != null and keyword != ''">
+			AND (
+				LOWER(user_name) LIKE '%' || LOWER(#{keyword}) || '%'
+					OR LOWER(email) LIKE '%' || LOWER(#{keyword}) || '%'
+					OR LOWER(user_id) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+		<if test="grade != null and grade != ''">
+			AND user_type = #{grade}
+		</if>
+		<if test="state != null and state != ''">
+			AND (CASE WHEN fcm_token IS NULL THEN 'off' ELSE 'on' END) = #{state}
+		</if>
+	</select>
+
+	<!-- 관리자 페이지에서 유저 삭제 -->
+	<delete id="deleteUsersByNos">
+		DELETE FROM users
+		WHERE user_no IN
+		<foreach collection="user_nos" item="user_no" open="(" separator="," close=")">
+			#{user_no}
+		</foreach>
+	</delete>
+	
+	<!-- 관리자 페이지 전체 유저정보 + 페이징 -->
+	<select id="getUserPage" parameterType="map" resultType="UsersVO">
+		SELECT user_no, user_id, user_name, email, user_type, birthday, address, tel, fcm_token
+		FROM users
+		WHERE user_type != 2
+		<if test="keyword != null and keyword != ''">
+			AND (
+				LOWER(user_name) LIKE '%' || LOWER(#{keyword}) || '%'
+					OR LOWER(email) LIKE '%' || LOWER(#{keyword}) || '%'
+					OR LOWER(user_id) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+		<if test="grade != null and grade != ''">
+			AND user_type = #{grade}
+		</if>
+		<if test="state != null and state != ''">
+			AND (CASE WHEN fcm_token IS NULL THEN 'off' ELSE 'on' END) = #{state}
+		</if>
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY
+				<choose>
+					<when test="sortField == 'user_no'"> user_no </when>
+					<when test="sortField == 'user_id'"> user_id </when>
+					<when test="sortField == 'user_name'"> user_name </when>
+					<when test="sortField == 'email'"> email </when>
+					<when test="sortField == 'user_type'"> user_type </when>
+					<when test="sortField == 'birthday'"> birthday </when>
+					<otherwise> user_no </otherwise>
+				</choose>
+				<choose>
+					<when test="sortDir == 'asc'"> ASC </when>
+					<otherwise> DESC </otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				ORDER BY user_no DESC
+			</otherwise>
+		</choose>
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+
+
+</mapper>

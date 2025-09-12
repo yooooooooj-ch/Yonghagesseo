@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddak.yongha.mapper.AutoTransferMapper">
+
+	<!-- 자동이체 정보 저장 -->
+	<insert id="insertAutoTransfer" parameterType="com.ddak.yongha.vo.AutoTransferVO">
+		INSERT INTO autotransfer (from_account_no, to_account_no, amount,
+		trans_cycle, last_trans_date)
+		VALUES (#{from_account_no}, #{to_account_no}, #{amount}, #{trans_cycle}, SYSDATE)
+	</insert>
+
+	<!-- 마지막 이체일로부터 설정된 주기 이상 경과한 자동이체 레코드를 조회 (처리해야할 자동이체들 찾기) -->
+	<select id="selectDueTransfers" resultType="AutoTransferVO">
+		SELECT * FROM autotransfer
+		WHERE TRUNC(SYSDATE) - TRUNC(last_trans_date) >= trans_cycle
+	</select>
+	
+	<!-- 자동이체 테스트를 위해 분단위로 조회 -->
+	<select id="selectDueTransfersTest" resultType="AutoTransferVO">
+		SELECT *
+		FROM autotransfer
+		WHERE (CAST(SYSTIMESTAMP AS DATE) - CAST(last_trans_date AS DATE)) * 24 * 60 >= trans_cycle
+	</select>
+
+	<!-- 최근 자동이체가 일어난 날짜로 update -->
+        <update id="updateLastTransferDate">
+                UPDATE autotransfer
+                SET last_trans_date = SYSDATE
+                WHERE from_account_no = #{from_account_no}
+                AND to_account_no = #{to_account_no}
+        </update>
+
+        <select id="selectAutoTransfer" parameterType="com.ddak.yongha.vo.AutoTransferVO" resultType="AutoTransferVO">
+                SELECT * FROM autotransfer
+                WHERE from_account_no = #{from_account_no}
+                AND to_account_no = #{to_account_no}
+        </select>
+
+        <delete id="deleteAutoTransfer" parameterType="com.ddak.yongha.vo.AutoTransferVO">
+                DELETE FROM autotransfer
+                WHERE from_account_no = #{from_account_no}
+                AND to_account_no = #{to_account_no}
+        </delete>
+
+        <update id="updateAutoTransfer" parameterType="com.ddak.yongha.vo.AutoTransferVO">
+                UPDATE autotransfer
+                SET amount = #{amount},
+                    trans_cycle = #{trans_cycle}
+                WHERE from_account_no = #{from_account_no}
+                AND to_account_no = #{to_account_no}
+        </update>
+
+
+
+
+</mapper>

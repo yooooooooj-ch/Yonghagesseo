@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>네이버 로그인 처리</title>
+</head>
+<body>
+  <p>네이버 로그인 처리 중...</p>
+
+  <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // ===== 공통 유틸 =====
+    function getRedirect() {
+    try {
+      	// 팝업 케이스면 opener의 스토리지 사용
+      	if (window.opener && !window.opener.closed) {
+        	return window.opener.localStorage.getItem('redirect_after_login') || '';
+      	}
+    	} catch(_) {}
+    	return localStorage.getItem('redirect_after_login') || '';
+  	}
+    
+    function clampUserId14(raw) {
+      const s = String(raw || '').trim();
+      return s.length > 14 ? s.slice(-14) : s;
+    }
+    function inPopup() {
+      return !!(window.opener && !window.opener.closed);
+    }
+    function go(url) {
+      if (inPopup()) {
+        window.opener.location.href = url;
+        window.close();
+      } else {
+        location.href = url;
+      }
+    }
+
+    // ===== 네이버 설정 =====
+    const NAVER_CLIENT_ID   = "IzMELxw0MbZbTng6KuT_";
+    const NAVER_CALLBACK_URL = `${window.location.origin}/naver-login-callback`;
+    const NAVER_SCOPES = "name,email,mobile,birthday,birthyear";
+
+    const naverLogin = new naver.LoginWithNaverId({
+      clientId: NAVER_CLIENT_ID,
+      callbackUrl: NAVER_CALLBACK_URL,
+      isPopup: false,  // 콜백 창은 false
+      state: "",
+      scope: NAVER_SCOPES
+    });
+    naverLogin.init();
+
+    window.addEventListener('load', function () {
+      naverLogin.getLoginStatus(function (status) {
+        if (!status) {
+          Swal.fire('로그인 실패', '네이버 인증에 실패했습니다.', 'error').then(() => go('/login'));
+          return;
+        }
+
+        // 프로필 파싱
+        const profile   = naverLogin.user || {};
+        const rawId     = profile.id || "";
+        const user_id   = "naver_" + clampUserId14(rawId);
+        const user_name = profile.name || "";
+        const email     = profile.email || "";
+        const birthyear = profile.birthyear || "";
+        const birthday  = profile.birthday || ""; // MM-DD
+        const tel       = profile.mobile || "";
+        const yyyyMMdd  = (birthyear && birthday)
+          ? `${birthyear}-${birthday.substring(0,2)}-${birthday.substring(3,5)}`
+          : "";
+
+        // 백엔드 공용 로그인 호출
+        fetch('/api/user/social-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id,
+            user_name,        
+            birthday: yyyyMMdd,
+            email,
+            tel
+          })
+        })
+        .then(async (res) => {
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw data; // 4xx/5xx
+          return data;
+        })
+        .then(async (data) => {
+          // 미가입 → 간편가입 유도
+          if (data.status === 'NOT_REGISTERED') {
+            const socialData = data.socialData || { user_id, user_name, birthday: yyyyMMdd, email, tel };
+            if (inPopup()) {
+              window.opener.localStorage.setItem('socialData', JSON.stringify(socialData));
+            } else {
+              localStorage.setItem('socialData', JSON.stringify(socialData));
+            }
+
+            const result = await Swal.fire({
+              icon: 'info',
+              title: '처음 오셨네요!',
+              text: (data.msg || '간편가입을 완료해 주세요.'),
+              confirmButtonText: '회원가입으로 이동'
+            });
+
+            if (result.isConfirmed) return go('/signup');
+            return go('/login');
+          }
+
+          // 로그인 성공
+          if (data.status === 'LOGIN' && data.token) {
+            if (inPopup()) {
+              window.opener.localStorage.setItem('access_token', data.token);
+            } else {
+              localStorage.setItem('access_token', data.token);
+            }
+            return Swal.fire({
+              icon: 'success',
+              title: '로그인 성공!',
+              text: (data.msg || '메인으로 이동합니다.'),
+              timer: 1500,
+              showConfirmButton: false
+            }).then(() => {
+                const ru = getRedirect();
+                return go(ru ? ru : '/'); 
+              });
+          }
+
+          // 기타
+          return Swal.fire('로그인 실패', (data.msg || '일시적인 오류가 발생했습니다.'), 'error')
+            .then(() => go('/login'));
+        })
+        .catch((err) => {
+          const msg = (err && err.msg) ? err.msg : '네이버 로그인 처리 중 오류가 발생했습니다.';
+          Swal.fire('로그인 실패', msg, 'error').then(() => go('/login'));
+        });
+      });
+    });
+  </script>
+</body>
+</html>

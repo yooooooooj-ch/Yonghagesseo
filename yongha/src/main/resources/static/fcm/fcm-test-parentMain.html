@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>용하게써 - 부모 알림 센터</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging-compat.js"></script>
+
+  <!-- UI 스타일 -->
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+      font-size: 1.5rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 15px;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-green {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .btn-green:hover {
+      background-color: #45a049;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #333;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      display: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>부모님 알림 테스트 화면</h2>
+    <p>아이가 용돈을 충전하면 알림을 받아볼 수 있어요</p>
+
+    <!-- 토큰 textarea 제거함 -->
+
+    <button class="btn btn-green" onclick="sendTokenToServer()">서버로 토큰 전송</button>
+    <button class="btn btn-green" onclick="sendNotification()">알림 보내기</button>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    let fcmToken = ""; // UI에는 노출되지 않음
+
+    // Firebase 설정 정보
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyGCvSmibzuEK9sKk4tLMyJlJtLNVQZPs",
+      authDomain: "yongha-push-test.firebaseapp.com",
+      projectId: "yongha-push-test",
+      messagingSenderId: "117022766634",
+      appId: "1:117022766634:web:ecfcebb79b8b2d9946f553"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    // FCM 토큰 요청
+    function getTokenAndSubscribe() {
+      messaging.getToken({
+        vapidKey: "BLQPoOK3ZRiKbZUyLIw8XQwvtzN8kGX1Xt0-F_0F_3eztz2k7VJwJGSmZEklURZOZDVor_hgCjyCGSSXMSFq7cg"
+      })
+      .then(token => {
+        fcmToken = token; // 변수에만 저장, HTML에는 노출 X
+        console.log("✅ FCM 토큰:", token);
+      })
+      .catch(err => {
+        console.error("❌ 토큰 오류:", err);
+      });
+    }
+
+    // 브라우저 알림 권한 요청
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') getTokenAndSubscribe();
+        else console.warn("알림 권한 거부됨");
+      });
+    } else {
+      getTokenAndSubscribe();
+    }
+
+    // 메시지 수신 시 푸시 알림 표시
+    messaging.onMessage(payload => {
+      const { title, body, image } = payload.notification;
+      const notificationOptions = {
+        body: body,
+        icon: image || "/default-icon.png"
+      };
+
+      // 시스템 알림 띄우기
+      if (Notification.permission === 'granted') {
+        new Notification(title, notificationOptions);
+      }
+    });
+
+    // 서버로 토큰 전송
+    function sendTokenToServer() {
+      if (!fcmToken) return alert("토큰이 아직 발급되지 않았습니다.");
+      fetch('/api/fcm/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: fcmToken })
+      })
+      .then(res => res.text())
+      .then(msg => showToast("✅ 서버 응답: " + msg))
+      .catch(err => showToast("❌ 전송 실패: " + err.message));
+    }
+
+    // 테스트용 알림 전송
+    function sendNotification() {
+      if (!fcmToken) return alert("토큰이 아직 발급되지 않았습니다.");
+      const title = "용돈 충전 완료!";
+      const body = "아이가 5,000원을 충전했어요. 칭찬해 주세요!";
+      const image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
+
+      fetch('/api/fcm/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: fcmToken,
+          notification: {
+            title: title,
+            body: body,
+            image: image
+          }
+        })
+      })
+      .then(res => res.text())
+      .then(msg => showToast("✅ 알림 전송 완료: " + msg))
+      .catch(err => showToast("❌ 오류 발생: " + err.message));
+    }
+
+    // 하단 토스트 메시지 표시
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.display = "block";
+      toast.style.opacity = "1";
+      setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+      setTimeout(() => { toast.style.display = "none"; }, 4000);
+    }
+  </script>
+</body>
+</html>

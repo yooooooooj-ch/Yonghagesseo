@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddak.yongha.mapper.GoalHistoryMapper">
+	<!-- 유저의 계좌 등록 -->
+	<select id="selectTopRankedUsers" resultType="GoalHistoryVO">
+		 <![CDATA[
+		  SELECT
+		    u.user_no,
+		    u.user_name,
+		    COUNT(CASE WHEN g.achieved = 1 THEN 1 END) AS achieved_count,
+		    a.balance,
+		    RANK() OVER (
+		        ORDER BY COUNT(CASE WHEN g.achieved = 1 THEN 1 END) DESC, a.balance DESC
+		    ) AS rank
+		FROM Users u
+		LEFT JOIN Childuser c ON c.child_no = u.user_no
+		LEFT JOIN GoalHistory g ON g.goal_no = c.goal_no
+		LEFT JOIN Accounts a ON a.user_no = u.user_no
+		GROUP BY u.user_no, u.user_name, a.balance
+		ORDER BY rank
+		  ]]>
+	</select>
+
+	<!-- 새 목표 등록 -->
+	<insert id="insertGoalHistory" >
+		INSERT INTO GoalHistory (
+        child_no,
+        goal_type,
+        goal_name,
+        target_amount
+    ) VALUES (
+        #{child_no},           
+        #{goal_type},          
+        #{goal_name},         
+        #{target_amount}
+    )
+	</insert>
+	
+	<!-- 목표 조회 - goal_no & chlid_no -->
+	<select id="findByGoalNoAndChildNo"  parameterType="int"
+        resultType="com.ddak.yongha.vo.GoalHistoryEntityVO">
+        SELECT
+        	goal_name,
+        	goal_type,
+        	target_amount,
+        	start_date,
+        	end_date,
+        	achieved
+        FROM
+        	GoalHistory
+        WHERE
+        	goal_no = #{goalNo}
+        AND
+        	child_no = #{childNo}
+    </select>
+	
+	<!-- 목표 조회 - child_no -->
+	<select id="findByChildNo" parameterType="int"
+        resultType="com.ddak.yongha.vo.GoalHistoryEntityVO">
+		SELECT
+	      gh.goal_no,
+	      gh.child_no,
+	      gh.goal_type,
+	      gh.goal_name,
+	      gh.target_amount,
+	      gh.start_date,
+	      gh.end_date,
+	      gh.achieved,
+	      NVL(a.balance, 0) AS balance
+	  FROM GoalHistory gh
+	  LEFT JOIN Accounts a
+	    ON a.user_no = gh.child_no
+	  WHERE gh.child_no = #{childNo}
+	  ORDER BY gh.achieved ASC, gh.end_date DESC, gh.goal_no DESC
+	</select>
+	
+	<!-- 목표 조회 (진행중인 목표) -->
+	<select id="findActiveByChildNo" parameterType="int"
+        resultType="com.ddak.yongha.vo.GoalHistoryEntityVO">
+		SELECT
+	      gh.goal_no,
+	      gh.child_no,
+	      gh.goal_type,
+	      gh.goal_name,
+	      gh.target_amount,
+	      gh.start_date,
+	      gh.end_date,
+	      gh.achieved,
+	      NVL(a.balance, 0) AS balance
+	  FROM GoalHistory gh
+	  LEFT JOIN Accounts a
+	    ON a.user_no = gh.child_no
+	  WHERE gh.child_no = #{childNo}
+	    AND gh.achieved = 0
+	  ORDER BY gh.start_date DESC, gh.goal_no DESC
+	</select>
+	
+	<!-- 진행중인 목표 존재 여부 -->
+	<select id="countActiveByChildNo" resultType="int">
+	  SELECT COUNT(1)
+	  	FROM GoalHistory
+	  WHERE child_no = #{childNo}
+	     AND achieved = 0
+	</select>
+	
+	<!-- 모든 달성 된 목표의 목표 조회 -->
+	<select id="selectAllAchievedGoals" resultType="com.ddak.yongha.vo.GoalHistoryEntityVO">
+	  SELECT *
+	  	FROM GoalHistory
+	  WHERE achieved = 1
+	</select>
+	
+	<!-- 모든 달성 된 목표의 목표번호 조회 -->
+	<select id="selectAllAchievedGoalNos" resultType="int">
+	  SELECT goal_no
+	  	FROM GoalHistory
+	  WHERE achieved = 1
+	</select>
+	
+	
+	<!-- 목표 수정 (진행중인 목표) -->
+	<update id="updateGoal" parameterType="map">
+  	UPDATE GoalHistory
+    	SET goal_type = #{patch.goal_type},
+         	goal_name = #{patch.goal_name},
+         	target_amount = #{patch.target_amount}
+  	WHERE goal_no = #{goalNo}
+  		AND achieved = 0
+	</update>
+
+	<!-- 목표 달성 처리 -->
+	<update id="completeGoalByChild" parameterType="map">
+		UPDATE GoalHistory
+			SET achieved = 1,
+				end_date = SYSDATE
+		WHERE goal_no = #{goalNo}
+			AND child_no = #{childNo}
+       		AND achieved = 0
+	</update>
+	
+	<!-- 목표 삭제 -->
+	<delete id="deleteGoal" parameterType="int">
+		DELETE FROM GoalHistory
+     	WHERE goal_no = #{goalNo}
+  	</delete>
+	
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ddak.yongha.mapper.FcmTestAccountsMapper2">
+
+  <insert id="insertAccount" parameterType="com.ddak.yongha.vo.AccountsVO">
+    INSERT INTO accounts (account_id, user_no, balance)
+    VALUES (#{accountId}, #{userNo}, #{balance})
+  </insert>
+
+  <update id="updateChildBalance" parameterType="com.ddak.yongha.vo.FcmTestTransferVO">
+    UPDATE Accounts
+    SET balance = balance + #{amount}
+    WHERE account_id = #{toAccountId}
+  </update>
+
+  <update id="updateParentBalance" parameterType="com.ddak.yongha.vo.FcmTestTransferVO">
+    UPDATE Accounts
+    SET balance = balance - #{amount}
+    WHERE account_id = #{fromAccountId}
+  </update>
+
+  <select id="selectBalanceByAccountId" parameterType="string" resultType="long">
+  SELECT balance
+  FROM accounts
+  WHERE account_id = #{accountId}   <!-- ✅ @Param 이름과 동일 -->
+</select>
+
+<select id="selectAccountNoByAccountId" parameterType="string" resultType="long">
+  SELECT account_no
+  FROM accounts
+  WHERE account_id = #{accountId}   <!-- ✅ -->
+</select>
+
+  <insert id="insertTransfer" parameterType="com.ddak.yongha.vo.FcmTestTransferVO">
+    INSERT INTO TRANSFER (
+      TRANS_NO,
+      FROM_ACCOUNT_NO,
+      TO_ACCOUNT_NO,
+      AMOUNT,
+      TRANS_DESC,
+      TRANS_DATE
+    ) VALUES (
+      seq_trans_no.NEXTVAL,
+      #{fromAccountNo},
+      #{toAccountNo},
+      #{amount},
+      #{transDesc},
+      SYSDATE
+    )
+  </insert>
+
+</mapper>

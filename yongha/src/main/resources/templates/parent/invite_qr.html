@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>초대 QR 코드</title>
+<style>
+body {
+  background: #eaf4ff; /* 전체 배경 연한 파스텔 블루 */
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.page-center1 {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 60px 40px;
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  margin: 100px auto;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08), 0 0 0 1px rgba(200,220,255,0.3);
+  border: 1px solid #d0e4ff;
+}
+
+/* 카드 제목 */
+.page-center1 h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #004080;
+  margin-bottom: 16px;
+}
+
+/* 안내 문구 */
+.page-center1 p {
+  font-size: 1rem;
+  color: #4f4f4f;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* 강조 문구 */
+.page-center1 .highlight {
+  color: #66b2ff;
+  font-weight: 600;
+}
+
+/* QR 코드 */
+.page-center1 img {
+  width: 220px;
+  height: 220px;
+  border-radius: 12px;
+  border: 3px solid #cce7ff;
+  margin: 20px 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.page-center1 img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(102,178,255,0.5);
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .page-center1 {
+    padding: 30px 20px;
+  }
+  .page-center1 h1 {
+    font-size: 1.5rem;
+  }
+  .page-center1 img {
+    width: 180px;
+    height: 180px;
+  }
+}
+</style>
+</head>
+<body>
+<main layout:fragment="content" class="content">
+  <div class="page-center1">
+    <h1>가족 초대 링크</h1>
+    <p>초대 이메일이 정상적으로 전송되었습니다.</p>
+    <p>아래 <span class="highlight">QR 코드를 스캔</span>하여 가족을 초대할 수 있습니다.</p>
+    <p>안전하게 QR 코드를 확인해주세요.</p>
+    <img th:src="${qr}" alt="초대 QR 코드" />
+  </div>
+</main>
+</body>
+</html>

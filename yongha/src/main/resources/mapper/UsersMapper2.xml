@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddak.yongha.mapper.UsersMapper2">
+
+	<!-- 특정 기간에 따른 부모 유저수 -->
+	<select id="countParentsWithPeriod" parameterType="map" resultType="int">
+		/* params: fromDate, toDate */
+		SELECT COUNT(*)
+		FROM users
+		WHERE user_type = 0
+		<if test="fromDate != null and fromDate != ''">
+			AND join_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="toDate != null and toDate != ''">
+			AND join_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="signupType != null and signupType != ''">
+		  <choose>
+		    <when test="signupType == 'kakao'">
+		      AND user_id LIKE 'kakao\_%' ESCAPE '\'
+		    </when>
+		    <when test="signupType == 'naver'">
+		      AND user_id LIKE 'naver\_%' ESCAPE '\'
+		    </when>
+		  </choose>
+		</if>
+	</select>
+	
+	<!-- 특정 기간에 따른 자녀 유저수 -->
+	<select id="countChildrenWithPeriod" parameterType="map" resultType="int">
+		/* params: fromDate, toDate */
+		SELECT COUNT(*)
+		FROM users
+		WHERE user_type = 1
+		<if test="fromDate != null and fromDate != ''">
+			AND join_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="toDate != null and toDate != ''">
+			AND join_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="signupType != null and signupType != ''">
+		  <choose>
+		    <when test="signupType == 'kakao'">
+		      AND user_id LIKE 'kakao\_%' ESCAPE '\'
+		    </when>
+		    <when test="signupType == 'naver'">
+		      AND user_id LIKE 'naver\_%' ESCAPE '\'
+		    </when>
+		  </choose>
+		</if>
+	</select>
+	
+	<!-- 지난달의 전체 유저수 -->
+	<select id="countTotalUsersWithPeriod" resultType="int">
+		SELECT COUNT(*)
+		FROM users
+		WHERE user_type != 2
+		<if test="fromDate != null and fromDate != ''">
+			AND join_date &lt;= TO_DATE(#{lastMonth}, 'YYYY-MM')
+		</if>
+	</select>
+
+
+	<!-- 특정 기간에 따른 자녀 연령대 분포 -->
+	<select id="getChildAgeGroups"  parameterType="map" resultType="map">
+		SELECT
+			SUM(CASE WHEN TRUNC(MONTHS_BETWEEN(SYSDATE, birthday)/12) BETWEEN 6 AND 8 THEN 1 ELSE 0 END) AS AGE_6_8,
+			SUM(CASE WHEN TRUNC(MONTHS_BETWEEN(SYSDATE, birthday)/12) BETWEEN 9 AND 12 THEN 1 ELSE 0 END) AS AGE_9_12,
+			SUM(CASE WHEN TRUNC(MONTHS_BETWEEN(SYSDATE, birthday)/12) BETWEEN 13 AND 15 THEN 1 ELSE 0 END) AS AGE_13_15,
+			SUM(CASE WHEN TRUNC(MONTHS_BETWEEN(SYSDATE, birthday)/12) BETWEEN 16 AND 18 THEN 1 ELSE 0 END) AS AGE_16_18
+		FROM users
+		WHERE user_type = 1
+		<if test="fromDate != null and fromDate != ''">
+	        AND join_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+	    </if>
+	    <if test="toDate != null and toDate != ''">
+	        AND join_date &lt;= TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+	    </if>
+	</select>
+	
+	<!-- 특정기간의 일별 평균 이체건수 -->
+	<select id="countAvgTransferWithPeriod" parameterType="map" resultType="double">
+		/* params: fromDate, toDate */
+		WITH params AS (
+			SELECT
+				TRUNC(NVL(CAST(#{fromDate, jdbcType=DATE} AS DATE), TRUNC(SYSDATE) - 29)) AS from_dt,
+				TRUNC(NVL(CAST(#{toDate,   jdbcType=DATE} AS DATE), TRUNC(SYSDATE)     )) AS to_dt
+			FROM dual
+		),
+		day_range AS (
+			SELECT from_dt, to_dt, (to_dt - from_dt + 1) AS day_cnt FROM params
+		),
+		filtered AS (
+			SELECT t.trans_date
+			FROM TRANSFER t
+			CROSS JOIN params p
+			WHERE TRUNC(t.trans_date) BETWEEN p.from_dt AND p.to_dt
+		)
+		SELECT ROUND(COUNT(*) / NULLIF(dr.day_cnt, 0), 2) AS avg_transfers_per_day
+		FROM filtered f
+		CROSS JOIN day_range dr
+	</select>
+	
+	<!-- 연령대별 평균 소비 금액 -->
+	<select id="getAvgConsByAgeGroups" parameterType="map" resultType="map">
+		WITH USER_SUM AS (
+		  SELECT
+		    u.user_no,
+		    TRUNC(MONTHS_BETWEEN(SYSDATE, u.birthday) / 12) AS age_years,
+		    SUM(c.amount) AS user_total
+		  FROM Users u
+		  JOIN Accounts a ON a.user_no = u.user_no
+		  JOIN Consume  c ON c.account_no = a.account_no
+		  WHERE u.user_type = 1
+		  <if test="fromDate != null and fromDate != ''">
+		    AND c.cons_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		  </if>
+		  <if test="toDate != null and toDate != ''">
+		    AND c.cons_date &lt;= TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		  </if>
+		  GROUP BY u.user_no, TRUNC(MONTHS_BETWEEN(SYSDATE, u.birthday) / 12)
+		)
+		SELECT
+		  NVL(AVG(CASE WHEN age_years BETWEEN  6 AND  8 THEN user_total END), 0) AS AGE_6_8,
+		  NVL(AVG(CASE WHEN age_years BETWEEN  9 AND 12 THEN user_total END), 0) AS AGE_9_12,
+		  NVL(AVG(CASE WHEN age_years BETWEEN 13 AND 15 THEN user_total END), 0) AS AGE_13_15,
+		  NVL(AVG(CASE WHEN age_years BETWEEN 16 AND 18 THEN user_total END), 0) AS AGE_16_18
+		FROM USER_SUM
+	</select>
+
+	<!-- 특정 기간에 따른 등록된 목표 카테고리 분포 -->
+	<select id="getPrefRate" parameterType="map" resultType="map">
+		SELECT
+		    c.code_label      AS "goal_name",
+		    NVL(COUNT(g.goal_no), 0) AS "cnt"
+		FROM CODE c
+		     LEFT JOIN GoalHistory g
+		       ON g.goal_type = c.code_value
+		      <if test="fromDate != null and fromDate != ''">
+		        AND g.start_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		      </if>
+		      <if test="toDate != null and toDate != ''">
+		        AND g.start_date &lt;= TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		      </if>
+		WHERE c.type_name = 'GOAL_TYPE'
+		  AND c.is_active = 'Y'
+		GROUP BY c.code_label, c.sort_order
+		ORDER BY c.sort_order
+	</select>
+	
+	<!-- 특정 기간에 따른 미달성 목표 수 -->
+	<select id="countUnachievedGoals" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM GoalHistory
+		WHERE achieved = 0
+		<if test="fromDate != null and fromDate != ''">
+			AND start_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="toDate != null and toDate != ''">
+			AND end_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+	</select>
+	
+	<!-- 특정 기간에 따른 달성 목표 수 -->
+	<select id="countAchievedGoals" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM GoalHistory
+		WHERE achieved = 1
+		<if test="fromDate != null and fromDate != ''">
+			AND start_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="toDate != null and toDate != ''">
+			AND end_date &lt; TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+	</select>
+
+	<!-- 특정 기간에 따른 달성기간(달성 목표만) 분포 -->
+	<select id="getAchvPeriodRate" parameterType="map" resultType="map">
+	  SELECT "period", COUNT(*) AS "cnt"
+	  FROM (
+	    SELECT
+	      CASE
+	        WHEN start_date IS NULL THEN '기타'
+	        WHEN (TRUNC(end_date) - TRUNC(start_date)) &lt; 7   THEN '1주이내'
+	        WHEN (TRUNC(end_date) - TRUNC(start_date)) &lt; 28  THEN '1~4주'
+	        WHEN (TRUNC(end_date) - TRUNC(start_date)) &lt; 90  THEN '1개월~3개월'
+	        WHEN (TRUNC(end_date) - TRUNC(start_date)) &lt; 180 THEN '3개월~6개월'
+	        ELSE '6개월이상'
+	      END AS "period"
+	    FROM GoalHistory
+	    WHERE achieved = 1
+	      <if test="fromDate != null and fromDate != ''">
+	        AND start_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+	      </if>
+	      <if test="toDate != null and toDate != ''">
+	        AND end_date &lt;= TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+	      </if>
+	  )
+	  GROUP BY "period"
+	  ORDER BY CASE "period"
+	    WHEN '1주이내' THEN 1
+	    WHEN '1~4주' THEN 2
+	    WHEN '1개월~3개월' THEN 3
+	    WHEN '3개월~6개월' THEN 4
+	    WHEN '6개월이상' THEN 5
+	    ELSE 99
+	  END
+	</select>
+
+	<!-- 특정 기간에 따른 소셜가입,일반가입 카운트 -->
+	<select id="countSignupType" resultType="map">
+	    SELECT
+	        CASE
+	            WHEN user_id LIKE 'kakao_%' THEN 'kakao'
+	            WHEN user_id LIKE 'naver_%' THEN 'naver'
+	            ELSE 'others'
+	        END AS type,
+	        COUNT(*) AS cnt
+	    FROM Users
+	    WHERE 1=1
+	    <if test="fromDate != null and fromDate != ''">
+	        AND join_date &gt;= TO_DATE(#{fromDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
+	    </if>
+	    <if test="toDate != null and toDate != ''">
+	        AND join_date &lt;= TO_DATE(#{toDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+	    </if>
+	    GROUP BY
+	        CASE
+	            WHEN user_id LIKE 'kakao_%' THEN 'kakao'
+	            WHEN user_id LIKE 'naver_%' THEN 'naver'
+	            ELSE 'others'
+	        END
+	</select>
+
+	
+	
+</mapper>

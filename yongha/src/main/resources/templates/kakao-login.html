@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>카카오 로그인</title>
+</head>
+<body>
+  <a href="javascript:kakaoLogin();">
+    <img th:src="@{/img/kakao_login/ko/kakao_login_medium_wide.png}" alt="카카오 로그인 버튼" />
+  </a>
+
+  <!-- SDKs -->
+  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+  
+	function getRedirect() {
+	  return localStorage.getItem('redirect_after_login') || '';
+	}
+	
+    // 670c24ec02272db12866f6afa03cddb9 <- JavaScript 키
+    window.Kakao.init("670c24ec02272db12866f6afa03cddb9");
+
+    function kakaoLogin() {
+      window.Kakao.Auth.login({
+        scope: 'profile_nickname, account_email, name, birthday, birthyear, phone_number, shipping_address',
+        success: function () {
+          window.Kakao.API.request({
+            url: '/v2/user/me',
+            success: (res) => {
+              const acc = res.kakao_account || {};
+              const id  = res.id;
+
+              // 안전하게 값 생성
+              const year = acc.birthyear || '';
+              const bday = acc.birthday || ''; // MMDD 형태
+              const yyyy_mm_dd = (year && bday && bday.length === 4)
+                ? `${year}-${bday.substring(0,2)}-${bday.substring(2,4)}`
+                : '';
+
+              const phone = acc.phone_number || ''; // +82 10-1234-5678 형태일 수도 있음
+              const normalizedPhone = phone.startsWith('+82')
+                ? '0' + phone.replace('+82', '').replace(/[^0-9]/g, '').replace(/^0?/, '')
+                : phone.replace(/[^0-9]/g, '');
+
+              // 백엔드 호출
+              fetch('/api/user/social-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify ({
+                  user_id: "kakao_" + String(id),
+                  user_name: acc.name || acc.profile?.nickname || '',
+                  birthday: yyyy_mm_dd,
+                  email: acc.email || '',
+                  tel: normalizedPhone || ''
+                })
+              })
+              .then(async (res) => {
+                // 성공/실패 모두 JSON 시도
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                  // 서버에서 4xx/5xx + {status:"ERROR", msg} 로 내려오는 경우 처리
+                  throw data;
+                }
+                return data;
+              })
+              .then((data) => {
+                // 1) 미가입 → 간편가입 유도
+                if (data.status === 'NOT_REGISTERED') {
+                  // socialData 저장 (signup.html이 이 키를 읽음)
+                  localStorage.setItem('socialData', JSON.stringify(data.socialData || {}));
+
+                  return Swal.fire ({
+                    icon: 'info',
+                    title: '처음 오셨네요!',
+                    text: (data.msg || '간편가입을 완료해 주세요.'),
+                    confirmButtonText: '회원가입으로 이동'
+                  }).then (() => {
+                    location.href = '/signup';
+                  });
+                }
+
+                // 2) 로그인 성공
+                if (data.status === 'LOGIN' && data.token) {
+                  // 일반 로그인과 동일 키로 통일
+                  localStorage.setItem('access_token', data.token);
+
+                  return Swal.fire ({
+                    icon: 'success',
+                    title: '로그인 성공!',
+                    text: (data.msg || '메인으로 이동합니다.'),
+                    timer: 1500,
+                    showConfirmButton: false
+                  }).then(() => {
+                	  const ru = getRedirect();
+                      location.href = ru ? ru : '/';
+                  });
+                }
+
+                // 3) 예외 케이스
+                return Swal.fire ('로그인 실패', (data.msg || '일시적인 오류가 발생했습니다.'), 'error');
+              })
+              .catch ((err) => {
+                // { msg } 형태 or 기타
+                const msg = (err && err.msg) ? err.msg : '카카오 로그인 처리 중 오류가 발생했습니다.';
+                Swal.fire('로그인 실패', msg, 'error');
+              });
+            },
+            fail: () => {
+              Swal.fire('로그인 실패', '카카오 사용자 정보를 가져오지 못했습니다.', 'error');
+            }
+          });
+        },
+        fail: () => {
+          Swal.fire('로그인 실패', '카카오 인증에 실패했습니다.', 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

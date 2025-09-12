@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>자녀페이지</title>
+  <link rel="stylesheet" th:href="@{/css/mypage-common.css}" />
+  <link rel="stylesheet" th:href="@{/css/child_mypage.css}" />
+  <script th:src="@{/js/popup.js}"></script>
+
+  <!-- ✅ Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+  <!-- ✅ FCM 초기화 -->
+  <script th:src="@{/js/fcm_init.js}"></script>
+</head>
+
+<body>
+<main layout:fragment="content" class="content">
+  <div class="parent-mypage-layout">
+    <!-- 사이드바 -->
+    <aside class="parent-mypage-sidebar">
+      <h1>나의 페이지에용</h1>
+      <hr class="sidebar-divider" />
+      <nav class="mypage-nav">
+        <a href="/child_page" class="nav-item">마이페이지</a>
+        <a href="/users/my-info" class="nav-item">내 정보 수정</a>
+      </nav>
+    </aside>
+
+    <!-- 본문 -->
+    <section class="parent-mypage-content">
+      <div class="mypage-container">
+        <!-- 1. 프로필 -->
+        <div class="profile" onclick="changeProfile()">
+          <img th:src="@{'/img/profile/profile' + ${userInfo.profile} + '.png'}"
+               alt="프로필 이미지" class="profile-img" id="profile-img"/>
+          <div class="username" th:text="${userInfo.user_name}"></div>
+        </div>
+
+        <!-- 프로필 변경 팝업 -->
+        <div class="popup-layer" id="popup-profile">
+          <div class="popup-content">
+            <h3 class="popup-title">프로필변경</h3>
+            <ul class="popup-list-profile">
+              <li th:each="p : ${PROFILE_CODES}">
+                <img th:src="@{'/img/profile/profile' + ${p.value} + '.png'}"
+                     th:attr="onclick=|selectProfile(${p.value})|"
+                     th:attrappend="title=${p.label}, alt=${p.label}" />
+              </li>
+            </ul>
+            <button class="popup-close">닫기</button>
+          </div>
+        </div>
+
+        <!-- 2. 현재 잔액 -->
+        <div class="balance-box">
+		 <!-- 연결된 계좌가 있을 때 -->
+		    <div th:if="${userInfo.account_id} != null">
+		      <div class="balance-title" th:text="${userInfo.account_id} + ' | ' + ${userInfo.bank_name}">123456 | 은행명</div>
+		      <div class="balance-amount" th:text="${#numbers.formatInteger(userInfo.balance ?: 0, 1, 'COMMA')}"></div>
+		      <div class="change-bank">
+		        <button onclick="accountSuggest()">계좌 변경</button>
+		      </div>
+		    </div>
+		
+		    <!-- 연결된 계좌가 없을 때 -->
+		    <div th:if="${userInfo.account_id} == null">
+		      <span>연결된 계좌가 없습니다</span>
+		      <div class="change-bank">
+		        <button onclick="accountSuggest()">계좌등록하기</button>
+		      </div>
+		    </div>
+		  </div>
+      </div>
+
+      <!-- 상단 메뉴 탭 -->
+      <div class="section-switch-buttons">
+        <div class="showSection">
+          <span class="tab-btn active"  type="button" onclick="showSection('goal')">나의 목표 달성률</span>
+          <span class="tab-btn"         type="button" onclick="showSection('consume')">주간 사용 내역</span>
+        </div>
+        <hr>
+      </div>
+
+      <!-- 콘텐츠 영역 -->
+      <div class="mypage-container2">
+        <div class="charging-list" style="display:block">
+
+          <!-- ✅ 목표 달성률 카드 -->
+          <div class="card-box goal-card">
+            <h2 class="goal-title">나의 목표 달성률</h2>
+
+            <!-- 목표 기본 정보 -->
+            <div class="child-info" th:if="${userInfo.goal_no} != null">
+              <span th:each="c : ${GOAL_TYPE_CODES}"
+                    th:if="${c.value == userInfo.goal_type}"
+                    th:text="${c.desc}" class="child-name">🔖</span>
+              <span class="child-name" th:text="${userInfo.goal_name}"></span>
+              <span class="child-balance"
+                    th:text="${#numbers.formatInteger(userInfo.target_amount ?: 0, 1, 'COMMA')}"></span>
+              <span class="child-trans"
+                    th:text="|목표 달성까지 : ${userInfo.end_date} (D-${userInfo.dday})|"></span>
+            </div>
+
+            <!-- 진행률 -->
+            <div class="goal-progress" th:if="${userInfo.target_amount} != null">
+              <div class="progress-track" role="progressbar"
+                   th:attr="aria-valuemin=0,aria-valuemax=100,aria-valuenow=${userInfo.progress}">
+                <div class="progress-fill"
+                     th:style="|width:${userInfo.progress}%|"></div>
+              </div>
+              <div class="progress-percent"
+                   th:text="|${userInfo.progress}%|">0%</div>
+            </div>
+
+            <!-- 목표/계좌 미설정 시 -->
+            <div th:if="${userInfo.target_amount} == null">
+              <span>목표가 없습니다. 목표를 등록해 주세요.</span>
+            </div>
+          </div>
+
+          <!-- ✅ 자녀 금융 팁 카드 -->
+          <div class="parent-mypage-guide card-box">
+            <h2 class="guide-title">🌟 오늘의 금융 꿀팁</h2>
+            <div class="guide-essay">
+              <h3 class="essay-title">“용돈을 쓰는 게 곧 연습이야!”</h3>
+              <p>
+                돈을 모으는 것도 중요하지만, <strong>돈을 어디에 쓰는지 기록하는 습관</strong>이 더 중요해요.  
+                내가 어디에 많이 쓰는지 알면, 다음에 더 현명하게 선택할 수 있어요. 💡
+              </p>
+              <blockquote class="guide-quote">
+                “이번 주에 나는 간식을 3번 샀어. 다음 주에는 2번만 사서 저축을 늘려야겠다!”  
+                <span class="quote-author">– 현명한 Yongha 친구</span>
+              </blockquote>
+              <p>오늘은 이런 습관을 실천해 보세요:</p>
+              <ul class="guide-points">
+                <li>📝 용돈을 받은 날은 꼭 사용 계획을 세우기</li>
+                <li>📊 지출할 때마다 <strong>앱에 기록</strong> 남기기</li>
+                <li>💰 저축 목표를 세우고 얼마나 모였는지 확인하기</li>
+              </ul>
+              <p class="guide-cta-text">작은 습관이 쌓이면, 큰 꿈을 이룰 수 있어요 🚀</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ 주간 소비 내역 -->
+      <div class="before7dayusedlist" style="display:none">
+        <div class="card-box consume-card">
+          <div class="card-body">
+            <h2 class="used-title">📊 주간 사용 내역</h2>
+            <h3 class="used-subtitle">최근 7일 소비 그래프</h3>
+            <div class="chart-wrapper">
+              <img th:src="${graphData}" alt="최근 7일 소비 그래프" />
+            </div>
+            <p class="chart-note">※ 최근 7일간 소비 금액을 막대그래프로 나타낸 통계입니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <!-- ✅ 계좌 선택 팝업 -->
+  <div class="popup-layer" id="popup-account">
+    <div class="popup-content">
+      <h3 class="popup-title">계좌 선택</h3>
+      <table class="account-table">
+        <thead>
+          <tr>
+            <th>은행명</th>
+            <th>계좌번호</th>
+            <th>잔액</th>
+            <th>선택</th>
+          </tr>
+        </thead>
+        <tbody id="account-list">
+          <!-- accountSuggest()가 불러온 계좌들이 append -->
+        </tbody>
+      </table>
+      <div class="popup-actions">
+        <button class="popup-close">닫기</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Script -->
+<div layout:fragment="script">
+<script>
+  // 탭 토글
+  function showSection(section) {
+    const chargingBox = document.querySelector('.charging-list');
+    const consumeBox  = document.querySelector('.before7dayusedlist');
+    const tabs = document.querySelectorAll('.showSection .tab-btn');
+    if (section === 'goal') {
+      chargingBox.style.display = 'block';
+      consumeBox.style.display  = 'none';
+      tabs[0].classList.add('active');
+      tabs[1].classList.remove('active');
+    } else {
+      chargingBox.style.display = 'none';
+      consumeBox.style.display  = 'block';
+      tabs[1].classList.add('active');
+      tabs[0].classList.remove('active');
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    showSection('goal');
+  });
+
+ 
+
+  // 프로필 변경 팝업
+		function changeProfile() {
+		    openPopup('#popup-profile');
+		}
+
+		async function selectProfile(id) {
+		    const response = await fetch('/users/changeProfile', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		        body: 'profile=' + id
+		    });
+
+		    closePopup('#popup-profile');
+
+		    if (response.ok) {
+		        await showAlert({
+		            text: '프로필이 변경되었습니다.',
+		            icon: 'success'
+		        });
+		        location.reload();
+		    } else {
+		        await showAlert({
+		            text: '프로필 변경 실패',
+		            icon: 'warning'
+		        });
+		    }
+		}
+		    
+		    
+		// 계좌 목록 팝업
+		function accountSuggest() {
+		    fetch("/api/accounts/suggestions")
+		        .then(async res => {
+		            if (!res.ok) throw new Error(await res.text());
+		            return res.json();
+		        })
+		        .then(data => {
+		            const list = document.getElementById("account-list");
+		            list.innerHTML = "";
+		            data.forEach(account => {
+		                const tr = document.createElement("tr");
+		                tr.innerHTML = `
+		                	<td>${account.bank_name}</td>
+		                    <td>${account.account_id}</td>
+		                    <td>${account.balance.toLocaleString()}원</td>
+		                    <td><button onclick="registerAccount('${account.account_id}', '${account.bank_name}', ${account.balance})">선택</button></td>`;
+		                list.appendChild(tr);
+		            });
+		            openPopup('#popup-account');
+		        })
+		        .catch(err => {
+		            showAlert({
+		                text: err.message,
+		                icon: 'warning'
+		            });
+		        });
+		}
+		
+
+		function registerAccount(account_id, bank_name, balance) {
+		    fetch("/api/accounts/register", {
+		        method: "POST",
+		        headers: { "Content-Type": "application/json" },
+		        body: JSON.stringify({ account_id, bank_name, balance })
+		    })
+		    .then(async res => {
+		        closePopup('#popup-account');
+		        if (res.ok) {
+		            await showAlert({
+		                text: '등록 완료',
+		                icon: 'success'
+		            });
+		            location.reload();
+		        } else {
+		            throw new Error(await res.text());
+		        }
+		    })
+		    .catch(err => {
+		        showAlert({
+		            text: err.message,
+		            icon: 'warning'
+		        });
+		    });
+		}
+</script>
+</div>
+</body>
+</html>

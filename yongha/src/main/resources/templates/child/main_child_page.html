@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<head>
+	<meta charset="UTF-8" />
+	<title></title>
+	<link rel="stylesheet" th:href="@{/css/main_child_page.css}" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+	<script th:src="@{/js/logout.js}"></script>
+</head>
+
+<body>
+	<main layout:fragment="content" class="content">
+
+
+		<!-- 🌀 Content 1: Swiper 이벤트 영역 -->
+		<section class="content1">
+
+			<div class="content1-inner">
+				<!-- 🎞️ 왼쪽: Swiper 슬라이드 -->
+				<div class="left-section">
+					<!-- Swiper -->
+					<div class="swiper mySwiper">
+						<div class="swiper-wrapper">
+							<!-- 배너 목록 반복 -->
+							<th:block th:each="banner : ${bannerList}">
+								<div class="swiper-slide">
+									<img th:src="@{${banner.imgPath}}" alt="배너 이미지" />
+									<!-- <div class="event-info">
+										<h3 th:text="${banner.title}"></h3>
+										<p th:text="${banner.description}"></p>
+										<button th:text="${banner.button}">자세히 보기</button>
+									</div> -->
+								</div>
+							</th:block>
+						</div>
+						<!-- swiper-wrapper -->
+						<!-- 페이징 버튼 -->
+						<div class="swiper-pagination"></div>
+					</div>
+
+				</div>
+				<!-- left-section -->
+
+				<!-- 상단 프로필 & 요약 -->
+				<div class="right-section">
+
+					<div class="profile-info">
+						<h2 class="child-name" th:text="${userInfo.user_name}"></h2>
+						<p class="child-balance">
+							현재 잔액: <strong>₩ <span
+									th:text="${#numbers.formatInteger(userInfo.balance ?: 0, 1, 'COMMA')}"></span></strong>
+						</p>
+						<div class="goal-progress">
+							<span th:text="'목표: ₩' + ${#numbers.formatInteger(userInfo.target_amount ?: 0, 1, 'COMMA')}">목표:
+								₩100,000</span>
+							<div class="progress-bar">
+								<div class="progress-fill" th:style="'width:' + ${userInfo.progress} + '%'"></div>
+								<span class="progress-text" th:text="${userInfo.progress} + '%'">0%</span>
+							</div>
+						</div>
+
+						<button class="go-btn" onclick="location.href='/goals/child'">GO →</button>
+					</div>
+
+					<div class="login-box">
+						<img th:src="@{'/img/profile/profile' + ${userInfo.profile} + '.png'}" alt="프로필 이미지"
+							class="profile-img" id="profile-img" />
+						<button class="login-btn" onclick="logout()">로그아웃</button>
+					</div>
+				</div>
+
+
+
+
+				<!-- Swiper JS -->
+				<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+				<script>
+					document.addEventListener("DOMContentLoaded", function () {
+						var swiper = new Swiper(".mySwiper", {
+							slidesPerView: 1,
+							spaceBetween: 30,
+							centeredSlides: true,
+							loop: true,
+							effect: "fade", // 부드러운 페이드 전환
+							fadeEffect: {
+								crossFade: true
+							},
+							autoplay: {
+								delay: 4000,
+								disableOnInteraction: false
+							},
+							pagination: {
+								el: ".swiper-pagination",
+								clickable: true
+							},
+							navigation: {
+								nextEl: ".swiper-button-next",
+								prevEl: ".swiper-button-prev"
+							}
+						});
+					});
+				</script>
+
+
+			</div>
+			<!-- content1-inner 닫기 -->
+		</section>
+
+		<!--모든 섹션들 다 포함 되어있는 class-->
+		<div class="childmain-container">
+			<!-- 6. 공지사항 & 알림 -->
+			<section class="child-section-wrap">
+				<!-- 공지사항 -->
+				<div class="child-notice">
+					<h3>📢 공지사항 & 알림</h3>
+
+					<div class="notice-fixed">
+						<div class="notice-card">
+							<p>🔔 [고정] 서비스 점검 안내 - 8월 30일 02시 ~ 05시</p>
+						</div>
+						<div class="notice-card">
+							<p>🔔 [고정] 개인정보 처리방침이 변경되었습니다.</p>
+						</div>
+					</div>
+
+					<div class="notice-new">
+						<div class="notice-card">
+							<p>💰 이번 주 저축 미션이 업데이트되었습니다!</p>
+						</div>
+						<div class="notice-card">
+							<p>💌 부모님이 메시지를 보냈습니다.</p>
+						</div>
+						<div class="notice-card">
+							<p>🎯 새로운 도전 과제가 시작되었습니다!</p>
+						</div>
+					</div>
+
+					<button class="notice-more-btn" aria-label="새 알림 추가">＋</button>
+				</div>
+
+
+
+				<!-- 3. 목표 달성 챌린지 -->
+				<div class="child-challenge">
+					<h3>🏆 이번 달 챌린지</h3>
+
+					<div class="challenge-card">
+						<p>
+							🍯 <strong>저축왕 도전</strong>
+						</p>
+						<p>매주 5,000원씩 저축하기</p>
+
+						<!-- 진행률 -->
+						<div class="challenge-progress">
+							<div class="progress-bar1" style="width: 60%;"></div>
+						</div>
+						<p class="challenge-remaining">남은 기간: 10일</p>
+
+						<button class="gold-btn">도전하기</button>
+					</div>
+				</div>
+			</section>
+
+			
+
+			<!-- 6. 오늘의 금융 팁 -->
+			<section class="daily-tip">
+
+				<div class="tip-header">
+					<div class="header-left">GROWING FINANCIAL HABITS</div>
+					<div class="header-right">EMPOWERING FAMILIES TOGETHER</div>
+				</div>
+				<div class="tip-container">
+					<div class="tip-image">
+						<img src="/img/Yongha.png" alt="금융 팁 이미지" />
+						<p class="img-caption">Homemade Marshmallow S'mores</p>
+					</div>
+					<div class="tip-list">
+						<div class="tip-item">
+							<span class="tip-num">01</span>
+							<div class="tip-text">
+								<h4>Homemade Marshmallow S'mores</h4>
+								<p>매일 조금씩 저축해도, 그 힘은 시간이 지날수록 크게 불어납니다.</p>
+							</div>
+						</div>
+						<div class="tip-item">
+							<span class="tip-num">02</span>
+							<div class="tip-text">
+								<h4>Classic German Donut with Raspberry Filling</h4>
+								<p>하루에 1,000원씩 저축하면 1년 후에는 36만 5천 원이 모입니다.</p>
+							</div>
+						</div>
+						<div class="tip-item">
+							<span class="tip-num">03</span>
+							<div class="tip-text">
+								<h4>Churros with Cinnamon Sugar and Chocolate Dip</h4>
+								<p>저축 습관은 미래의 나를 위한 든든한 기반이 됩니다.</p>
+							</div>
+						</div>
+						<div class="tip-item">
+							<span class="tip-num">04</span>
+							<div class="tip-text">
+								<h4>Choco Caramel Candied Apple Pops with Nut Crumble</h4>
+								<p>작은 습관이 모여 큰 변화를 만듭니다.</p>
+							</div>
+						</div>
+						<div class="tip-item">
+							<span class="tip-num">05</span>
+							<div class="tip-text">
+								<h4>Almond Crunch Chocolate Glazed Baked Donut</h4>
+								<p>오늘부터 작은 습관을 시작해 보세요!</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<script>
+				const tipItems = document.querySelectorAll('.tip-list .tip-item');
+				const tipNums = document.querySelectorAll('.tip-num');
+
+				// 기본값: 01번에 active 적용
+				tipNums.forEach((num, idx) => {
+					if (idx === 0) {
+						num.classList.add('active');
+					} else {
+						num.classList.remove('active');
+					}
+				});
+
+				tipItems.forEach((item, index) => {
+					item.addEventListener('click', () => {
+						// 모든 숫자에서 active 제거
+						tipNums.forEach(num => num.classList.remove('active'));
+						// 클릭한 숫자에 active 부여
+						tipNums[index].classList.add('active');
+					});
+				});
+			</script>
+
+
+		
+
+
+			<!-- 8. 포기하지 않는 비결 -->
+			<section class="motivation-success">
+
+				<div class="success-left top">
+					<h3>🔥 포기하지 않는 비결</h3>
+					<p>"작은 습관이 큰 변화를 만든다."</p>
+				</div>
+				<div class="content-row">
+					<!-- 왼쪽: 1, 2 -->
+					<div class="review-column left">
+						<div class="review-item">
+							<span class="review-number">1</span>
+							<p>수민이(12살): 용돈 5,000원으로 목표 저축 달성!
+								<br>
+								<small>수민이는 매주 용돈을 기록하고 목표 금액을 설정하며, 3개월 만에 새 자전거를 사는 목표를 달성했습니다.</small>
+							</p>
+						</div>
+						<div class="review-item">
+							<span class="review-number">2</span>
+							<p>재윤이(10살): 소비 습관 개선
+								<br>
+								<small>재윤이는 Yongha를 통해 지출 내역을 기록하고, 부모님과 매주 소비 피드백을 받으며 불필요한 지출을 40% 줄였습니다.</small>
+							</p>
+						</div>
+					</div>
+
+
+					<!-- 가운데: 이미지 -->
+					<div class="image-card">
+						<img src="/img/Yongha.png" alt="">
+
+					</div>
+					<!-- 오른쪽: 3, 4 -->
+					<div class="review-column right">
+						<div class="review-item">
+							<span class="review-number">3</span>
+							<p>지훈이(14살): 저축 습관으로 첫 목표 달성
+								<br>
+								<small>지훈이는 매일 용돈 기록과 저축 목표를 실천하며, 6개월 만에 게임기와 학용품을 동시에 구입할 수 있었습니다.</small>
+							</p>
+						</div>
+						<div class="review-item">
+							<span class="review-number">4</span>
+							<p>하은이(9살): 부모와 함께 금융 대화 시작
+								<br>
+								<small>하은이는 Yongha를 통해 부모님과 용돈 계획을 공유하며, 스스로 소비 계획을 세우는 법을 배우고 책임감을 키웠습니다.</small>
+							</p>
+
+						</div>
+					</div>
+				</div>
+
+				<!-- 이미지 위/아래 텍스트는 섹션 바깥으로 -->
+
+
+				<div class="success-left bottom">
+					<ul>
+						<li>15살 지훈이: 하루 2,000원 저축 → 1년 만에 73만 원 모음</li>
+						<li>매일 조금씩 실천하는 습관이 큰 변화를 만들어냅니다.</li>
+						<li>중요한 건 금액이 아니라 ‘꾸준함’입니다.</li>
+					</ul>
+				</div>
+
+			</section>
+
+
+
+
+		</div>
+	</main>
+
+</body>
+
+</html>

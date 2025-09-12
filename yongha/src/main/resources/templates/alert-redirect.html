@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>안내</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/js/sweetAlert.js}" defer></script>
+<link rel="stylesheet" th:href="@{/css/sweetalert.css}" />
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+	
+	</main>
+	
+	<div layout:fragment="script"><script th:inline="javascript">
+		document.addEventListener('DOMContentLoaded', function(){
+			var msg = /*[[${msg}]]*/ '안내';
+			var target = /*[[${target}]]*/ '/';
+			var icon = /*[[${icon}]]*/ 'info'
+			window.showAlert({ title: '안내', text: msg, icon: icon })
+			  .then(()=> { location.replace(target); });
+		});
+	</script></div>
+
+	
+</body>
+</html>
+

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/admin-layout}">
+<head>
+<meta charset="UTF-8" />
+<title>관리자 - 통계</title>
+
+<!-- 공통 스타일 -->
+<th:block layout:fragment="head">
+	<link rel="stylesheet" th:href="@{/css/admin.css}">
+</th:block>
+<link rel="stylesheet" th:href="@{/css/admin.css}">
+
+<style>
+/* 마케팅 히어로/탭 전부 숨김 */
+.site-top, .site-hero, .hero, .top-tabs, #pageHead, .page-head.header-hero,
+	.logo-white-circle, .logo-gradient-glow {
+	display: none !important;
+}
+
+:root {
+	/* 차트 팔레트 */
+	--c-blue: #3b82f6;
+	--c-indigo: #6366f1;
+	--c-emerald: #10b981;
+	--c-amber: #f59e0b;
+	--c-slate: #94a3b8;
+}
+
+/* KPI 톤만 살짝 강화 */
+.kpi-grid.kpi-stats {
+	gap: 12px;
+}
+
+.kpi-card {
+	position: relative;
+	overflow: hidden;
+}
+
+.kpi-card::after {
+	content: "";
+	position: absolute;
+	right: -28px;
+	bottom: -28px;
+	width: 140px;
+	height: 140px;
+	border-radius: 50%;
+	opacity: .14;
+	filter: blur(2px);
+}
+
+.kpi-card.soft-blue {
+	background: linear-gradient(180deg, #f5f8ff, #ffffff);
+}
+
+.kpi-card.soft-indigo {
+	background: linear-gradient(180deg, #f7f5ff, #ffffff);
+}
+
+.kpi-card.soft-emerald {
+	background: linear-gradient(180deg, #f5fffb, #ffffff);
+}
+
+.kpi-card.soft-amber {
+	background: linear-gradient(180deg, #fff9e8, #ffffff);
+}
+
+.kpi-card.soft-blue::after {
+	background: var(--c-blue);
+}
+
+.kpi-card.soft-indigo::after {
+	background: var(--c-indigo);
+}
+
+.kpi-card.soft-emerald::after {
+	background: var(--c-emerald);
+}
+
+.kpi-card.soft-amber::after {
+	background: var(--c-amber);
+}
+
+/* 차트 레이아웃 */
+.stats-graphs.pretty .chart-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px; /* 줄 간격 */
+}
+
+.stats-graphs.pretty .chart-card {
+  background: #fff;
+  border: 1px solid var(--ad-line);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.stats-graphs.pretty .chart-title {
+  font-weight: 900;
+  color: #0b4e74;
+  margin: 4px 0 10px;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.stats-graphs.pretty .chart-canvas {
+  height: 260px; /* 원그래프/막대 동일 높이 */
+  position: relative;
+}
+
+.chart-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* 반응형: 한 열로 쌓기 */
+@media (max-width: 1024px) {
+  .stats-graphs.pretty .chart-row-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.legend-subline {
+	margin-top: 6px;
+	text-align: center;
+	font-size: 12px;
+	font-weight: 600;
+	color: #334155;
+}
+
+/* 상단 필터 전체 컨테이너 */
+.mh-filters {
+	display: flex !important;
+	flex-direction: column;
+}
+
+.mh-filters .filter-row {
+	width: 70% !important;
+	display: flex;
+	justify-content: space-between; /* 좌/우 끝으로 배치 */
+	align-items: center;
+	gap: 12px;
+}
+
+.date-group {
+	display: flex;
+	align-items: center;
+	gap: 6px; /* 라벨과 input 사이 여백 */
+	flex: 1; /* 필요시 균등 폭 */
+}
+
+.mh-filters .action-row {
+	width: 70% !important;
+	display: flex;
+	justify-content: center; /* 가로축 가운데 */
+	gap: 12px; /* 요소 간 간격 */
+}
+
+.mh-filters .action-row .btn {
+	flex: 0 0 auto; /* 자동 늘어남 방지 */
+	min-width: 100px; /* 최소 너비 */
+	width: 100px; /* 모든 버튼 동일 폭 */
+	text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+</style>
+</head>
+
+<body>
+	<main layout:fragment="content">
+		<div class="admin-main">
+
+			<!-- 상단 카드(제목 + 기간 필터) -->
+			<section class="member-head-card">
+				<div class="mh-title">
+					<h1>회원 관리 통계</h1>
+					<p class="page-sub">기간별 가입 현황과 상태 분포를 확인합니다.</p>
+				</div>
+				<div class="mh-filters">
+					<div class="filter-row">
+						<div class="date-group">
+							<span class="date-label">시작일</span> <input class="input" type="date" id="fromDate" name="fromDate" th:value="${fromDate}">
+						</div>
+						<div class="date-group">
+							<span class="date-label">종료일</span> <input class="input" type="date" id="toDate" name="toDate" th:value="${toDate}">
+						</div>
+					</div>
+					<div class="action-row">
+						<button class="btn" id="btnThisMonth">이번 달</button>
+						<button class="btn" id="btn3m">3개월</button>
+						<button class="btn" id="btn6m">6개월</button>
+						<button class="btn" id="btn12m">1년</button>
+						<button class="btn" id="btnReset" type="button">초기화</button>
+						<button class="btn primary" id="btnFetch">조회</button>
+					</div>
+				</div>
+			</section>
+
+			<!-- KPI 4장 -->
+			<section class="kpi-wrap">
+				<div class="kpi-grid kpi-stats">
+					<article class="kpi-card soft-blue">
+						<div class="kpi-top">
+							<span>👥 총 가입 계정 수</span>
+						</div>
+						<div class="kpi-num" id="kpi-total">12,430</div>
+						<div class="help">
+							지난달 대비 <strong id="kpi-total-percent">+3.1%</strong>
+						</div>
+					</article>
+
+					<article class="kpi-card soft-indigo">
+						<div class="kpi-top">
+							<span>🧑‍🍼 부모 계정 수</span>
+						</div>
+						<div class="kpi-num" id="kpi-parents">6,460</div>
+						<div class="help">
+							비중 <strong id="kpi-parents-percent">52%</strong>
+						</div>
+					</article>
+
+					<article class="kpi-card soft-emerald">
+						<div class="kpi-top">
+							<span>🧒 자녀 계정 수</span>
+						</div>
+						<div class="kpi-num" id="kpi-children">5,970</div>
+						<div class="help">
+							비중 <strong id="kpi-children-percent">48%</strong>
+						</div>
+					</article>
+
+					<article class="kpi-card soft-amber">
+						<div class="kpi-top">
+							<span>💸 플랫폼 일 평균 이체 수</span>
+						</div>
+						<div class="kpi-num" id="kpi-dailyTransfers">2,340</div>
+						<div class="help" id="kpi-dailyTransfers-text">최근 30일 평균</div>
+					</article>
+				</div>
+			</section>
+
+			<!-- 차트: 미니 도넛 4개 + 우측 두 개 막대 -->
+			<section class="card stats-graphs pretty">
+				<div class="stats-head">
+					<h2>가입 분포 & 선호</h2>
+				</div>
+				
+				<!-- 막대그래프 2개 -->
+				<div class="chart-row-2">
+					<article class="chart-card">
+						<div class="chart-title">자녀 연령대 분포</div>
+						<div class="chart-canvas">
+							<canvas id="chAge"></canvas>
+						</div>
+					</article>
+					<article class="chart-card">
+						<div class="chart-title">자녀 연령대 소비 평균</div>
+						<div class="chart-canvas">
+							<canvas id="chAvgCons"></canvas>
+						</div>
+					</article>
+				</div>
+
+				<!-- 원그래프 4개 -->
+				<div class="chart-row-2">
+					<article class="chart-card">
+						<div class="chart-title">등록된 목표 카테고리 선호</div>
+						<div class="chart-canvas">
+							<canvas id="chPref"></canvas>
+						</div>
+					</article>
+					<article class="chart-card">
+						<div class="chart-title">목표 달성기간 비율</div>
+						<div class="chart-canvas">
+							<canvas id="chAchieved"></canvas>
+						</div>
+					</article>
+				</div>
+				<div class="chart-row-2">
+					<article class="chart-card">
+						<div class="chart-title">부모 가입 분포</div>
+						<div class="chart-canvas">
+							<canvas id="chSignupParents"></canvas>
+						</div>
+					</article>
+					<article class="chart-card">
+						<div class="chart-title">자녀 가입 분포</div>
+						<div class="chart-canvas">
+							<canvas id="chSignupChildren"></canvas>
+						</div>
+					</article>
+				</div>
+
+				
+			</section>
+		</div>
+
+		<!-- 공통 JS -->
+		<script th:src="@{/js/admin.js}"></script>
+
+		<!-- Chart.js CDN -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+
+		<script th:inline="javascript">
+		    /* ---------- 공통 유틸 ---------- */
+		    const $css = getComputedStyle(document.documentElement);
+		    const cssVar = (k, fallback='') => ($css.getPropertyValue(k)||fallback).trim();
+		    const HEX = (h,a=1)=>{ // '#rrggbb' -> rgba(...)
+		      const c=h.replace('#',''); const r=parseInt(c.substr(0,2),16), g=parseInt(c.substr(2,2),16), b=parseInt(c.substr(4,2),16);
+		      return `rgba(${r},${g},${b},${a})`;
+		    };
+		
+		    /* ---------- 파스텔 블루 팔레트 ---------- */
+		    const BLUE = {
+		      main:  cssVar('--chart-primary','#3E6FEF'),
+		      strong:cssVar('--chart-primary-strong','rgba(62,111,239,.90)'),
+		      soft:  cssVar('--chart-soft','rgba(143,178,255,.30)'),
+		      grid:  cssVar('--chart-grid','rgba(62,111,239,.16)'),
+		      step400: cssVar('--cb-400','#8FB2FF'),
+		      step500: cssVar('--cb-500','#5D90F6'),
+		      step600: cssVar('--cb-600','#3E6FEF'),
+		      step700: cssVar('--cb-700','#2F58D8'),
+		    };
+		
+		    const RAMP_SOFT2DEEP = [
+		      'rgba(143,178,255,.28)',  // very soft
+		      'rgba(143,178,255,.44)',
+		      'rgba(93,144,246,.66)',
+		      'rgba(62,111,239,.85)',
+		      BLUE.strong              // almost solid
+		    ];
+		
+		    /* ---------- 도넛 공통(블루) ---------- */
+		    function miniDonut(canvasId, value, total, colorHex, outTextId){
+		      const el = document.getElementById(canvasId);
+		      const pct = Math.round((value/total)*100);
+		      if (outTextId) { const t=document.getElementById(outTextId); if(t) t.textContent=pct+'%'; }
+		
+		      new Chart(el, {
+		        type: 'doughnut',
+		        data: {
+		          labels: ['값','나머지'],
+		          datasets: [{
+		            data: [value, Math.max(total - value, 0)],
+		            backgroundColor: [
+		              colorHex || BLUE.strong,   // 값
+		              BLUE.soft                  // 나머지
+		            ],
+		            borderWidth: 0,
+		            hoverOffset: 2
+		          }]
+		        },
+		        options: {
+		          responsive:true, maintainAspectRatio:false,
+		          cutout: '78%',
+		          plugins: { legend:{display:false}, tooltip:{enabled:false} }
+		        },
+		        plugins: [{
+		          id:'centerMini',
+		          afterDraw(chart){
+		            const {ctx, chartArea:{width, height}} = chart;
+		            ctx.save();
+		            ctx.font = '700 16px system-ui,-apple-system,Segoe UI,Roboto';
+		            ctx.fillStyle = BLUE.step700;   // 진블루 텍스트
+		            ctx.textAlign = 'center';
+		            ctx.textBaseline = 'middle';
+		            ctx.fillText(pct + '%', width/2, height/2);
+		            ctx.restore();
+		          }
+		        }]
+		      });
+		    }
+		    
+		    /* ---------- 멀티 도넛(라벨/값 배열 + 중앙 퍼센트) ---------- */
+		    function multiDonutWithCenter(canvasId, labels, values, colors) {
+			  const el = document.getElementById(canvasId);
+			  if (!el || !labels || !labels.length) return;
+			
+			  const vals = values.map(v => Number(v) || 0);
+			  const sum  = vals.reduce((a,b)=>a+b, 0);
+			  const pct  = sum > 0 ? vals.map(v => (v / sum) * 100) : vals.map(() => 0);
+			
+			  let maxIdx = 0;
+			  for (let i = 1; i < vals.length; i++) if (vals[i] > vals[maxIdx]) maxIdx = i;
+			
+			  const centerState = {
+			    label: labels[maxIdx] || '',
+			    pct:   Math.round(pct[maxIdx] || 0)
+			  };
+			
+			  const bg = (colors || []).slice(0, labels.length);
+			  while (bg.length < labels.length) bg.push(BLUE.strong);
+			
+			  return new Chart(el, {
+			    type: 'doughnut',
+			    data: { labels, datasets: [{ data: vals, backgroundColor: bg, borderWidth: 0, hoverOffset: 2 }] },
+			    options: {
+			      responsive: true,
+			      maintainAspectRatio: false,
+			      cutout: '60%',
+			      plugins: {
+			        legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { weight: 600 } } },
+			        tooltip: {
+			          enabled: true,
+			          backgroundColor:'#0b1020',
+			          padding:10,
+			          titleColor:'#fff',
+			          bodyColor:'#e5e7eb',
+			          callbacks: {
+			            label: (ctx) => {
+			              const i = ctx.dataIndex;
+			              const count = vals[i];
+			              const p = Math.round(pct[i] || 0);
+			              return `${ctx.label}: ${fmt(count)}건 (${p}%)`;
+			            }
+			          }
+			        }
+			      }
+			    },
+			    plugins: [{
+			      id: 'centerForMulti',
+			      afterEvent(chart) {
+			        const act = chart.getActiveElements();
+			        if (act && act.length) {
+			          const i = act[0].index;
+			          centerState.label = labels[i];
+			          centerState.pct   = Math.round(pct[i] || 0);
+			        } else {
+			          centerState.label = labels[maxIdx] || '';
+			          centerState.pct   = Math.round(pct[maxIdx] || 0);
+			        }
+			        chart.draw();
+			      },
+			      afterDraw(chart) {
+			        const { ctx, chartArea } = chart;
+			        const cx = (chartArea.left + chartArea.right) / 2;
+			        const cy = (chartArea.top + chartArea.bottom) / 2;
+			
+			        ctx.save();
+			        ctx.textAlign = 'center';
+			        ctx.textBaseline = 'middle';
+			
+			        // 상단 라벨
+			        ctx.font = '600 12px system-ui,-apple-system,Segoe UI,Roboto';
+			        ctx.fillStyle = '#64748b';
+			        ctx.fillText(centerState.label, cx, cy - 12);
+			
+			        // 하단 퍼센트
+			        ctx.font = '700 18px system-ui,-apple-system,Segoe UI,Roboto';
+			        ctx.fillStyle = BLUE.step700;
+			        ctx.fillText(centerState.pct + '%', cx, cy + 10);
+			
+			        ctx.restore();
+			      }
+			    }]
+			  });
+			}
+		    
+		    /* 날짜 유틸 */
+		    function fmtDate(d){
+		      const y = d.getFullYear();
+		      const m = String(d.getMonth()+1).padStart(2,'0');
+		      const day = String(d.getDate()).padStart(2,'0');
+		      return `${y}-${m}-${day}`;
+		    }
+		    function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+		    function addMonths(d, delta){ const nd = new Date(d); nd.setMonth(nd.getMonth() + delta); return nd; }
+
+		    // 월 경계 기준 윈도우: (현재월 포함 N개월) → from = (현재달 1일)에서 (N-1)개월 전 1일, to = 오늘
+		    function setRangeLastNMonthsInclusive(n){
+		      const today = new Date();
+		      const cur1st = startOfMonth(today);
+		      const from1st = startOfMonth(addMonths(cur1st, -(n-1)));
+		      document.getElementById("fromDate").value = fmtDate(from1st);
+		      document.getElementById("toDate").value   = fmtDate(today);
+		    }
+		    function setRangeThisMonth(){
+		      const today = new Date();
+		      document.getElementById("fromDate").value = fmtDate(startOfMonth(today));
+		      document.getElementById("toDate").value   = fmtDate(today);
+		    }
+
+		    /* 바인딩 */
+		    document.getElementById("btnThisMonth").addEventListener("click", () => {
+		      setRangeThisMonth();
+		      document.getElementById("btnFetch").click();
+		    });
+		    document.getElementById("btn3m").addEventListener("click", () => {
+		      setRangeLastNMonthsInclusive(3);
+		      document.getElementById("btnFetch").click();
+		    });
+		    document.getElementById("btn6m").addEventListener("click", () => {
+		      setRangeLastNMonthsInclusive(6);
+		      document.getElementById("btnFetch").click();
+		    });
+		    document.getElementById("btn12m").addEventListener("click", () => {
+		      setRangeLastNMonthsInclusive(12);
+		      document.getElementById("btnFetch").click();
+		    });
+		    document.getElementById("btnReset").addEventListener("click", () => {
+	    	  document.getElementById("fromDate").value = "";
+	    	  document.getElementById("toDate").value   = "";
+	    	  document.getElementById("btnFetch").click();
+	    	});
+		    
+		    document.getElementById("btnFetch").addEventListener("click", () => {
+		    	const from = document.getElementById("fromDate").value;
+		        const to   = document.getElementById("toDate").value;
+
+		        // 기본 검증
+		        if (from && to && new Date(from) > new Date(to)) {
+		          showAlert({ title: '알림', text: "시작일이 종료일보다 늦을 수 없습니다.", icon: 'warning' });
+		          return;
+		        }
+
+		        // URL 구성 (Spring Controller: /stats?fromDate=...&toDate=...)
+		        const params = new URLSearchParams();
+		        if (from) params.append("fromDate", from);
+		        if (to)   params.append("toDate", to);
+
+		        window.location.href = "/admin/stats" + (params.toString() ? "?" + params.toString() : "");
+		      });
+		
+		    /* ----------   데이터 (그대로)   ---------- */
+		    const PARENTS     = /*[[${parents}]]*/ 0;
+		    const CHILDREN        = /*[[${children}]]*/ 0;
+		    const TOTAL_USERS = /*[[${totalUser}]]*/ 0;
+		    const JOIN_PERCENT= /*[[${joinPercent}]]*/ 0;
+		    const DAILY_TRANSFER= /*[[${avgTransfer}]]*/ 0;
+		    
+		    /* ---------- 샘플 데이터 (그대로) ---------- */
+		    const AGE_LABELS  = ['6–8','9–12','13–15', '16-18'];
+		    const AGE_VALUES  = [
+		        /*[[${ageGroups.AGE_6_8} ?: 0]]*/ 0,
+		        /*[[${ageGroups.AGE_9_12} ?: 0]]*/ 0,
+		        /*[[${ageGroups.AGE_13_15} ?: 0]]*/ 0,
+		        /*[[${ageGroups.AGE_16_18} ?: 0]]*/ 0
+		    	];
+		    const AVG_CONS_VALUES  = [
+		        /*[[${avgCons.AGE_6_8} ?: 0]]*/ 0,
+		        /*[[${avgCons.AGE_9_12} ?: 0]]*/ 0,
+		        /*[[${avgCons.AGE_13_15} ?: 0]]*/ 0,
+		        /*[[${avgCons.AGE_16_18} ?: 0]]*/ 0
+		    	];
+		    const PREF_DATA   = /*[[${prefRate}]]*/ {};
+		    const PREF_LABELS = Object.keys(PREF_DATA);
+		    const PREF_VALUES = Object.values(PREF_DATA);
+		    
+		    const ACHV_DATA   = /*[[${achvPeriodRate}]]*/ {};
+		    const ACHV_LABELS = Object.keys(ACHV_DATA);
+		    const ACHV_VALUES = Object.values(ACHV_DATA);
+		    
+		    const ACHIEVED   = /*[[${achieved}]]*/ 0;
+		    const UNACHIEVED = /*[[${unachieved}]]*/ 0;
+		    const _sumAch    = ACHIEVED + UNACHIEVED;
+		    const _achPct    = _sumAch > 0 ? Math.round((ACHIEVED / _sumAch) * 100) : 0;
+		    const _unPct     = 100 - _achPct;
+
+		    // 범례 두 번째 줄에 달성, 미달성 % 출력
+		    const $achvSub = document.getElementById('achvLegendSub');
+		    if ($achvSub) {
+		      // 필요하면 카운트도 함께 
+		      $achvSub.textContent = `달성: ${_achPct}% · 미달성: ${_unPct}%`;
+		    }
+		
+		    const fmt = (n)=> n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		    const displayPercent = (n) => {
+		    	  if (n > 0) {
+		    	    return "+" + n.toFixed(1) + "%";
+		    	  } else if (n < 0) {
+		    	    return n.toFixed(1) + "%"; 
+		    	  } else {
+		    	    return "0.0%";
+		    	  }
+		    	};
+		    	
+	    	/* ---------- 소셜/일반 분포(부모/자녀) ---------- */
+			 // 컨트롤러에서 내려주는 모델 값 사용
+			 const TOT_PARENTS        = /*[[${totParents}]]*/ 0;
+			 const TOT_CHILDREN       = /*[[${totChildren}]]*/ 0;
+			 const TOT_PARENTS_KAKAO  = /*[[${totParents_kakao}]]*/ 0;
+			 const TOT_PARENTS_NAVER  = /*[[${totParents_naver}]]*/ 0;
+			 const TOT_CHILDREN_KAKAO = /*[[${totChildren_kakao}]]*/ 0;
+			 const TOT_CHILDREN_NAVER = /*[[${totChildren_naver}]]*/ 0;
+	
+			 // 일반 = 전체 - (카카오 + 네이버), 음수 방지
+			 const TOT_PARENTS_LOCAL  = Math.max(0, (TOT_PARENTS  ?? 0) - (TOT_PARENTS_KAKAO  ?? 0) - (TOT_PARENTS_NAVER  ?? 0));
+			 const TOT_CHILDREN_LOCAL = Math.max(0, (TOT_CHILDREN ?? 0) - (TOT_CHILDREN_KAKAO ?? 0) - (TOT_CHILDREN_NAVER ?? 0));
+	
+			 // 라벨/컬러
+			 const SIGNUP_LABELS = ['카카오(Kakao)', '네이버(Naver)', '일반'];
+			 const SIGNUP_COLORS = [
+			   'rgba(254,229,0,0.7)',   // 카카오 노랑
+			   'rgba(3,199,90,0.7)',    // 네이버 초록
+			   'rgba(143,178,255,.28)'   // 일반 연파랑
+			 ];
+	
+			 // 부모/자녀 값 배열
+			 const PARENTS_SIGNUP_VALUES = [TOT_PARENTS_KAKAO,  TOT_PARENTS_NAVER,  TOT_PARENTS_LOCAL];
+			 const CHILDREN_SIGNUP_VALUES    = [TOT_CHILDREN_KAKAO, TOT_CHILDREN_NAVER, TOT_CHILDREN_LOCAL];
+		    
+		    /* ---------- KPI 카드 업데이트 ---------- */
+		    document.getElementById('kpi-total').textContent			= fmt(TOTAL_USERS);
+		    document.getElementById('kpi-total-percent').textContent	= displayPercent(JOIN_PERCENT);
+		    
+		    document.getElementById('kpi-parents').textContent 			= fmt(PARENTS);
+		    document.getElementById('kpi-parents-percent').textContent 	= displayPercent(PARENTS/(PARENTS+CHILDREN)*100);
+		    document.getElementById('kpi-children').textContent    			= fmt(CHILDREN);
+		    document.getElementById('kpi-children-percent').textContent    	= displayPercent(CHILDREN/(PARENTS+CHILDREN)*100);
+		    
+		    document.getElementById('kpi-dailyTransfers').textContent    = fmt(DAILY_TRANSFER);
+		
+		
+		    /* ---------- 도넛 4개(블루) ---------- */
+		    const sumAge = AGE_VALUES.reduce((a,b)=>a+b,0);
+		
+		    /* ---------- 세로 막대: 자녀 연령대(블루) ---------- */
+		    new Chart(document.getElementById('chAge'), {
+		      type: 'bar',
+		      data: {
+		        labels: AGE_LABELS,
+		        datasets: [{
+		          data: AGE_VALUES,
+		          backgroundColor: 'rgba(62,111,239,.85)', // 메인 블루(투명)
+		          borderColor: BLUE.main,
+		          borderWidth: 1,
+		          borderRadius: 10,
+		          maxBarThickness: 52
+		        }]
+		      },
+		      options: {
+		        responsive:true, maintainAspectRatio:false,
+		        plugins: {
+		          legend:{display:false},
+		          tooltip:{
+		            backgroundColor:'#0b1020', padding:10, titleColor:'#fff', bodyColor:'#e5e7eb',
+		            callbacks:{ label:ctx => `${ctx.label}: ${fmt(ctx.parsed.y)}명` }
+		          }
+		        },
+		        scales: {
+		          x: { grid:{ display:false }, ticks:{ font:{ weight:700 } } },
+		          y: {
+		            beginAtZero:true,
+		            ticks:{ callback:(v)=>fmt(v) },
+		            grid:{ color: BLUE.grid }
+		          }
+		        }
+		      }
+		    });
+		    
+		    /* ---------- 가로 막대: 자녀 연령별 소비 평균 (파스텔~솔리드 블루 램프) ---------- */
+		    new Chart(document.getElementById('chAvgCons'), {
+		      type: 'bar',
+		      data: {
+		        labels: AGE_LABELS,
+		        datasets: [{
+		          data: AVG_CONS_VALUES,
+		          backgroundColor: RAMP_SOFT2DEEP.slice(0, AVG_CONS_VALUES.length),
+		          borderColor:     [BLUE.step400, BLUE.step400, BLUE.step500, BLUE.step600, BLUE.step700],
+		          borderWidth: 1,
+		          borderRadius: 10,
+		          maxBarThickness: 32
+		        }]
+		      },
+		      options: {
+		        indexAxis:'y',
+		        responsive:true, maintainAspectRatio:false,
+		        plugins: {
+		          legend:{display:false},
+		          tooltip:{
+		            backgroundColor:'#0b1020', padding:10, titleColor:'#fff', bodyColor:'#e5e7eb',
+		            callbacks:{ label: ctx => `${ctx.label}: ${fmt(ctx.parsed.x)}원` }
+		          }
+		        },
+		        scales: {
+		          x: {
+		            beginAtZero:true,
+		            ticks:{ callback:(v)=>fmt(v) + '원' },
+		            grid:{ color: BLUE.grid }
+		          },
+		          y: { grid:{ display:false }, ticks:{ font:{ weight:700 } } }
+		        }
+		      }
+		    });
+		
+		    /* ---------- 멀키도넛그래프 : 목표 & 가입타입 관련 ---------- */
+		    multiDonutWithCenter('chPref', PREF_LABELS, PREF_VALUES, RAMP_SOFT2DEEP);
+		    multiDonutWithCenter('chAchieved', ACHV_LABELS, ACHV_VALUES, RAMP_SOFT2DEEP);
+			multiDonutWithCenter('chSignupParents', SIGNUP_LABELS, PARENTS_SIGNUP_VALUES, SIGNUP_COLORS);
+			multiDonutWithCenter('chSignupChildren',    SIGNUP_LABELS, CHILDREN_SIGNUP_VALUES,    SIGNUP_COLORS);
+
+		  </script>
+	</main>
+</body>
+</html>

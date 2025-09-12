@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ddak.yongha.mapper.FcmTestUserMapper">
+
+    <!-- ✅ 자녀 계좌 ID 기준 → '부모'의 FCM 토큰 (user_type = 0) -->
+    <select id="getParentFcmTokenByChildAccountId" parameterType="string" resultType="string">
+        SELECT u.fcm_token
+        FROM Users u
+        JOIN Family f   ON u.user_no = f.parent_no
+        JOIN Accounts a ON f.child_no = a.user_no
+        WHERE a.account_id = #{childAccountId}
+          AND u.user_type = 0   <!-- 0: 부모 -->
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- ✅ 자녀 계좌 ID 기준 → '자녀' 자신의 FCM 토큰 (user_type = 1) -->
+    <select id="getChildFcmTokenByChildAccountId" parameterType="string" resultType="string">
+        SELECT u.fcm_token
+        FROM Users u
+        JOIN Accounts a ON u.user_no = a.user_no
+        WHERE a.account_id = #{childAccountId}
+          AND u.user_type = 1   <!-- 1: 자녀 -->
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+</mapper>

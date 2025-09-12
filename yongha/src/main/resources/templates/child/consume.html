@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
+<head>
+
+<meta charset="UTF-8" />
+<title>용돈 어디갔지?</title>
+<link rel="stylesheet" th:href="@{/css/consume.css}" />
+<script th:src="@{/js/consume.js}"></script>
+<script th:src="@{/js/consume-rcpt.js}"></script>
+<style>
+html {
+	scroll-behavior: smooth;
+}
+</style>
+</head>
+
+<body>
+	<main layout:fragment="content" class="content">
+
+		<!-- Hero Banner -->
+		<section class="hero">
+			<div class="hero-inner">
+				<div class="hero-content">
+					<h1>
+						오늘의 소비, <br> 내일의 나를 위해 적어두세요
+					</h1>
+					<p>용돈의 흐름을 한눈에, 쉽고 깔끔하게 관리하세요.</p>
+					<a href="#consume-card" class="btn-hero">소비 기록하러 가기</a>
+				</div>
+
+				<!-- 오른쪽 캐릭터 이미지 -->
+				<div class="hero-illustration">
+					<img src="/img/yongv3.png" alt="용하 캐릭터" />
+				</div>
+			</div>
+		</section>
+
+
+		<!-- 중간 타이핑 섹션 -->
+		<section class="mid-section">
+			<h2>
+				<span id="typing"></span>
+			</h2>
+			<p>매일 기록하는 습관이, 미래의 저축을 만듭니다.</p>
+		</section>
+
+		<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+				new Typed("#typing", {
+					strings : [ "오늘의 소비를 기록하세요.", "내일은 더 똑똑하게!", "용돈 관리의 시작 💙" ],
+					typeSpeed : 60,
+					backSpeed : 30,
+					loop : true
+				});
+			});
+		</script>
+
+		<!-- 대시보드 헤더 -->
+		<div class="dashboard-header">
+			<h2>
+				<svg class="icon-wallet" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M2 7a2 2 0 012-2h16a2 2 0 012 2v3h-6a2 2 0 000 4h6v3a2 2 0 01-2 2H4a2
+        2 0 01-2-2V7z" />
+      </svg>
+				소비 기록 관리
+			</h2>
+			<p class="subtitle">오늘의 소비를 빠르게 기록하고, 이번 달 현황을 확인하세요</p>
+		</div>
+
+		<!-- 등록/수정 카드 -->
+		<div class="container" id="consume-card">
+			<h1 th:text="${isEdit} ? '소비 기록 수정' : '소비 기록 추가'">소비 기록 추가</h1>
+
+			<!-- 영수증 업로드 (미리보기 없음) -->
+			<section class="rcpt-lite" style="margin-bottom: 1rem;">
+				<button type="button" class="btn" id="rcpt-btn">영수증 스캔 🔍</button>
+				<input type="file" id="rcpt-input" accept="image/*" capture="environment" hidden> <small id="rcpt-status" class="help" aria-live="polite" style="margin-left: .5rem;"></small>
+			</section>
+
+
+			<form id="consume-form" th:action="${isEdit} ? @{/consume/update} : @{/consume/insert}" method="post" th:object="${consume}">
+
+				<!-- 수정 모드 cons_no -->
+				<input type="hidden" name="cons_no" th:if="${isEdit}" th:value="*{cons_no}" />
+				<!-- 계좌번호 -->
+				<input type="hidden" name="account_no" th:value="${userInfo.account_no}" />
+
+				<div class="row">
+					<!-- 날짜/시간 -->
+					<div class="field">
+						<label for="cons-date">날짜/시간</label> <input type="datetime-local" id="cons-date" name="cons_date" th:value="${isEdit} ? ${#temporals.format(consume.cons_date, 'yyyy-MM-dd''T''HH:mm')} : ''" />
+						<div class="hint">미입력 시 오늘 날짜로 지정됩니다</div>
+					</div>
+
+					<!-- 소비 타입 -->
+					<div class="field">
+						<label for="cons-type">소비 타입</label> <select id="cons-type" th:field="*{cons_type}" required>
+							<option value="" disabled th:selected="${!isEdit}">선택하세요</option>
+							<option th:each="c : ${CONS_TYPE_CODES}" th:value="${c.value}" th:text="${(c.desc != null ? c.desc + ' ' : '') + c.label}"></option>
+						</select>
+					</div>
+				</div>
+
+				<!-- 금액 -->
+				<div class="field">
+					<label for="amount">금액</label>
+					<div class="amount-input">
+						<input type="number" id="amount" name="amount" class="amount-field" placeholder="금액" inputmode="numeric" min="0" step="10" required th:value="${isEdit} ? *{amount} : ''" />
+						<button type="button" id="amount-init" class="init">초기화</button>
+					</div>
+					<div class="amount-buttons">
+						<button type="button" data-amt="500">
+							<svg class="icon-coin" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" /></svg>
+							500
+						</button>
+						<button type="button" data-amt="1000">
+							<svg class="icon-coin" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" /></svg>
+							1000
+						</button>
+						<button type="button" data-amt="5000">
+							<svg class="icon-coin" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" /></svg>
+							5000
+						</button>
+						<button type="button" data-amt="10000">
+							<svg class="icon-coin" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" /></svg>
+							10000
+						</button>
+						<button type="button" data-amt="50000">
+							<svg class="icon-coin" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+								<circle cx="12" cy="12" r="10" /></svg>
+							50000
+						</button>
+					</div>
+					<div class="hint">
+						현재 잔액: <span id="balance-amount" th:text="${#numbers.formatInteger(userInfo.balance ?: 0, 1, 'COMMA')}">0</span>원
+					</div>
+				</div>
+
+				<!-- 포인트 사용 -->
+				<div class="field">
+					<label for="use-point">사용 포인트</label>
+					<div class="amount-input">
+						<input type="number" id="use-point" name="used_point" class="amount-field" placeholder="사용할 포인트" inputmode="numeric" min="0" step="10" th:value="${isEdit} ? *{used_point} : ''" />
+						<button type="button" id="use-all-point" class="init">전액 사용</button>
+					</div>
+					<div class="hint">
+						보유 포인트: <span id="point-available" th:text="${#numbers.formatInteger(userInfo.point ?: 0, 1, 'COMMA')}">0</span>P
+					</div>
+				</div>
+
+				<!-- 설명 -->
+				<div class="field">
+					<label for="cons-desc">설명</label> <input type="text" id="cons-desc" name="cons_desc" placeholder="예) 점심, 버스, 이어폰 케이스 등" maxlength="200" th:value="${isEdit} ? *{cons_desc} : ''" required />
+				</div>
+
+				<!-- 액션 -->
+				<div class="actions">
+					<button type="reset" class="btn">입력값 초기화</button>
+					<button type="submit" class="btn btn-primary" th:text="${isEdit} ? '수정 완료' : '저장'">저장</button>
+				</div>
+			</form>
+
+			<!-- 삭제 버튼 (수정 모드 전용) -->
+			<div class="actions" th:if="${isEdit}" style="margin-top: .5rem;">
+				<form id="delete-form" th:action="@{/consume/delete}" method="post" style="display: inline;">
+					<input type="hidden" name="cons_no" th:value="*{cons_no}" th:object="${consume}" />
+					<button type="submit" class="btn btn-danger">삭제</button>
+				</form>
+			</div>
+		</div>
+		
+
+		<!-- ✅ 맨 아래로 이동한 통계 위젯 -->
+		<section class="stats-section">
+			<h2 class="section-title">소비 현황</h2>
+			<p class="section-subtitle">오늘과 이번 달의 소비, 그리고 보유 포인트를 한눈에 확인하세요</p>
+
+			<div class="stats-cards">
+				<div class="stat-card">
+					<span class="stat-label">오늘 소비</span> <span class="stat-value" th:text="${#numbers.formatInteger(todayConsume ?: 0, 1, 'COMMA')} + '원'">0원</span>
+				</div>
+				<div class="stat-card">
+					<span class="stat-label">이번 달 소비</span> <span class="stat-value" th:text="${#numbers.formatInteger(monthConsume ?: 0, 1, 'COMMA')} + '원'">0원</span>
+				</div>
+				<div class="stat-card">
+					<span class="stat-label">보유 포인트</span> <span class="stat-value" th:attr="data-raw=${userInfo.point}" th:text="${#numbers.formatInteger(userInfo.point ?: 0, 1, 'COMMA')} + 'P'">0P</span>
+				</div>
+			</div>
+		</section>
+
+	</main>
+</body>
+</html>

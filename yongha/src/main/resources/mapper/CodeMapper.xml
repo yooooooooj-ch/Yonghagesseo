@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddak.yongha.mapper.CodeMapper">
+
+	<select id="selectCodesByType" parameterType="string" resultType="map">
+		SELECT code_value AS "value",
+			code_label AS "label",
+			code_desc AS "desc",
+			sort_order AS "order"
+		FROM CODE
+		WHERE type_name = #{typeName}
+			AND is_active = 'Y'
+		ORDER BY sort_order, code_value
+	</select>
+
+
+
+</mapper>

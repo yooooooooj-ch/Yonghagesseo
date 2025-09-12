@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>아기용 가족으로 초대하기</title>
+<link rel="stylesheet" th:href="@{/css/invite.css}" />
+<script th:src="@{/js/invite.js}"></script>
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+		<div class="invite-layout">
+		    <!-- 상단 헤더 -->
+		    <header class="invite-header">
+		        <h1>아기용 초대하기</h1>
+		        <p>아기의 이메일을 입력하고 간편하게 초대하세요.</p>
+		    </header>
+
+		    <!-- 메인 컨텐츠 -->
+		    <section class="invite-content">
+		        <div class="invite-form">
+		            <label for="child_email">아기용 이메일</label>
+		            <input type="text" id="child_email" placeholder="example@email.com" />
+		            <button onclick="invite()">초대하기</button>
+		            <p class="form-note">이메일로 초대장이 전송됩니다.</p>
+		        </div>
+		    </section>
+		</div>s
+	</main>
+</body>
+</html>

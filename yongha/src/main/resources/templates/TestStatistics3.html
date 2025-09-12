@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>최근 7일 소비 통계</title>
+</head>
+<body>
+    <h2>최근 7일 소비 그래프</h2>
+
+    <!-- Base64 이미지 출력 -->
+    <img th:src="${graphData}" alt="최근 7일 소비 그래프"/>
+
+    <!-- 필요하면 추가 정보나 테이블 -->
+    <p>※ 최근 7일간 소비 금액을 막대그래프로 나타낸 통계입니다.</p>
+</body>
+</html>

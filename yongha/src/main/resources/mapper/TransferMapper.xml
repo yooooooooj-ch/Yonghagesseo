@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ddak.yongha.mapper.TransferMapper">
+	<!-- 유저의 계좌 등록 -->
+	<insert id="insertTransfer" parameterType="TransferVO">
+		INSERT INTO transfer (from_account_no, to_account_no, amount, trans_date, trans_desc)
+		VALUES (#{from_account_no}, #{to_account_no}, #{amount}, SYSDATE, #{trans_desc}) 
+	</insert>
+	
+	<!-- 날짜별 총 이체 금액 -->
+	<select id="getDailyTransferAmountAllAccounts" resultType="map">
+		SELECT 
+			TO_CHAR(trans_date, 'YYYY-MM-DD') AS trans_date,
+		NVL(SUM(CAST(amount AS NUMBER)), 0) AS daily_amount
+		FROM Transfer
+		GROUP BY TO_CHAR(trans_date, 'YYYY-MM-DD')
+		ORDER BY trans_date
+	</select>
+
+</mapper>

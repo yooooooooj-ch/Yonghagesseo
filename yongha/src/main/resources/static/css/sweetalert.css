@@ -1,0 +1,166 @@
+/* === Overlay: .popup-layer와 동일한 배경/여백 === */
+.swal2-container.yh-container {
+	padding: 20px;
+	background: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* === Popup box: .popup-content와 동일 (계좌 스타일 반영) === */
+.swal2-popup.yh-popup {
+	width: min(700px, 90vw) !important;
+	background: #fff !important;
+	border: 1.5px solid var(--border-blue) !important;
+	border-radius: var(--card-radius) !important;
+	box-shadow: var(--card-shadow) !important;
+	padding: 28px !important;
+	text-align: center !important;
+	font-family: 'Urbanist', sans-serif;
+	color: var(--primary-600);
+}
+
+/* === Title: 계좌 팝업 제목과 동일 === */
+.swal2-title.yh-title {
+	font-size: 20px !important;
+	font-weight: 800 !important;
+	color: var(--primary-600) !important;
+	margin: 0 0 18px !important;
+	text-align: center;
+	border-bottom: 2px solid var(--border-blue);
+	padding-bottom: 8px;
+}
+
+/* === 본문 컨테이너 === */
+.swal2-html-container.yh-html {
+	margin: 0 0 20px !important;
+	color: #0056b3;
+	font-size: 1.1rem;
+	max-height: 60vh;
+	overflow: auto;
+}
+
+.swal2-html-container.yh-html::-webkit-scrollbar {
+	width: 6px;
+}
+.swal2-html-container.yh-html::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 123, 255, 0.4);
+	border-radius: 3px;
+}
+.swal2-html-container.yh-html::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+/* === 아이콘 === */
+.no-circle-icon .swal2-icon {
+	border: 0 !important;
+	box-shadow: none !important;
+}
+.swal2-icon.no-circle-icon {
+	background: none !important;
+	border: none !important;
+	color: inherit !important;
+	box-shadow: none !important;
+}
+
+/* === 확인 버튼: 계좌 팝업 닫기 버튼 스타일로 통일 === */
+.my-confirm-button {
+	background: #e0e7ff !important;
+	color: #4F8FEF !important;
+	font-weight: 700 !important;
+	padding: 8px 16px !important;
+	border-radius: 8px !important;
+	border: none !important;
+	font-size: 1rem !important;
+	cursor: pointer;
+	transition: background-color 0.25s ease;
+	margin: 10px;
+}
+.my-confirm-button:hover {
+	background: #6FAEFF !important;
+	color: #fff !important;
+}
+
+/* === 취소 버튼: 블루 아웃라인 유지 === */
+.yh-cancel {
+	background: #6FAEFF !important;
+	color: #fff !important;
+	font-weight: 700 !important;
+	padding: 8px 16px !important;
+	border-radius: 8px !important;
+	border: none !important;
+	font-size: 1rem !important;
+	cursor: pointer;
+	transition: background-color 0.25s ease;
+	margin: 10px;
+}
+
+.yh-cancel:hover {
+	background: #e0e7ff !important;
+	color: #4F8FEF !important;
+}
+
+/* === 유틸리티 클래스 그대로 유지 === */
+.swal2-html-container.yh-html .popup-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.swal2-html-container.yh-html .popup-list li {
+	font-size: 1.1rem;
+	color: #0056b3;
+	margin: 8px 0;
+	padding-left: 10px;
+	position: relative;
+}
+.swal2-html-container.yh-html .popup-list li::before {
+	content: '•';
+	color: #007bff;
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.swal2-html-container.yh-html .popup-list-profile {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.swal2-html-container.yh-html .popup-list-profile li {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.swal2-html-container.yh-html .popup-list-profile img {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	object-fit: cover;
+	cursor: pointer;
+	transition: transform 0.2s ease;
+}
+
+.swal2-html-container.yh-html .popup-list-profile img:hover {
+	transform: scale(1.1);
+}
+
+.swal2-html-container.yh-html .popup-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+.swal2-html-container.yh-html .popup-table th,
+.swal2-html-container.yh-html .popup-table td {
+	border: 1px solid #ddd;
+	padding: 10px;
+	text-align: center;
+}
+
+.swal2-html-container.yh-html .popup-table th {
+	background-color: #f2f2f2;
+}

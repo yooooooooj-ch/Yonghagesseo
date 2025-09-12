@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>관리자 - 배너 업로드</title>
+  <th:block layout:fragment="head">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/banner.css}">
+    <style>
+      /* ✅ 업로더 영역 2열 배치 */
+      .uploader-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 좌측: 이미지, 우측: 입력 폼 */
+        gap: 24px;
+        align-items: start;
+      }
+      .uploader-grid .drop {
+        height: 100%;
+        min-height: 260px;
+      }
+      .up-right {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .up-right .form-actions {
+        text-align: right;
+        margin-top: auto; /* 버튼을 하단으로 */
+      }
+    </style>
+  </th:block>
+</head>
+
+<body>
+  <main layout:fragment="content">
+
+    <!-- ✅ 메인 -->
+    <div class="admin-main banners-page">
+
+      <!-- 상단 카드(제목) -->
+      <section class="member-head-card">
+        <div class="mh-title">
+          <h1>홍보 & 배너 업로드</h1>
+          <p class="page-sub">홈/히어로 영역에 노출될 배너를 등록합니다.</p>
+        </div>
+      </section>
+
+      <!-- 업로더 카드 -->
+      <div class="card uploader">
+        <form id="bannerForm" enctype="multipart/form-data" method="post" action="/saveBanner">
+
+          <!-- 좌/우 그리드 -->
+          <div class="uploader-grid">
+            <!-- 좌측: 이미지 업로드 -->
+            <div class="field">
+              <label>배너 이미지</label>
+              <div class="drop" id="dropZone" aria-live="polite">
+                <div id="dropContent" class="empty" style="text-align:center;">
+                  <div id="bn-file-trigger" class="bn-file clickable" style="font-size:28px"
+                       role="button" tabindex="0" aria-label="배너 이미지 선택">🖼️</div>
+                  <div class="help">파일을 끌어놓거나 클릭하여 업로드</div>
+                </div>
+                <input type="file" name="image" id="bn-file-input" accept="image/*" hidden required>
+              </div>
+            </div>
+
+            <!-- 우측: 입력 필드 + 등록버튼 -->
+            <div class="up-right">
+              <div>
+                <div class="field-row">
+                  <div class="field">
+                    <label>시작일</label>
+                    <input type="datetime-local" name="startDate" id="startDate" required>
+                  </div>
+                  <div class="field">
+                    <label>종료일</label>
+                    <input type="datetime-local" name="endDate" id="endDate" required>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="bannerIndex">표시할 페이지</label>
+                  <input type="number" name="bannerIndex" id="bannerIndex" min="1" max="9" required>
+                </div>
+              </div>
+
+              <!-- 버튼 (우측 하단 고정) -->
+              <div class="form-actions">
+                <button type="submit" class="btn primary">등록</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ✅ 최근 등록된 배너 카드형 리스트 -->
+    <div class="card">
+      <h3 class="banner-list-title">최근 등록된 배너</h3>
+      <div class="banner-list">
+
+        <div class="banner-card" th:each="b : ${banners}">
+          <!-- 이미지 -->
+          <img th:src="@{${b.imgPath}}" alt="배너 이미지">
+
+          <!-- 정보 -->
+          <div class="banner-info">
+            <strong th:text="'배너 #' + ${b.bannerNo}"></strong>
+            <span th:text="'시작일: ' + ${#dates.format(b.startDate, 'yyyy-MM-dd HH:mm')}"></span>
+            <span th:text="'종료일: ' + ${#dates.format(b.endDate, 'yyyy-MM-dd HH:mm')}"></span>
+
+            <!-- 상태칩 -->
+            <span class="status-chip"
+                  th:classappend="${bannerStatusMap[b.bannerNo] == '게시 전'} ? ' upcoming' 
+                                  : (${bannerStatusMap[b.bannerNo] == '만료'} ? ' expired' : ' active')"
+                  th:text="${bannerStatusMap[b.bannerNo]}">
+            </span>
+          </div>
+
+          <!-- 액션 -->
+          <div class="banner-actions">
+            	<button type="button" class="btn-delete" th:data-id="${b.bannerNo}">삭제</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    </section>
+    <script th:src="@{/js/admin.js}"></script>
+    <script th:src="@{/js/upload_banner.js}"></script>
+
+    <!-- ✅ 삭제 버튼 동작 (DOM만 삭제) -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".btn-delete").forEach(btn => {
+    btn.addEventListener("click", function () {
+      const bannerNo = this.getAttribute("data-id");
+      if (!confirm("삭제하시겠습니까?")) return;
+
+      fetch("/deleteBanner", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "bannerNo=" + encodeURIComponent(bannerNo)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.closest(".banner-card").remove(); // ✅ 즉시 화면에서 제거
+        } else {
+          alert("삭제 실패: " + (data.message || ""));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("삭제 중 오류가 발생했습니다.");
+      });
+    });
+  });
+});
+</script>
+
+  </main>
+</body>
+</html>

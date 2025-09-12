@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>FCM 웹 수신 예제</title>
+
+  <!-- Firebase SDK (compat 버전) -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging-compat.js"></script>
+
+  <style>
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #333;
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      display: none;
+      z-index: 9999;
+      font-family: sans-serif;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: opacity 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <h3>알림 권한 요청 중...</h3>
+  <textarea id="token" rows="4" cols="80" readonly>토큰을 불러오는 중...</textarea><br><br>
+
+  <button onclick="sendTokenToServer()">서버로 토큰 전송</button>
+
+  <!-- 알림보내기 버튼 -->
+  <button onclick="sendNotification()">알림 보내기</button>
+
+  <div id="toast"></div>
+
+  <script>
+    let fcmToken = "";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyGCvSmibzuEK9sKk4tLMyJlJtLNVQZPs",
+      authDomain: "yongha-push-test.firebaseapp.com",
+      projectId: "yongha-push-test",
+      messagingSenderId: "117022766634",
+      appId: "1:117022766634:web:ecfcebb79b8b2d9946f553"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    function getTokenAndSubscribe() {
+      messaging.getToken({
+        vapidKey: "BLQPoOK3ZRiKbZUyLIw8XQwvtzN8kGX1Xt0-F_0F_3eztz2k7VJwJGSmZEklURZOZDVor_hgCjyCGSSXMSFq7cg"
+      })
+      .then(token => {
+        if (token) {
+          fcmToken = token;
+          document.getElementById('token').value = token;
+          console.log("FCM 토큰:", token);
+        } else {
+          document.getElementById('token').value = "토큰 없음. 권한 거부됨.";
+        }
+      })
+      .catch(err => {
+        console.error("FCM 오류:", err);
+        document.getElementById('token').value = "오류 발생: " + err.message;
+      });
+    }
+
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          getTokenAndSubscribe();
+        } else {
+          document.getElementById('token').value = "알림 권한이 거부되었습니다.";
+        }
+      });
+    } else {
+      getTokenAndSubscribe();
+    }
+
+    // 수신된 메시지 처리
+    messaging.onMessage(payload => {
+      console.log("수신된 메시지:", payload);
+      const title = payload.notification?.title || "알림";
+      const body = payload.notification?.body || "";
+      showToast(`${title}: ${body}`);
+
+      // 브라우저 Notification으로 실제 알림 표시
+      if (Notification.permission === "granted") {
+        new Notification(title, {
+          body: body,
+          icon: "/icon.png", // 프로젝트에 있으면 표시됨. 없으면 생략 가능
+          image: payload.notification?.image || undefined
+        });
+      }
+    });
+
+    // 서버로 토큰 전송
+    function sendTokenToServer() {
+      if (!fcmToken) {
+        alert("토큰이 아직 발급되지 않았습니다.");
+        return;
+      }
+
+      fetch('/api/fcm/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: fcmToken })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("서버 응답 오류");
+        return res.text();
+      })
+      .then(msg => {
+        showToast("서버 응답: " + msg);
+      })
+      .catch(err => {
+        showToast("전송 실패: " + err.message);
+        console.error("전송 오류:", err);
+      });
+    }
+
+    // 알림 전송 요청
+    function sendNotification() {
+      if (!fcmToken) {
+        alert("토큰이 아직 발급되지 않았습니다.");
+        return;
+      }
+
+      fetch('/api/fcm/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: fcmToken,
+          notification: {
+            title: "버튼 알림",
+            body: "이건 버튼을 눌러서 보낸 알림입니다.",
+            image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Pierre-Person.jpg/440px-Pierre-Person.jpg"
+          }
+        })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("알림 전송 실패");
+        return res.text();
+      })
+      .then(msg => {
+        showToast("알림 전송 완료: " + msg);
+      })
+      .catch(err => {
+        showToast("오류 발생: " + err.message);
+        console.error("알림 전송 오류:", err);
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.display = "block";
+      toast.style.opacity = "1";
+
+      setTimeout(() => { toast.style.opacity = "0"; }, 3000);
+      setTimeout(() => { toast.style.display = "none"; }, 4000);
+    }
+  </script>
+</body>
+</html>

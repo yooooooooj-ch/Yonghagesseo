@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>네이버 로그인</title>
+</head>
+<body>
+  <div id="naverIdLogin"></div>
+
+  <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+	//IzMELxw0MbZbTng6KuT_ <- Client ID
+    const NAVER_CLIENT_ID = "IzMELxw0MbZbTng6KuT_"; 
+    const NAVER_CALLBACK_URL =  `${window.location.origin}/naver-login-callback`; // 콜백 페이지 URL
+    const NAVER_SCOPES = "name,email,mobile,birthday,birthyear";
+
+    const naverLogin = new naver.LoginWithNaverId({
+      clientId: NAVER_CLIENT_ID,
+      callbackUrl: NAVER_CALLBACK_URL,
+      isPopup: true,
+      state: Math.random().toString(36).substring(2),
+      scope: NAVER_SCOPES,
+      loginButton: { color: "green", type: 3, height: 48 }
+    });
+
+    naverLogin.init();
+  </script>
+</body>
+</html>

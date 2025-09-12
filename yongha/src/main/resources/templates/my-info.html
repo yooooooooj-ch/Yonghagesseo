@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>내 정보 수정</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}" />
+  <link rel="stylesheet" th:href="@{/css/mypage-common.css}" />
+  <link rel="stylesheet" th:href="@{/css/myinfo.css}" />
+</head>
+<body th:data-logged-in="${loggedIn}">
+<main layout:fragment="content" class="content">
+
+  <div class="parent-mypage-layout">
+    <!-- 사이드바 -->
+    <aside class="parent-mypage-sidebar">
+      <h1>나의 페이지에용</h1>
+      <hr class="sidebar-divider" />
+<!--       <nav class="mypage-nav"> -->
+<!--         <a href="/child_page" class="nav-item">마이페이지</a> -->
+<!--         <a href="/users/my-info" class="nav-item">내 정보 수정</a> -->
+<!--       </nav> -->
+		<nav class="mypage-nav">
+		  <a th:if="${user.user_type == 0}"
+		     href="/parent_page" class="nav-item">마이페이지</a>
+		  <a th:if="${user.user_type == 1}"
+		     href="/child_page" class="nav-item">마이페이지</a>
+		  <a href="/users/my-info" class="nav-item">내 정보 수정</a>
+		</nav>
+    </aside>
+
+    <!-- 본문 -->
+    <section class="parent-mypage-main">
+		<div class="profile-card">
+		  <!-- 왼쪽: 프로필 이미지 -->
+		  <div class="profile-left">
+			<img th:src="@{'/img/profile/profile' + ${user.profile} + '.png'}"
+               alt="프로필 이미지" class="profile-img" id="profile-img"/>
+		  </div>
+
+		  <!-- 세로 구분선 -->
+		  <div class="profile-divider"></div>
+
+		  <!-- 오른쪽: 프로필 정보 -->
+		  <div class="profile-info">
+		    <h3 th:text="${user.user_name}">자녀01</h3>
+		    <p>아이디: <span th:text="${user.user_id}">child01</span></p>
+		    <p>생년월일: <span th:text="${#temporals.format(user.birthday, 'yyyy-MM-dd')}">2012-04-02</span></p>
+		    <p>이메일: <span th:text="${user.email}">child01@example.com</span></p>
+		    <p>전화번호: <span th:text="${user.tel}">010-3001-0001</span></p>
+		  </div>
+		</div>
+
+	  <!-- 가족 구성원 카드 -->
+		<div class="family-profile-container">
+		  <h4>연결된 가족</h4>
+		  <div class="family-profile-list">
+		    <!-- 연결된 가족 없을 경우 -->
+		    <p th:if="${#lists.isEmpty(familyMembers)}">연결된 가족이 아직 없습니다</p>
+		
+		    <!-- 연결된 가족 있을 경우 -->
+		    <div class="family-profile"
+		         th:each="member : ${familyMembers}">
+		      <img th:src="@{/img/profile/profile{num}.png(num=${member.profile})}"
+		           th:alt="${member.user_name}"
+		           class="family-avatar"/>
+		      <p class="family-name" th:text="${member.user_name}"></p>
+		    </div>
+		  </div>
+		</div>
+
+				<!-- ✅ 정보 수정 카드 -->
+      <div class="user-profile-container">
+        <form id="profileForm" class="signup-form">
+          <h2 class="signup-title">내 정보</h2>
+          <table class="signup-table">
+            <!-- 아이디 -->
+            <tr>
+              <td data-label="* 아이디">
+                <input type="text" name="user_id" id="user_id"
+                       th:value="${user.user_id}" class="signup-input" disabled>
+              </td>
+            </tr>
+            <!-- 이름 -->
+            <tr>
+              <td data-label="* 이름">
+                <input type="text" name="user_name" id="user_name"
+                       th:value="${user.user_name}" class="signup-input" disabled>
+              </td>
+            </tr>
+            <!-- 생년월일 -->
+            <tr>
+              <td data-label="* 생년월일">
+                <input type="text" id="birthday_view"
+                       th:value="${user.birthday != null ? #temporals.format(user.birthday,'yyyy-MM-dd') : ''}"
+                       class="signup-input" disabled>
+                <input type="hidden" name="birthday" id="birthday">
+              </td>
+            </tr>
+            <!-- 이메일 -->
+            <tr id="emailRow">
+              <td data-label="이메일">
+                <div class="signup-inline">
+                  <input type="text" name="email" id="email-full"
+                         th:value="${user.email}" class="signup-input" disabled>
+                  <button type="button" class="signup-btn" id="btnEmailEdit">이메일변경</button>
+                </div>
+              </td>
+            </tr>
+            <tr id="emailEditRow" style="display: none;">
+              <td data-label="이메일">
+                <div class="signup-inline">
+                  <input type="text" id="email-user" class="signup-input">
+                  <span>@</span>
+                  <input type="text" id="email-domain" class="signup-input">
+                  <select id="email-domain-select" class="signup-input">
+                    <option value="">직접입력</option>
+                    <option value="gmail.com">gmail.com</option>
+                    <option value="naver.com">naver.com</option>
+                    <option value="daum.net">daum.net</option>
+                  </select>
+                  <button type="button" class="signup-btn" onclick="checkEmailDuplication()">중복확인</button>
+                  <button type="button" class="signup-btn" id="btnEmailEditConfirm">확인</button>
+                </div>
+              </td>
+            </tr>
+            <!-- 주소 -->
+            <tr id="addrRow">
+              <td data-label="주소">
+                <div class="signup-inline">
+                  <input type="text" id="address_full" name="address"
+                         th:value="${user.address}"
+                         class="signup-input" placeholder="주소를 선택하세요" readonly>
+                  <button type="button" class="signup-btn" id="btnAddrSearch">주소찾기</button>
+                </div>
+              </td>
+            </tr>
+            <tr id="addrEditRow" style="display: none;">
+              <td data-label="주소">
+                <div class="signup-inline">
+                  <input type="text" id="addr_road" class="signup-input" placeholder="도로명 주소" readonly>
+                  <input type="text" id="addr_detail" class="signup-input" placeholder="상세주소 입력">
+                  <button type="button" class="signup-btn" id="btnAddrConfirm">확인</button>
+                </div>
+              </td>
+            </tr>
+            <!-- 전화번호 -->
+            <tr>
+              <td data-label="전화번호">
+                <input type="text" name="tel" id="tel"
+                       th:value="${user.tel}" class="signup-input" disabled data-editable>
+              </td>
+            </tr>
+            <!-- 푸시 알림 -->
+            <tr>
+              <td data-label="푸시 알림">
+                <div class="signup-inline">
+                  <label class="switch">
+                    <input type="checkbox" id="pushToggle" th:checked="${user.fcm_token != null}">
+                    <span class="slider"></span>
+                  </label>
+                  <small id="pushStatusText">
+                    <span th:text="${user.fcm_token != null} ? 'ON' : 'OFF'">OFF</span>
+                  </small>
+                  <input type="hidden" id="initialFcmToken" th:value="${user.fcm_token}">
+                </div>
+              </td>
+            </tr>
+			<!-- 이메일 수신 -->
+			<tr th:if="${user.user_type == 0}">
+			  <td data-label="이메일 수신">
+			    <div class="signup-inline">
+			      <label class="switch">
+			        <input type="checkbox" id="emailToggle" th:checked="${user.mail_cycle != null}">
+			        <span class="slider"></span>
+			      </label>
+			      <small id="emailStatusText" th:text="${user.mail_cycle != null} ? 'ON' : 'OFF'">OFF</small>
+
+			      <!-- 라디오 버튼 (기본 숨김) -->
+			      <div id="emailPeriodOptions" th:style="${user.mail_cycle == null} ? 'display:none; margin-left: 15px;' : 'margin-left: 15px;'">
+			        <label><input type="radio" name="emailPeriod" value="0" th:checked="${user.mail_cycle == null} ? 1 : ${user.mail_cycle == 0}"> 매일</label>
+			        <label><input type="radio" name="emailPeriod" value="1" th:checked="${user.mail_cycle == 1}"> 매주</label>
+			        <label><input type="radio" name="emailPeriod" value="2" th:checked="${user.mail_cycle == 2}"> 매달</label>
+			      </div>
+			    </div>
+			  </td>
+			</tr>
+
+          </table>
+          <input type="hidden" id="full_address" name="address">
+          <button type="submit" id="btnSave" class="signup-btn">수정</button>
+		 
+		  
+		  
+		  
+		  
+        </form>
+      </div>
+    </section>
+  </div>
+</main>
+
+  <!-- ✅ 기존 script 전체 유지 -->
+  <div layout:fragment="script">
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging-compat.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+    <script>
+      (function(){
+        const YELLOW = '#F6D110';
+        const loggedIn = document.body.dataset.loggedIn === 'true';
+        if (!loggedIn) {
+          Swal.fire({
+            icon: 'warning',
+            title: '로그인 필요',
+            text: '회원 정보가 없거나 로그인이 만료되었습니다.',
+            confirmButtonColor: YELLOW,
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => location.href = '/login');
+          return;
+        }
+
+        // ===== 공통 엘리먼트 =====
+        const form    = document.getElementById('profileForm');
+        const btnSave = document.getElementById('btnSave');
+        const bView   = document.getElementById('birthday_view');
+        const bHidden = document.getElementById('birthday');
+
+        // ===== 주소 UI =====
+        const addrFull   = document.getElementById('address_full');
+        const editRow    = document.getElementById('addrEditRow');
+        const addrRoad   = document.getElementById('addr_road');
+        const addrDetail = document.getElementById('addr_detail');
+        const btnSearch  = document.getElementById('btnAddrSearch');
+        const btnConfirm = document.getElementById('btnAddrConfirm');
+
+        // ===== 이메일 UI =====
+        const emailFull           = document.getElementById('email-full');
+        const emailRow            = document.getElementById('emailRow');
+        const emailEditRow        = document.getElementById('emailEditRow');
+        const emailUser           = document.getElementById('email-user');
+        const emailDomain         = document.getElementById('email-domain');
+        const emailDomainSelect   = document.getElementById('email-domain-select');
+        const btnEmailEdit        = document.getElementById('btnEmailEdit');
+        const btnEmailEditConfirm = document.getElementById('btnEmailEditConfirm');
+		
+		
+		// ===== 푸시 알림 UI =====
+		const pushToggle = document.getElementById("pushToggle");
+		const pushStatusText = document.getElementById("pushStatusText");
+
+		if (pushToggle) {
+		  pushToggle.addEventListener("change", function () {
+		    pushStatusText.textContent = pushToggle.checked ? "ON" : "OFF";
+		  });
+		}
+
+        let emailDuplicateCheck = true;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (btnSave) btnSave.disabled = false;
+        if (bView && bHidden) bHidden.value = (bView.value || '').trim();
+
+        document.querySelectorAll('input[data-editable]').forEach(function(el){
+          el.disabled = false;
+          el.readOnly = true;
+          el.addEventListener('click', function(){
+            if (el.readOnly) { el.readOnly = false; el.focus(); }
+          });
+        });
+
+        // --- 주소 --- 
+        function mergeAddress(){
+          const base = (addrRoad && addrRoad.value ? addrRoad.value : '').trim();
+          const det  = (addrDetail && addrDetail.value ? addrDetail.value : '').trim();
+          const combined = det ? (base + ' ' + det) : base;
+          if (addrFull) addrFull.value = combined;
+        }
+
+        if (addrFull) addrFull.disabled = true;
+
+        if (btnSearch) {
+          btnSearch.addEventListener('click', function(){
+            if (editRow) editRow.style.display = '';
+            if (addrFull) addrFull.disabled = false;
+            if (window.daum && daum.Postcode) {
+              new daum.Postcode({
+                oncomplete: function (data) {
+                  if (addrRoad)   addrRoad.value = data.roadAddress || data.jibunAddress || '';
+                  mergeAddress();
+                  if (addrDetail) addrDetail.focus();
+                }
+              }).open();
+            } else {
+              console.warn('Daum Postcode script not loaded.');
+            }
+          });
+        }
+
+        if (addrDetail) addrDetail.addEventListener('input', mergeAddress);
+
+        if (btnConfirm) {
+          btnConfirm.addEventListener('click', function(){
+            mergeAddress();
+            if (editRow)  editRow.style.display = 'none';
+            if (addrFull) addrFull.disabled = true;
+          });
+        }
+
+        // --- 이메일 ---
+        function splitEmail(full){
+          const s = (full || '').trim();
+          const at = s.lastIndexOf('@');
+          if (at <= 0) return {local:'', domain:''};
+          return { local: s.slice(0, at), domain: s.slice(at+1) };
+        }
+        function composeEmail(){
+          const local  = (emailUser && emailUser.value ? emailUser.value : '').trim();
+          const domain = (emailDomain && emailDomain.value ? emailDomain.value : '').trim().toLowerCase();
+          const combined = (local && domain) ? (local + '@' + domain) : '';
+          if (emailFull) emailFull.value = combined;
+        }
+        function handleSelectChange(){
+          if (!emailDomainSelect || !emailDomain) return;
+          if (emailDomainSelect.value) {
+            emailDomain.value = emailDomainSelect.value;
+            emailDomain.readOnly = true;
+          } else {
+            emailDomain.readOnly = false;
+            emailDomain.value = '';
+            emailDomain.focus();
+          }
+          composeEmail();
+        }
+
+        if (emailFull) emailFull.disabled = true;
+
+        if (btnEmailEdit) {
+          btnEmailEdit.addEventListener('click', function(){
+            if (emailRow) emailRow.style.display = 'none';
+            if (emailEditRow) emailEditRow.style.display = '';
+            if (emailFull)    emailFull.disabled = false;
+
+            const parts = splitEmail(emailFull ? emailFull.value : '');
+            if (emailUser)   emailUser.value = parts.local;
+            if (emailDomain) emailDomain.value = parts.domain;
+
+            if (emailDomainSelect) {
+              var found = false;
+              Array.from(emailDomainSelect.options).forEach(function(o){
+                if (o.value === parts.domain) found = true;
+              });
+              emailDomainSelect.value = found ? parts.domain : '';
+              handleSelectChange();
+            }
+            if (emailUser) emailUser.focus();
+            emailDuplicateCheck = false;
+          });
+        }
+
+        if (emailDomainSelect) emailDomainSelect.addEventListener('change', handleSelectChange);
+        if (emailUser)   emailUser.addEventListener('input', composeEmail);
+        if (emailDomain) emailDomain.addEventListener('input', composeEmail);
+
+        if (emailUser)         emailUser.addEventListener('input',  function(){ emailDuplicateCheck = false; });
+        if (emailDomain)       emailDomain.addEventListener('input', function(){ emailDuplicateCheck = false; });
+        if (emailDomainSelect) emailDomainSelect.addEventListener('change', function(){ emailDuplicateCheck = false; });
+
+        if (btnEmailEditConfirm) {
+          btnEmailEditConfirm.addEventListener('click', function() {
+            if (!emailDuplicateCheck) {
+              Swal.fire({ icon:'warning', title:'이메일 중복확인을 체크해주세요', confirmButtonColor: YELLOW });
+              return;
+            }
+            composeEmail();
+            if (emailRow) emailRow.style.display = '';
+            if (emailEditRow) emailEditRow.style.display = 'none';
+            if (emailFull)    emailFull.disabled = true;
+            emailDuplicateCheck = false;
+          });
+        }
+
+        window.checkEmailDuplication = async function(){
+          composeEmail();
+          const authEmail = (emailFull && emailFull.value ? emailFull.value : '').trim();
+
+          if (!authEmail) {
+            await Swal.fire({ icon:'warning', title:'입력 필요', text:'이메일을 입력하세요.', confirmButtonColor:YELLOW });
+            if (emailUser) emailUser.focus();
+            return;
+          }
+          if (!emailRegex.test(authEmail)) {
+            await Swal.fire({ icon:'warning', title:'형식 오류', text:'이메일 형식을 확인해주세요.', confirmButtonColor:YELLOW });
+            if (emailUser) emailUser.focus();
+            return;
+          }
+
+          try {
+            const res = await fetch('/users/check-email-duplicate?email=' + encodeURIComponent(authEmail), { credentials:'include' });
+            if (!res.ok) throw new Error('서버 오류');
+            const data = await res.json();
+            const dup = !!data.duplicate;
+            await Swal.fire({
+              icon: dup ? 'error' : 'success',
+              title: dup ? '중복된 이메일' : '사용 가능',
+              text: dup ? '이미 사용 중인 이메일입니다.' : '사용 가능한 이메일입니다!',
+              confirmButtonColor: YELLOW
+            });
+            emailDuplicateCheck = !dup;
+          } catch (e) {
+            console.error(e);
+            await Swal.fire({ icon:'error', title:'오류', text:'중복 확인 중 오류가 발생했습니다.', confirmButtonColor:YELLOW });
+          }
+        };
+
+        // ===== 제출 =====
+        form.addEventListener('submit', async function(e){
+          e.preventDefault();
+
+          const initialToken = (document.getElementById('initialFcmToken')?.value || '').trim();
+          const wantOn = !!document.getElementById('pushToggle')?.checked;
+          const hadToken = !!initialToken;
+
+          let fcmToSend;
+          if (wantOn) {
+            if (hadToken) {
+              fcmToSend = initialToken;
+            } else {
+              const newToken = await FcmInit.getFcmToken();
+              if (!newToken) {
+                await Swal.fire({
+                  icon:'warning',
+                  title:'권한 필요',
+                  text:'브라우저 알림 권한을 허용하고 다시 시도해주세요.',
+                  confirmButtonColor: YELLOW
+                });
+                return;
+              }
+              fcmToSend = newToken;
+            }
+          } else {
+            fcmToSend = null;
+          }
+          
+          const emailToggle = !!document.getElementById('emailToggle')?.checked;
+          let mail_cycle;
+          if (emailToggle) {
+			mail_cycle = document.querySelector('input[name="emailPeriod"]:checked')?.value || null
+		} else {
+			mail_cycle = null;
+		}
+          
+          
+
+          const payload = {
+            user_id:   ((document.getElementById('user_id')?.value) || '').trim(),
+            user_name: ((document.getElementById('user_name')?.value) || '').trim(),
+            birthday:  ((document.getElementById('birthday')?.value) ||
+                        (document.getElementById('birthday_view')?.value) || '').trim(),
+            email:     ((document.getElementById('email-full')?.value) || '').trim(),
+            address:   ((document.getElementById('address_full')?.value) || '').trim(),
+            tel:       ((document.getElementById('tel')?.value) || '').trim(),
+            fcm_token: fcmToSend,
+            mail_cycle: mail_cycle
+          };
+
+          const res = await fetch('/users/edit-my-info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+
+          const ok = res.ok;
+          await Swal.fire({
+            icon: ok ? 'success' : 'error',
+            title: ok ? '정보 수정 완료' : '수정 실패',
+            text:  ok ? '변경사항이 저장되었습니다.' : '잠시 후 다시 시도해주세요.',
+            confirmButtonColor: YELLOW,
+            showConfirmButton: false,
+            timer: 1500
+          });
+          if (ok) location.reload();
+        });
+      })();
+	  
+	  
+	  
+	  
+	  
+	  
+	  <!--이메일 수신 기능-->
+	  
+	  document.addEventListener("DOMContentLoaded", function () {
+		  const emailToggle = document.getElementById("emailToggle");
+		  const emailStatusText = document.getElementById("emailStatusText");
+		  const emailPeriodOptions = document.getElementById("emailPeriodOptions");
+
+		  function updateEmailUI() {
+		    if (emailToggle.checked) {
+		      emailStatusText.textContent = "ON";
+		      emailPeriodOptions.style.display = "inline-block";
+		    } else {
+		      emailStatusText.textContent = "OFF";
+		      emailPeriodOptions.style.display = "none";
+		    }
+		  }
+
+		  // 초기 상태 적용
+		  updateEmailUI();
+
+		  // 토글 변경 시 적용
+		  emailToggle.addEventListener("change", updateEmailUI);
+		});
+	  
+    </script>
+  </div>
+</body>
+</html>

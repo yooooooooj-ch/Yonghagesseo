@@ -1,0 +1,111 @@
+/* 전체 레이아웃 */
+.invite-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #e3f2fd; /* 파스텔 블루 배경 */
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 상단 헤더 */
+.invite-header {
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    padding: 60px 20px 40px 20px;
+    background: #90caf9; /* 파스텔 블루 중간톤 */
+    color: #0d47a1;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.invite-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.invite-header p {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* 컨텐츠 영역 - 화면 세로 중앙 정렬 */
+.invite-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 60px 20px;
+    box-sizing: border-box;
+}
+
+/* 초대 폼 카드 */
+.invite-form {
+    background: #fff;
+    padding: 40px 35px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.invite-form:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* 라벨 */
+.invite-form label {
+    font-weight: 600;
+    color: #0d47a1;
+    text-align: left;
+    font-size: 1rem;
+}
+
+/* 입력창 */
+.invite-form input[type="text"] {
+    padding: 14px 12px;
+    border: 1px solid #bbdefb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.invite-form input[type="text"]:focus {
+    border-color: #42a5f5; /* 포인트 블루 */
+    box-shadow: 0 0 0 3px rgba(66,165,245,0.2);
+    outline: none;
+}
+
+/* 버튼 */
+.invite-form button {
+    background: #42a5f5; /* 파스텔 블루 버튼 */
+    color: #fff;
+    padding: 14px 0;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.invite-form button:hover {
+    background: #1e88e5;
+    transform: translateY(-2px);
+}
+
+/* 안내 문구 */
+.invite-form .form-note {
+    font-size: 0.9rem;
+    color: #546e7a;
+    margin-top: 10px;
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title layout:title-pattern="$CONTENT_TITLE | 용하게써">용하게써</title>
+
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+<link rel="stylesheet" th:href="@{/css/main.css}" />
+<link rel="stylesheet" th:href="@{/css/popup.css}" />
+<link rel="stylesheet" th:href="@{/css/sweetalert.css}" />
+<!-- 공통 로그아웃 -->
+<script th:src="@{/js/logout.js}"></script>
+<!-- 리프레쉬 토큰 -->
+<script type="module" src="/js/jwtFetch.js"></script>
+</head>
+<body style="margin: 0;">
+	<div class="page-container">
+		<!-- 헤더 -->
+		<div th:replace="~{fragments/header :: header(${session.user_type != null ? session.user_type : -1})}"></div>
+
+		<!-- 		<div th:replace="~{fragments/header :: header-parent}"></div> -->
+
+		<!-- 콘텐츠 영역 -->
+		<div class="content-wrapper">
+			<main class="content" layout:fragment="content"></main>
+
+		</div>
+
+		<!-- 푸터 -->
+		<div th:replace="fragments/footer :: footer"></div>
+	</div>
+
+	<!-- 페이지별 스크립트 -->
+	<div layout:fragment="script"></div>
+
+	<!-- SweetAlert2 로드 -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script th:src="@{/js/sweetAlert.js}"></script>
+
+	<!-- Fcm 어플리케이션 초기화&로드 -->
+	<script src="/js/fcm_init.js"></script>
+	
+</body>
+</html>

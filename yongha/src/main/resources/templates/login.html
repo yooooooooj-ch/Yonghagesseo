@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8">
+<title>로그인 페이지</title>
+<!-- CSS 연결 -->
+<link rel="stylesheet" th:href="@{/css/login.css}">
+
+
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+		<input type="hidden" id="redirectUrl" th:value="${redirectUrl}" />
+		<script th:inline="javascript">
+			// 페이지 진입 시 저장(소셜 공통 사용)
+			(function () {
+			  const ru = document.getElementById('redirectUrl')?.value?.trim();
+			  if (ru) localStorage.setItem('redirect_after_login', ru);
+			  else     localStorage.removeItem('redirect_after_login');
+			})();
+		</script>
+
+		<!-- 로그인 박스컨테이너 -->
+		<div class="login-sections">
+			<section class="common-login login-card">
+				<form id="loginForm" class="login-form">
+					<h2 class="login-title">일반 로그인</h2>
+					<label class="login-inline">아이디 <input type="text" id="user_id" class="login-input" />
+					</label> <br> <br> <label class="login-inline">비밀번호 <input type="password" id="password" class="login-input" />
+					</label> <br> <br>
+					<button type="submit" id="login-submit-btn" class="login-btn">로그인</button>
+				</form>
+			</section>
+
+			<section class="social-login login-card">
+				<h2 class="login-title">소셜 로그인</h2>
+
+				<div th:insert="~{/kakao-login}">
+					<!-- kakao-login.html 부분 -->
+				</div>
+
+				<div th:insert="~{/naver-login}">
+					<!-- naver-login.html 부분 -->
+				</div>
+			</section>
+		</div>
+
+		<!-- 비로그인 요소 영역 -->
+		<div class="nonlogin-section">
+			<div class="nonlogin-wrapper">
+<!--				 통합 로그아웃 
+				<div class="nonlogin-row">
+					<button type="button" onclick="logout()" class="login-btn">로그아웃</button>
+				</div>-->
+
+				<!-- 회원가입 안내 -->
+				<div class="nonlogin-row">
+					<span class="nonlogin-text">아직 회원이 아니신가요? <strong>용하게써</strong> 가입하기
+					</span>
+					<button
+					  type="button"
+					  class="login-btn"
+					  onclick="
+					    try {
+					      localStorage.removeItem('socialData');      // 소셜 데이터 제거 → 일반 가입 폼 강제
+					      sessionStorage.removeItem('cameFromSocial'); // (있으면) 소셜 리다이렉트 플래그 제거
+					    } catch(e) {}
+					    window.location.href = '/signup?mode=normal';  // 선택사항: 명시적 normal 모드 파라미터
+					  "
+					>
+					  회원가입
+					</button>
+
+				</div>
+
+				<!-- 아이디/비밀번호 찾기 -->
+				<div class="nonlogin-row">
+					<span class="nonlogin-text">아이디 혹은 비밀번호를 잊어버리셨나요?</span>
+					<div class="nonlogin-actions">
+						<button type="button" id="find-id" class="login-btn">아이디 찾기</button>
+						<button type="button" id="reset-pw" class="login-btn">비밀번호 찾기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 개발용 디버깅 출력칸 -->
+		<div class="debugging">
+			<div id="result" style="margin-top: 20px; color: blue;"></div>
+			<!-- 로그인 사용자 'user_no' 확인 -->
+			<div id="userNoArea"></div>
+		</div>
+
+	</main>
+
+	<div layout:fragment="script">
+		<script>
+	    // 이메일 정규표현식 (이 파일에서 사용하므로 선언 필요)
+	    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	
+	    document.getElementById('loginForm').addEventListener('submit', function (e) {
+	      e.preventDefault();
+	
+	      const userId = this.querySelector('#user_id').value.trim();
+	      const password = this.querySelector('#password').value.trim();
+	
+	      // 기존 GET 엔드포인트 그대로 사용 (쿼리스트링로 인증 정보 전달)
+	      fetch(`/api/user/login?user_id=${encodeURIComponent(userId)}&password=${encodeURIComponent(password)}`, {
+	        method: 'GET',
+	        credentials: 'include' // 세션 쿠키도 함께(서버에서 session.setAttribute 사용 중)
+	      })
+	        .then(res => {
+	          if (!res.ok) throw new Error('UNAUTHORIZED');
+	          return res.text(); // 서버가 "문자열 토큰"을 반환
+	        })
+	        .then(token => {
+	          // 토큰 저장(향후 Authorization 헤더에 사용)
+	          localStorage.setItem('access_token', token);
+	
+	          // 로그인 성공 알럿 1.5초 → 메인으로 이동
+	          Swal.fire({
+	            icon: 'success',
+	            title: '로그인 성공!',
+	            text: '메인으로 이동합니다.',
+	            timer: 1500,
+	            showConfirmButton: false
+	          }).then(() => {
+	        	 const ru = (document.getElementById('redirectUrl')?.value || '').trim()
+	                || localStorage.getItem('redirect_after_login') || '';
+	     		 if (ru) location.href = ru; 
+	     		 else location.href = '/';
+	          });
+	        })
+	        .catch(() => {
+	          Swal.fire('로그인 실패', '아이디/비밀번호를 확인해주세요.', 'error');
+	        });
+	    });
+	
+	    // 통합 로그아웃
+	    function logout() {
+	      // 서버 세션 무효화
+	      fetch('/api/user/logout', { method: 'POST' })
+	        .then(() => {
+	          // 토큰, 클라이언트 스토리지 초기화 (키 이름 통일)
+	//           localStorage.removeItem('access_token');
+	//           localStorage.removeItem('socialData');
+	          sessionStorage.clear();
+	          localStorage.clear();
+	          // 로그인페이지로 이동
+	          window.location.href = '/';
+	        });
+	    }
+	
+	    // 아이디 찾기
+	    document.getElementById('find-id').addEventListener('click', function () {
+			// Swal "아이디 찾기"
+	      Swal.fire({
+	        title: '아이디 찾기',
+	        html: `
+	          <input type="email" id="findIdEmail" class="swal2-input" placeholder="가입시 사용한 이메일">
+	        `,
+	        showCancelButton: true,
+	        confirmButtonText: '인증코드 전송',
+	        preConfirm: () => {
+	          const email = document.getElementById('findIdEmail').value.trim();
+	          if (!emailRegex.test(email)) { // 이메일 정규식 검사
+	            Swal.showValidationMessage('올바른 이메일을 입력하세요.');
+	            return false;
+	          }
+	          return email;
+	        }
+	      }).then(result => {
+	        if (!result.isConfirmed) return;
+	        const email = result.value;
+	
+	        // 인증코드 전송 API 호출
+	        fetch('/api/auth/veri/send-email-code', {
+	          method: 'POST',
+	          headers: { 'Content-Type': 'application/json' },
+	          body: JSON.stringify({ email })
+	        })
+	          .then(res => res.json())
+	          .then(data => {
+	            if (data.success) {
+	              Swal.fire({
+	                title: '이메일 인증',
+	                html: `<input type="text" id="findIdAuthCode" class="swal2-input" placeholder="인증코드 입력">`,
+	                confirmButtonText: '인증하기',
+	                preConfirm: () => {
+	                  const code = document.getElementById('findIdAuthCode').value.trim();
+	                  if (!code) {
+	                    Swal.showValidationMessage('인증코드를 입력하세요.');
+	                    return false;
+	                  }
+	                  return code;
+	                }
+	              }).then(authResult => {
+	                if (!authResult.isConfirmed) return;
+	                fetch('/api/auth/veri/check-email-code', {
+	                  method: 'POST',
+	                  headers: { 'Content-Type': 'application/json' },
+	                  body: JSON.stringify({ authCode: authResult.value })
+	                })
+	                  .then(res => res.json())
+	                  .then(checkData => {
+	                    if (checkData.success) {
+	                      // 인증 성공시 아이디 조회
+	                      fetch(`/api/user/find-id?email=${encodeURIComponent(email)}`)
+	                        .then(res => res.json())
+	                        .then(idData => {
+	                          if (idData.success) {
+	                            Swal.fire('아이디 찾기 완료', `회원님의 아이디는 <b>${idData.user_id}</b> 입니다.`, 'success');
+	                          } else {
+	                            Swal.fire('조회 실패', idData.msg || '해당 이메일의 아이디를 찾을 수 없습니다.', 'error');
+	                          }
+	                        });
+	                    } else {
+	                      Swal.fire('인증 실패', checkData.msg || '코드가 일치하지 않습니다.', 'error');
+	                    }
+	                  });
+	              });
+	            } else {
+	              Swal.fire('전송 실패', data.msg || '이메일 전송에 실패했습니다.', 'error');
+	            }
+	          });
+	      });
+	    });
+	
+	    // 비밀번호 찾기
+	    document.getElementById('reset-pw').addEventListener('click', function () {
+	      Swal.fire({
+	        title: '비밀번호 찾기',
+	        html: `
+	          <input type="text" id="resetPwUserId" class="swal2-input" placeholder="아이디">
+	          <input type="email" id="resetPwEmail" class="swal2-input" placeholder="가입시 사용한 이메일">
+	        `,
+	        showCancelButton: true,
+	        confirmButtonText: '인증코드 전송',
+	        preConfirm: () => {
+	          const email = document.getElementById('resetPwEmail').value.trim();
+	          if (!emailRegex.test(email)) {
+	            Swal.showValidationMessage('올바른 이메일을 입력하세요.');
+	            return false;
+	          }
+	          return {
+	            user_id: document.getElementById('resetPwUserId').value.trim(),
+	            email
+	          };
+	        }
+	      }).then(result => {
+	        if (!result.isConfirmed) return;
+	        const { user_id, email } = result.value;
+	        
+	       // 1) 아이디+이메일 매칭 검증 먼저
+	       fetch('/api/user/verify-id-email', {
+	         method: 'POST',
+	         headers: { 'Content-Type': 'application/json' },
+	         body: JSON.stringify({ user_id, email })
+	       })
+	       .then(res => res.json())
+	       .then(verify => {
+	         if (!verify.success) {
+	           return Swal.fire('검증 실패', verify.msg || '회원 정보가 일치하지 않습니다.', 'error');
+	         }
+	         
+	        // 2) 검증 통과 시 인증코드 전송
+	        fetch('/api/auth/veri/send-email-code', {
+	          method: 'POST',
+	          headers: { 'Content-Type': 'application/json' },
+	          body: JSON.stringify({ email })
+	        })
+	          .then(res => res.json())
+	          .then(data => {
+	            if (data.success) {
+	              Swal.fire({
+	                title: '이메일 인증',
+	                html: `<input type="text" id="resetPwAuthCode" class="swal2-input" placeholder="인증코드 입력">`,
+	                confirmButtonText: '인증하기',
+	                preConfirm: () => {
+	                  const code = document.getElementById('resetPwAuthCode').value.trim();
+	                  if (!code) {
+	                    Swal.showValidationMessage('인증코드를 입력하세요.');
+	                    return false;
+	                  }
+	                  return code;
+	                }
+	              }).then(authResult => {
+	                if (!authResult.isConfirmed) return;
+	                fetch('/api/auth/veri/check-email-code', {
+	                  method: 'POST',
+	                  headers: { 'Content-Type': 'application/json' },
+	                  body: JSON.stringify({ authCode: authResult.value })
+	                })
+	                  .then(res => res.json())
+	                  .then(checkData => {
+	                    if (checkData.success) {
+	                    	// 인증 성공 -> 새 비밀번호 입력받아 변경
+	                    	   Swal.fire({
+	                    	     title: '새 비밀번호 설정',
+	                    	     html: `
+	                    	       <input type="password" id="newPw1" class="swal2-input" placeholder="새 비밀번호(8자 이상)">
+	                    	       <input type="password" id="newPw2" class="swal2-input" placeholder="비밀번호 확인">
+	                    	     `,
+	                    	     confirmButtonText: '변경하기',
+	                    	     focusConfirm: false,
+	                    	     preConfirm: () => {
+	                    	       const pw1 = document.getElementById('newPw1').value.trim();
+	                    	       const pw2 = document.getElementById('newPw2').value.trim();
+	                    	       if (pw1.length < 8) { Swal.showValidationMessage('비밀번호는 8자 이상 입력하세요.'); return false; }
+	                    	       if (pw1 !== pw2)    { Swal.showValidationMessage('비밀번호가 일치하지 않습니다.'); return false; }
+	                    	       return pw1;
+	                    	     }
+	                    	   }).then(pwResult => {
+	                    	     if (!pwResult.isConfirmed) return;
+	                    	     fetch('/api/user/reset-password', {
+	                    	       method: 'POST',
+	                    	       headers: { 'Content-Type': 'application/json' },
+	                    	       body: JSON.stringify({
+	                    	         user_id,
+	                    	         email,
+	                    	         new_password: pwResult.value
+	                    	       })
+	                    	     })
+	                    	     .then(r => r.json())
+	                    	     .then(d => {
+	                    	       if (d.success) {
+	                    	         Swal.fire({
+	                    	           icon: 'success',
+	                    	           title: '비밀번호 변경 완료',
+	                    	           text: '새 비밀번호로 로그인해 주세요.',
+	                    	           timer: 1500,
+	                    	           showConfirmButton: false
+	                    	         }).then(() => location.href = '/login');
+	                    	       } else {
+	                    	         Swal.fire('실패', d.msg || '비밀번호 변경에 실패했습니다.', 'error');
+	                    	       }
+	                    	     })
+	                    	     .catch(() => Swal.fire('오류', '요청 처리 중 오류가 발생했습니다.', 'error'));
+	                    	   });
+	                    } else {
+	                      Swal.fire('인증 실패', checkData.msg || '코드가 일치하지 않습니다.', 'error');
+	                    }
+	                  });
+	              });
+	            } else {
+	              Swal.fire('전송 실패', data.msg || '이메일 전송에 실패했습니다.', 'error');
+	            }
+	          });
+	       });
+	      });
+	    });
+	
+	    // 로그인 한 사용자의 'user_no' 확인 (임시)
+	    window.addEventListener('DOMContentLoaded', async function () {
+	      const token = localStorage.getItem('access_token'); // 키 이름 통일
+	      if (token) {
+	        const res = await fetch('/api/user/me', {
+	          headers: { 'Authorization': 'Bearer ' + token }
+	        });
+	        if (res.ok) {
+	          const data = await res.json();
+	          document.getElementById('userNoArea').innerText = `로그인 중 user_no: ${data.user_no}`;
+	        } else {
+	          // 만료, 위조, 로그아웃 등 비로그인 상태 처리
+	          document.getElementById('userNoArea').innerText = '';
+	          localStorage.removeItem('access_token');
+	        }
+	      } else {
+	        // 비로그인 상태
+	        document.getElementById('userNoArea').innerText = '';
+	      }
+	    });
+ 	 </script>
+	</div>
+</body>
+</html>

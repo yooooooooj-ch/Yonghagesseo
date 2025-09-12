@@ -1,0 +1,353 @@
+@charset "UTF-8";
+
+/* =========================
+   THEME
+   ========================= */
+:root{
+  --ink:#0F172A;
+  --muted:#6B7280;
+  --line:#E9EDF5;
+
+  --primary:#6FAEFF;
+  --primary-600:#5F9EF7;
+  --primary-700:#4F8FEF;
+  --accent:#FFD768;
+
+  --bg: linear-gradient(160deg, #EAF3FF 0%, #D5E9FF 40%, #CBE3FF 70%, #F3F8FF 100%);
+  --card: rgba(255,255,255,.78);
+
+  --radius-card:20px;
+  --radius-input:12px;
+
+  --shadow-lg:0 22px 60px rgba(15,23,42,.10);
+  --shadow-md:0 12px 30px rgba(15,23,42,.08);
+  --border-blue: 2px solid rgba(111,174,255,.6);
+}
+
+/* =========================
+   PAGE / WRAPPER
+   ========================= */
+body{
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+.content{
+  min-height:calc(100vh - 120px);
+  display:flex; align-items:center; justify-content:center;
+  padding:32px 16px;
+}
+.signup-section{ width:100%; display:flex; align-items:center; justify-content:center; }
+
+/* OUTER CARD */
+.signup-form{
+  width:min(1200px, 96vw);
+  background:var(--card);
+  border:var(--border-blue);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-lg);
+  padding:28px;
+  backdrop-filter:blur(4px);
+}
+.signup-title{
+  margin:6px 0 22px;
+  font-size:30px; font-weight:800; letter-spacing:-.02em;
+  text-align:center;
+}
+
+/* =========================
+   3-COLUMN CARDS
+   ========================= */
+.wizard{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+.step-card{
+  background:#fff;
+  border:1.8px solid rgba(111,174,255,.60);
+  border-radius:16px;
+  box-shadow:var(--shadow-md);
+  padding:18px;
+  display:flex; flex-direction:column; gap:14px;
+}
+
+/* 내부 테이블 (폼 레이아웃용) */
+.step-table{ width:100%; border-collapse:separate; border-spacing:0 12px; }
+.step-table td{ vertical-align:bottom; padding:0; }
+
+/* =========================
+   INPUTS & SELECTS
+   ========================= */
+.signup-input{
+  width:100%;
+  height:42px;
+  box-sizing:border-box;
+  padding:10px 14px;
+  background:#fff; color:var(--ink);
+  border:1.5px solid #D6E6FF;
+  border-radius:var(--radius-input);
+  outline:0;
+  transition:border-color .18s ease, box-shadow .18s ease;
+}
+.signup-input:hover{ border-color:#9FC3FF; }
+.signup-input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(111,174,255,.18), 0 10px 24px rgba(15,23,42,.06);
+}
+
+/* select arrow */
+select.signup-input{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #9aa5b1 50%),
+    linear-gradient(135deg, #9aa5b1 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+  background-position:
+    calc(100% - 18px) calc(50% - 4px),
+    calc(100% - 12px) calc(50% - 4px),
+    calc(100% - 2.4em) 0.6em;
+  background-size:6px 6px,6px 6px,1px 1.8em;
+  background-repeat:no-repeat;
+}
+
+/* 기본 인라인 그리드 */
+.signup-inline{ display:grid; gap:8px; }
+
+/* =========================
+   BUTTONS
+   ========================= */
+.signup-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:40px; padding:0 14px;
+  border-radius:12px;
+  border:1.5px solid var(--line);
+  background:#fff; color:var(--ink);
+  cursor:pointer;
+  box-shadow:var(--shadow-md);
+  transition:transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.signup-btn:hover{ border-color:#d9e2f1; box-shadow:0 12px 26px rgba(15,23,42,.10); }
+.signup-btn:active{ transform:translateY(1px); }
+
+/* 제출 버튼 */
+.submit-btn{
+  width:100%; margin-top:6px;
+  color:var(--primary-700); border-color:transparent; position:relative; isolation:isolate;
+}
+.submit-btn::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px;
+  background:linear-gradient(90deg, var(--primary) 0%, var(--primary-700) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
+}
+.submit-btn:hover{ background:linear-gradient(90deg, var(--primary) 0%, var(--primary-700) 100%); color:#fff; }
+.submit-btn:hover::before{ opacity:0; }
+
+/* 우편번호 버튼(비주얼) */
+input.signup-btn[value="우편번호 찾기"]{
+  border-color:transparent; font-weight:600; color:#0F172A;
+  background:linear-gradient(135deg, #d6ebff 0%, #b0d8ff 100%);
+  box-shadow:0 6px 14px rgba(111,174,255,.25);
+}
+input.signup-btn[value="우편번호 찾기"]:hover{
+  background:linear-gradient(135deg, #c9e3ff 0%, #9ecfff 100%);
+}
+
+/* =========================
+   ROW-SPECIFIC LAYOUT FIXES
+   ========================= */
+
+/* 아이디 행: [입력칸 | 중복확인] */
+#idRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 110px;
+  column-gap:12px;
+  align-items:end;
+}
+#idRow > td{ padding:0; }
+#idRow input.signup-input{ width:100%; }
+#idRow .signup-btn{
+  height:42px;
+  width:100%;
+  max-width:110px;
+  justify-self:end;
+}
+
+/* 이메일 행: 카드 가로폭에 정확히 맞춤
+   - 그리드 전체 폭 = 카드 내부 패딩을 제외한 100%
+   - 왼쪽 트랙은 (전체 - 버튼폭 - 간격)으로 계산
+*/
+#emailRow1{
+  display:grid !important;
+  grid-template-columns: minmax(0, calc(100% - 132px)) 120px; /* 120px 버튼 + 12px 간격 */
+  grid-template-rows: auto auto;   /* 1줄: local@domain / 2줄: select */
+  column-gap:12px;
+  align-items:end;
+  width:100%;
+}
+#emailRow1 > td{ padding:0; }
+
+/* 왼쪽 셀(두 줄) */
+#emailRow1 > td:first-child{
+  grid-column:1;
+  grid-row:1 / span 2;
+}
+
+/* 오른쪽 셀(중복확인 버튼) – 2번째 줄 우측 */
+#emailRow1 > td:last-child{
+  grid-column:2;
+  grid-row:2;
+  align-self:end;
+  justify-self:stretch;
+}
+#emailRow1 .signup-btn{ height:42px; width:100%; }
+
+/* 왼쪽 셀 내부 인라인: 위/아래 두 줄 */
+#emailRow1 .signup-inline{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr); /* local | @ | domain */
+  grid-template-rows:auto auto;
+  gap:10px;
+  width:100%;
+}
+#emailRow1 .signup-inline > span{
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#6b7280;
+}
+/* 도메인 선택은 아래줄 왼쪽(풀폭) */
+#emailRow1 #email-domain-select{
+  grid-column:1 / -1;   /* 왼쪽 영역 전체(버튼 제외) */
+  grid-row:2;
+  height:42px;
+}
+
+/* 모든 입력칸 폭 통일(카드 내부) */
+.step-card .signup-input,
+.step-card select.signup-input{ width:100%; }
+
+/* =========================
+   ROLE CARDS
+   ========================= */
+.signup-radio-group{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:16px;
+}
+.signup-radio-group label{
+  position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  gap:8px; padding:20px; min-height:170px;
+  background:#fff; border:1.6px solid #D6E6FF; border-radius:16px;
+  box-shadow:0 10px 22px rgba(15,23,42,.06); cursor:pointer;
+  transition:transform .06s, box-shadow .15s, border-color .15s, background .15s;
+  font-weight:800;
+}
+.signup-radio-group input.signup-radio{ position:absolute; opacity:0; pointer-events:none; }
+.signup-radio-group label::before{
+  content:""; width:92px; height:92px; border-radius:50%;
+  background:#fff center/80% no-repeat; box-shadow:0 8px 16px rgba(15,23,42,.10);
+}
+.signup-radio-group label:first-child::before{ background-image:url("/img/profile/profile0.png"); }
+.signup-radio-group label:last-child::before { background-image:url("/img/profile/profile3.png"); }
+.signup-radio-group label span{ font-weight:600; color:#64748b; }
+.signup-radio-group label:has(input:checked){
+  background:linear-gradient(90deg, var(--primary) 0%, var(--primary-700) 100%);
+  color:#fff; border-color:transparent; box-shadow:0 12px 26px rgba(111,174,255,.35);
+}
+
+/* =========================
+   VERIFY / CONSENT
+   ========================= */
+.verify-card{
+  padding:14px; border:1.6px solid #D6E6FF; border-radius:14px;
+  box-shadow:0 10px 22px rgba(15,23,42,.06); background:#fff;
+}
+.verify-title{ margin:0 0 10px; font-size:18px; font-weight:800; }
+
+.consent-row{ display:flex; align-items:center; gap:8px; color:#374151; }
+.consent-row input[type="checkbox"]{
+  appearance:none; width:18px; height:18px; margin:0;
+  border:1.8px solid #D6E6FF; border-radius:6px; background:#fff;
+  display:inline-grid; place-content:center;
+  transition:border-color .18s, background-color .18s, box-shadow .18s;
+}
+.consent-row input[type="checkbox"]::before{
+  content:""; width:10px; height:10px; transform:scale(0);
+  background:linear-gradient(90deg, var(--primary) 0%, var(--primary-700) 100%);
+  border-radius:3px; transition:transform .12s ease-in-out;
+}
+.consent-row input[type="checkbox"]:checked{ border-color:transparent; box-shadow:0 0 0 3px rgba(111,174,255,.18); }
+.consent-row input[type="checkbox"]:checked::before{ transform:scale(1); }
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width:1100px){
+  .wizard{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:760px){
+  .wizard{ grid-template-columns:1fr; }
+  #idRow, #emailRow1{ display:block !important; }
+  #emailRow1 > td:last-child{ margin-top:8px; }
+  #emailRow1 .signup-inline{
+    grid-template-columns:1fr; grid-template-rows:auto auto auto;
+  }
+  #emailRow1 #email-domain-select{ grid-column:auto; grid-row:auto; }
+}
+/* =========================
+   EMAIL ROW — top line full width
+   ========================= */
+
+/* 2열 그리드: [전체 내용 | 중복확인(120px)] + 2줄 */
+#emailRow1{
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) 120px; /* 내용 | 버튼 */
+  grid-template-rows: auto auto;              /* 윗줄 / 아랫줄 */
+  column-gap: 12px;
+  align-items: end;
+  width: 100%;
+}
+#emailRow1 > td{ padding:0; }
+
+/* 윗줄( local @ domain )은 카드 폭 전체를 사용 */
+#emailRow1 > td:first-child{
+  grid-column: 1 / -1;  /* 두 컬럼 모두 차지 */
+  grid-row: 1;
+}
+
+/* 아랫줄 우측: 중복확인 버튼 */
+#emailRow1 > td:last-child{
+  grid-column: 2;       /* 오른쪽 고정폭 트랙 */
+  grid-row: 2;
+  align-self: end;
+  justify-self: stretch; /* 버튼 가로를 트랙폭에 맞춤 */
+}
+#emailRow1 .signup-btn{ height:42px; width:100%; }
+
+/* 왼쪽 셀 내부 인라인: 윗줄(local @ domain) + 아랫줄(select) */
+#emailRow1 .signup-inline{
+  display:grid;
+  grid-template-columns: minmax(0,1fr) 24px minmax(0,1fr); /* local | @ | domain */
+  grid-template-rows: auto auto;                           /* 윗줄 / 아랫줄 */
+  gap:10px;
+  width:100%;
+}
+#emailRow1 .signup-inline > span{
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#6b7280; /* @ 표시 */
+}
+/* 도메인 선택은 아랫줄 전체(버튼 영역 제외) */
+#emailRow1 #email-domain-select{
+  grid-column: 1 / -1;  /* 왼쪽 내용 영역 전체 */
+  grid-row: 2;
+  height:42px;
+}
+
+/* 모바일에서는 자연스럽게 세로 스택 */
+@media (max-width: 760px){
+  #emailRow1{ display:block !important; }
+  #emailRow1 > td:last-child{ margin-top:8px; }
+  #emailRow1 .signup-inline{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto auto; /* local / @domain / select */
+  }
+  #emailRow1 #email-domain-select{ grid-column:auto; grid-row:auto; }
+}

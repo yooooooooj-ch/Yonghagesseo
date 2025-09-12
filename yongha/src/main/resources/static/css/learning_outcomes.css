@@ -1,0 +1,383 @@
+/*section1*/
+.learning-section1 {
+  display: flex;
+  width: 100%;
+  height: 100vh; /* 전체 화면 높이 */
+}
+
+.section1-left {
+	width: 45%;
+	 background-color: #009fe3;
+	 display: flex;
+	 flex-direction: column;
+	 justify-content: center;
+	 align-items: flex-start;
+	 padding: 40px;
+}
+
+.section1-title {
+  font-size: 70px;
+  font-weight: bold;
+  margin-top:-50px;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.section1-desc {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  max-width: 400px;
+  color: #555;
+}
+
+.section1-btn {
+	display: inline-block;
+	  padding: 14px 28px;
+	  background-color: #fff;
+	  color: gold;
+	  font-weight: bold;
+	  border-radius: 6px;
+	  border: none;
+	  text-decoration: none;
+	  box-shadow: 6px 6px 0 0 gold;
+	    transition: box-shadow 0.3s, color 0.3s;
+}
+
+
+
+.section1-btn:hover {
+	color: #fff;
+	  box-shadow: 8px 8px 0 0 gold;
+}
+
+.section1-btn:hover::before {
+  background-color: #b8860b;  /* hover시 골드톤 조금 진하게 */
+}
+
+/* 오른쪽 이미지 영역 */
+.section1-right {
+	width: 55%;
+	  background-image: url('/img/company.jpg');
+	  background-size: cover;
+	  background-position: center;
+  }
+
+
+
+
+
+
+/* ===== 교육 효과 섹션2 ===== */
+
+.learning-section {
+  position: relative;
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #a8d8ff, #cfeeff, #f0faff);
+  
+}
+.learning-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('/img/bg/finance-bg.jpg') center/cover no-repeat;
+  opacity: 0.1;
+  z-index: 0;
+}
+
+/* 제목 & 부제목 */
+.learning-title {
+  font-size: 2.8rem;
+  text-align: left;
+  margin-bottom: 15px;
+  font-weight: 800;
+  background: #333;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* 카드 그리드 */
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  justify-content: start; /* 그리드 아이템 전체 왼쪽 정렬 */
+  z-index: 1;
+  overflow: visible; /* 추가 */
+}
+
+/* 개별 카드 */
+.learning-card {
+	background: rgba(255, 255, 255, 0.6);
+	 backdrop-filter: blur(10px);
+	 border-radius: 2px;
+	 padding: 30px;
+	 box-shadow: 0 8px 20px rgba(168, 216, 255, 0.4);
+
+	 opacity: 0;
+	 transform: translateY(40px);
+	 transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+	 
+}
+
+.learning-card.visible {
+	opacity: 1;
+	  transform: translateY(0);
+}
+
+/* 각 카드마다 약간씩 다른 지연시간 */
+.learning-card:nth-child(1) { transition-delay: 0.1s; }
+.learning-card:nth-child(2) { transition-delay: 0.2s; }
+.learning-card:nth-child(3) { transition-delay: 0.3s; }
+.learning-card:nth-child(4) { transition-delay: 0.4s; }
+.learning-card:nth-child(5) { transition-delay: 0.5s; }
+.learning-card:nth-child(6) { transition-delay: 0.6s; }
+
+/* 카드 내부 요소 */
+.card-icon {
+  font-size: 2rem;
+  color: #FFD700;
+  margin-bottom: 10px;
+}
+
+.card-number {
+  display: inline-block;
+  background: rgba(168, 216, 255, 0.3);
+  color: #005b96;
+  font-weight: bold;
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  color: #005b96;
+  margin-bottom: 15px;
+}
+
+.card-text {
+  color: #333;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Hover 효과 */
+.learning-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(168, 216, 255, 0.6);
+}
+
+/* 애니메이션 */
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* ROI 섹션 전체 */
+.roi-section {
+  padding: 80px 20px;
+  background: #f7f9fc;
+  text-align: center;
+}
+
+.roi-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.roi-subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 50px;
+  line-height: 1.6;
+}
+
+/* 카드 컨테이너 */
+.roi-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+/* 카드 스타일 */
+.roi-card {
+  background: #fff;
+  padding: 30px 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.roi-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.roi-icon {
+  font-size: 2.5rem;
+  color: #ff7f50;
+  margin-bottom: 20px;
+}
+
+.roi-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+.roi-card-text {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* CTA */
+.roi-cta p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.roi-btn {
+  display: inline-block;
+  padding: 15px 40px;
+  background: #ff7f50;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.roi-btn:hover {
+  background: #ff6333;
+}
+
+/*content3 끝 부분*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*section3 자주 묻는 질문  */
+.lo-faq {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+  font-family: 'Noto Sans KR', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+  line-height: 1.6;
+}
+
+.lo-faq-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  border-left: 5px solid #0d6efd; /* 파란 포인트 */
+  padding-left: 12px;
+}
+
+.lo-faq-description {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.lo-faq-list {
+  border-top: 1px solid #e0e0e0;
+}
+
+.lo-faq-question {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 20px 0 6px;
+  cursor: pointer;
+  position: relative;
+  padding-right: 20px;
+  color: #0d6efd; /* 질문 파란색 */
+  transition: color 0.3s ease;
+}
+
+.lo-faq-question:hover {
+  color: #084298;
+}
+
+.lo-faq-question::after {
+  content: '+';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 700;
+  color: #0d6efd;
+  transition: transform 0.3s ease;
+}
+
+/* 자바스크립트로 열렸을 때 +를 -로 바꿀 때 활용 */
+.lo-faq-question.active::after {
+  content: '-';
+  transform: translateY(-50%);
+  color: #084298;
+}
+
+.lo-faq-answer {
+  font-size: 1rem;
+  color: #444;
+  margin-left: 10px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  padding-left: 0;
+}
+
+/* 열렸을 때 답변 보이도록 */
+.lo-faq-answer.active {
+  max-height: 500px; /* 충분히 크게 */
+  padding-left: 15px;
+  margin-bottom: 10px;
+}
+
+/* 답변 부드럽게 나오도록 애니메이션 */
+@keyframes fadeInAnswer {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

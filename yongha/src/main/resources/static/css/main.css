@@ -1,0 +1,692 @@
+/* 📦 content 전체 */
+.content1 {
+  width: 100%;
+  height: 100vh; /* 화면 전체 높이 */
+}
+
+.content1-inner1 {
+  width: 100%;
+  height: 100%;
+  background-image: url('/img/yong2.png'); /* 여기에 원하는 사진 경로 */
+  background-size: cover; /* 화면 꽉 채우기 */
+  background-position: center; /* 중앙 정렬 */
+  background-repeat: no-repeat;
+  display: flex; /* 내용 가운데 배치 */
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  text-align: center;
+  position: relative;
+}
+
+/* 글씨 스타일 */
+.main-text h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.main-text p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.main-text button {
+  background-color: #ffcc00; /* 카카오뱅크 노랑 느낌 */
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.main-text button:hover {
+  background-color: #ffdb4d;
+}
+
+
+/* 🔐 오른쪽: 로그인 영역 */
+.right-section {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: linear-gradient(to right, #ffffff, #f9f9f9);
+	border: 1px solid #e0e0e0;
+	border-radius: 16px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+	padding: 40px 50px;
+	max-width: 900px;
+	margin: 40px auto;
+	gap: 40px;
+	margin-right: 100px; /* 적당히 조절 */
+}
+
+/* 왼쪽 섹션 */
+.yongha-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.yongha-info h2 {
+	font-size: 28px;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 5px;
+}
+
+.description p {
+	font-size: 15px;
+	color: #555;
+	line-height: 1.6;
+}
+
+.go-btn {
+	width: fit-content;
+	padding: 10px 20px;
+	background-color: gold; /* 골드 */
+	border: none;
+	color: #fff;
+	font-weight: 600;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.go-btn:hover {
+	background-color: gold;
+}
+
+/* 오른쪽 박스 */
+.login-box {
+	width: 180px;
+	height: 180px;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 15px;
+	transition: transform 0.3s ease;
+}
+
+.login-box:hover {
+	transform: translateY(-4px);
+}
+
+.user-icon {
+	font-size: 54px;
+	font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji",
+		sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: inherit; /* 색상 강제 적용 방지 */
+}
+
+.login-btn {
+	padding: 8px 18px;
+	background-color: gold;
+	color: #222;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+	background-color: gold;
+}
+
+/* 📱 반응형 대응 */
+@media ( max-width : 768px) {
+	.content1-inner {
+		flex-direction: column;
+		margin-bottom: 50px;
+	}
+	.left-section, .right-section {
+		width: 100%;
+	}
+	.swiper {
+		height: 300px;
+	}
+	.event-info {
+		left: 20px;
+		right: 20px;
+		bottom: 20px;
+		max-width: 90%;
+		padding: 15px;
+	}
+	.event-info h3 {
+		font-size: 18px;
+	}
+	.event-info p {
+		font-size: 14px;
+	}
+	.event-info button {
+		padding: 8px 16px;
+		font-size: 14px;
+	}
+}
+
+
+
+/* content2 ~ content5 전체 화면 꽉 차게 */
+.content2,
+.content3,
+.content4,
+.content5 {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+
+}
+
+/* 각 섹션 내부 컨텐츠가 너무 바깥까지 붙지 않게 */
+.content2 > *,
+.content3 > *,
+.content4 > *,
+.content5 > * {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+
+
+
+
+/* 🔐 Content 2: 버튼영역 */
+.content2 {
+  background-color: #009fe3;
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.product-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.product-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+  align-items: center;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 아이콘 스타일 */
+.product-card i {
+  font-size: 32px;
+  background-color: #009fe3;
+  color: white;
+  border-radius: 50%;
+  padding: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.product-card:hover i {
+  background-color: #006edc; /* hover 시 아이콘 배경 변화 */
+  color: #ffd700; /* hover 시 아이콘 골드 색상 */
+}
+
+.product-card p {
+  margin-top: 10px;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.product-card:hover p {
+  color: #ffd700; /* 골드 색상으로 텍스트 강조 */
+}
+
+.product-message {
+  text-align: left;
+  color: white;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 260px;
+}
+
+.product-message img {
+  margin-top: 10px;
+  width: 100px;
+}
+
+.icon-emoji {
+  font-size: 32px;
+  background-color: #009fe3;
+  color: white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.product-card:hover .icon-emoji {
+  background-color: #006edc;
+  color: #ffd700; /* hover 시 골드 */
+}
+
+
+
+
+
+
+
+
+
+/* 💎 content3: 메인 제품 강조 */
+/* 전체 섹션 배경 및 정렬 */
+.content3 {
+  background-color: #f5f5f5;
+  padding: 120px 30px 80px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.highlight-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  position: relative;
+}
+
+/* 텍스트 박스 */
+.text-box {
+  max-width: 600px;
+  text-align: center;
+  color: #333;
+  z-index: 2;
+}
+
+.text-box h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.text-box strong {
+  display: block;
+  font-size: 20px;
+  color: #009FE3;
+  margin-bottom: 20px;
+}
+
+.text-box p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.text-box .year {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #999;
+}
+/* 로고 + 설명 나란히 */
+.logo-and-desc {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  z-index: 1;
+  position: relative;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+/* 설명 텍스트 작게 */
+.desc-small {
+  max-width: 320px;
+  font-size: 13.5px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.desc-small .year {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+
+
+/* 연도 텍스트와 이미지 감싸는 wrap */
+.image-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.year-text {
+  font-size: 180px;
+  font-weight: 900;
+  color: #e0e0e0;
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.image-box {
+  position: relative;
+  z-index: 1;
+}
+
+.image-box img {
+  max-width: 260px;
+  height: auto;
+}
+
+/* 연도 그래프 스타일 */
+.year-graph {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+
+.year-graph ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-left: 3px solid #ff5555;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.year-graph li {
+  padding-left: 10px;
+  font-size: 14px;
+  color: #999;
+}
+
+.year-graph li.active {
+  color: #ff5555;
+  font-weight: bold;
+}
+
+/* 하단 버튼 */
+.year-selector {
+  margin-top: 80px;
+  display: flex;
+  gap: 15px;
+}
+
+.year-btn {
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.year-btn:hover,
+.year-btn.active {
+  background-color: gold;
+  color: #fff;
+  border-color: gold;
+}
+
+
+/* 🍭 content4: 카드형 주요 기능 안내 */
+.content4 {
+  background: #fefefe;
+  padding: 60px 30px;
+  text-align: center;
+}
+
+.content4 h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.content4 p {
+  font-size: 1rem;
+  margin-bottom: 40px;
+  color: #444;
+}
+
+.card-row {
+	
+  padding: 0 40vw; /* 좌우 여백을 줘야 첫/마지막 카드가 중앙에 올 수 있어 */
+  scroll-behavior: smooth;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  display: flex;
+  gap: 20px;
+  padding: 20px 10px;
+    scroll-behavior: smooth;
+
+  /* 스크롤바 제거 */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.card-row::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+.card-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 20px;
+  padding: 40px 20px;
+  scroll-behavior: smooth;
+}
+
+.card {
+  flex: 0 0 auto;
+  width: 260px;
+  padding: 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  scroll-snap-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+
+.card h4 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.card p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* 가운데 활성 카드 스타일 */
+.card.active {
+  transform: scale(1.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  background: #2D9CDB;
+  color: white;
+}
+.card.active h4,
+.card.active p {
+  color: white;
+}
+.card-icon {
+  width: 200px;      /* 아이콘 크기 */
+  height: 200px;
+  display: block;
+  margin: 0 auto 12px auto; /* 위/아래 마진 조절 */
+}
+.card:hover {
+  transform: scale(1.05);
+}
+
+
+/* 🎀 content5: Yongha가 만드는 변화 */
+.content5 {
+    padding: 60px 20px;
+     background: rgba(45, 156, 219, 0.04); /* 2D9CDB 색상의 흐릿한 배경 */
+    font-family: 'Noto Sans KR', sans-serif;
+    overflow: hidden;
+  }
+
+  .content5 h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #1b4029;
+    text-align: center;
+  }
+
+  .content5 p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .testimonial-wrap {
+	display: flex;
+	  flex-wrap: wrap;
+	  gap: 30px;
+	  justify-content: center; /* 가운데 정렬(선택 사항) */
+  }
+
+  .testimonial-card {
+    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    padding: 20px 24px;
+    width: 90%;
+    max-width: 480px;
+    margin-top: -40px;
+    transition: all 0.3s ease;
+  }
+
+  /* 지그재그 좌우 이동 */
+  .testimonial-card:nth-child(odd) {
+    transform: translateX(-10px);
+  }
+
+  .testimonial-card:nth-child(even) {
+    transform: translateX(10px);
+  }
+
+  /* z-index 순차 배치 */
+  .testimonial-card:nth-child(1) { z-index: 10; margin-top: 0; }
+  .testimonial-card:nth-child(2) { z-index: 9; }
+  .testimonial-card:nth-child(3) { z-index: 8; }
+  .testimonial-card:nth-child(4) { z-index: 7; }
+  .testimonial-card:nth-child(5) { z-index: 6; }
+  .testimonial-card:nth-child(6) { z-index: 5; }
+  .testimonial-card:nth-child(7) { z-index: 4; }
+  .testimonial-card:nth-child(8) { z-index: 3; }
+  .testimonial-card:nth-child(9) { z-index: 2; }
+  .testimonial-card:nth-child(10) { z-index: 1; }
+
+  /* 흐릿한 카드 */
+  .testimonial-card.faded {
+    opacity: 0.45;
+    transform: scale(0.97) translateX(30px); /* 지그재그도 포함 */
+    filter: blur(1px);
+  }
+  
+  /* clear 클래스 붙은 카드 중 홀수번째: 왼쪽 정렬 */
+  .testimonial-card.clear:nth-of-type(odd) {
+    margin-left: 0;
+    margin-right: auto;
+    text-align: left;
+  }
+
+  /* clear 클래스 붙은 카드 중 짝수번째: 오른쪽 정렬 */
+  .testimonial-card.clear:nth-of-type(even) {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+  }
+
+  .stars {
+    color: #2d9947;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .testimonial-card .text {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .testimonial-card .info {
+    font-size: 14px;
+    color: #888;
+  }
+
+  .tag {
+    position: absolute;
+    top: -12px;
+    left: -12px;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 12px;
+    transform: rotate(-7deg);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    white-space: nowrap;
+  }
+
+  .tag.child {
+    background-color: #ffe99b;
+    color: #7a4b00;
+  }
+
+  .tag.parent {
+    background-color: #c8f9d0;
+    color: #1a522a;
+  }
+
+  .tag.teen {
+    background-color: #d8e1ff;
+    color: #3a49b2;
+  }

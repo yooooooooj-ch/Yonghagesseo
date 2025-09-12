@@ -1,0 +1,858 @@
+/* 📦 content 전체 */
+.content {
+	background-color: #fff;
+	padding: 30px 25px;
+	color: #333;
+	margin: 0 auto; /* 좌우 자동 여백으로 중앙 정렬 */
+}
+
+
+/* 🌀 content1: Swiper + 로그인 섹션 좌우 정렬 래퍼 */
+.content1-inner {
+	display: flex;
+	justify-content: space-between;
+	align-items: stretch;
+	gap: 30px;
+	flex-wrap: wrap;
+	margin-bottom: 80px;
+	flex-wrap: nowrap; /* 가로 고정, 필요시 wrap */
+}
+
+/* 🎞️ 왼쪽: Swiper 슬라이드 */
+.left-section {
+	flex: 2;
+	min-width: 60%;
+}
+
+/* Swiper 스타일 */
+.swiper {
+  width: 60%;
+  aspect-ratio: 3 / 2;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.swiper-slide {
+	position: relative;
+	overflow: hidden;
+}
+
+.swiper-slide img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.6s ease;
+}
+
+.swiper-slide:hover img {
+	transform: scale(1.05);
+}
+
+/* 📄 이벤트 텍스트 박스 */
+.event-info {
+	position: absolute;
+	bottom: 30px;
+	left: 40px;
+	color: #fff;
+	text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+	background: rgba(0, 0, 0, 0.4);
+	padding: 20px;
+	border-radius: 12px;
+	max-width: 60%;
+}
+
+.event-info h3 {
+	font-size: 24px;
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+.event-info p {
+	font-size: 16px;
+	margin-bottom: 10px;
+}
+
+.event-info button {
+	background: gold;
+	color: #222;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 8px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+.event-info button:hover {
+	background: #f5d142;
+}
+
+/* 페이징 + 네비게이션 */
+.swiper-pagination-bullet {
+	background: #ddd;
+	opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+	background: gold;
+}
+
+.swiper-button-next, .swiper-button-prev {
+	color: gold;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+
+/* =====1. 왼쪽 상단 프로필 & 요약  ===== */
+.right-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+}
+
+
+
+/* 프로필 정보 영역 */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.child-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #222;
+}
+
+.child-balance {
+  font-size: 1rem;
+  margin: 0;
+  color: #555;
+}
+
+/* 목표 진행바 */
+.goal-progress {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.progress-bar {
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 10px;
+  margin-top: 5px;
+}
+
+.progress-bar div {
+  background: linear-gradient(to right, gold, #ffdf70);
+  height: 100%;
+}
+
+/* GO 버튼 스타일 */
+.go-btn {
+  align-self: flex-start;
+  margin-top: 8px;
+  background: gold;
+  color: #333;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.go-btn:hover {
+  background: #ffdf70;
+  transform: translateY(-2px);
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .right-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .go-btn {
+    align-self: center;
+  }
+}
+
+
+/* 🔐 오른쪽: 자녀 로그인 영역 */
+.right-section {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: linear-gradient(to right, #ffffff, #f9f9f9);
+	border: 1px solid #e0e0e0;
+	border-radius: 16px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+	padding: 40px 50px;
+	max-width: 900px;
+	margin: 40px auto;
+	gap: 40px;
+	margin-right: 100px; /* 적당히 조절 */
+}
+
+
+
+/* 오른쪽 박스 */
+.login-box {
+	width: 180px;
+	height: 180px;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 15px;
+	transition: transform 0.3s ease;
+}
+
+.login-box:hover {
+	transform: translateY(-4px);
+}
+
+.user-icon {
+	font-size: 54px;
+	font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji",
+		sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: inherit; /* 색상 강제 적용 방지 */
+}
+
+
+/* 프로필 이미지 */
+.login-box .profile-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid gold;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.login-btn {
+	padding: 8px 18px;
+	background-color: gold;
+	color: #222;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+	background-color: gold;
+}
+
+/* 📱 반응형 대응 */
+@media ( max-width : 768px) {
+	.content1-inner {
+		flex-direction: column;
+		margin-bottom: 50px;
+	}
+	.left-section, .right-section {
+		width: 100%;
+	}
+	.swiper {
+		height: 300px;
+	}
+	.event-info {
+		left: 20px;
+		right: 20px;
+		bottom: 20px;
+		max-width: 90%;
+		padding: 15px;
+	}
+	.event-info h3 {
+		font-size: 18px;
+	}
+	.event-info p {
+		font-size: 14px;
+	}
+	.event-info button {
+		padding: 8px 16px;
+		font-size: 14px;
+	}
+}
+
+
+
+
+
+
+
+
+
+/* =========================
+   전체 컨테이너 (심플 버전)
+========================= */
+.parent-page-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+    font-family: 'Inter', 'Roboto', sans-serif;
+    color: #222;
+
+
+}
+
+/* =========================
+   공통 섹션 (심플)
+========================= */
+.parent-section {
+    background-color: #fff;
+   
+    padding: 20px 24px;
+    margin-bottom: 30px;
+
+   
+
+}
+
+.parent-section h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #111;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.parent-section h2::before {
+    content: "💼";
+    font-size: 1.2rem;
+}
+
+/* =========================
+   좌우 배치: 공지사항 + 팁
+========================= */
+.parent-section-wrap {
+    display: flex;
+    gap: 40px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 40px auto;
+	margin-top: -350px;
+
+}
+
+.child-notice {
+	flex: 1;
+	background: #fff;
+	padding: 20px 24px; /* 패딩 살짝 줄임 */
+	font-family: 'Noto Sans KR', 'Segoe UI', Tahoma, Geneva, Verdana,
+		sans-serif;
+	margin: 0; /* 마진 제거 */
+	border-radius: 0; /* 둥근 모서리 제거 */
+	box-shadow: none; /* 그림자 제거 */
+	border-bottom: 1px solid #ddd; /* 구분선 추가 */
+
+}
+
+.child-notice h3 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin: 0 0 12px 0;
+	color: #222;
+	border: none; /* 아래 보더 제거 */
+	padding: 0;
+	letter-spacing: -0.02em;
+}
+
+/* 고정 공지사항 영역 */
+.notice-fixed {
+	margin: 0 0 12px 0;
+	border-left: 4px solid #f39c12;
+	padding-left: 12px;
+}
+
+.notice-fixed .notice-card {
+	background: #fffbe6;
+	box-shadow: none;
+	font-weight: 600;
+	margin-bottom: 8px;
+	cursor: default;
+	transition: box-shadow 0.3s ease;
+	border-radius: 0;
+}
+
+.notice-fixed .notice-card:hover {
+	box-shadow: none;
+}
+
+/* 새 알림 영역 */
+.notice-new {
+	margin: 0 0 8px 0;
+}
+
+.notice-card:hover {
+	box-shadow: none;
+	border-bottom: 1px solid #eee;
+}
+
+.notice-text {
+	font-size: 1rem;
+	color: #333;
+	line-height: 1.5;
+	font-weight: 500;
+	margin: 0;
+}
+
+
+
+.notice-more-btn:hover {
+	background: #222;
+}
+.child-notice {
+	flex: 1;
+	background: #fff;
+	padding: 20px 24px; /* 패딩 살짝 줄임 */
+	font-family: 'Noto Sans KR', 'Segoe UI', Tahoma, Geneva, Verdana,
+		sans-serif;
+	margin: 0; /* 마진 제거 */
+	border-radius: 0; /* 둥근 모서리 제거 */
+	box-shadow: none; /* 그림자 제거 */
+	border-bottom: 1px solid #ddd; /* 구분선 추가 */
+}
+
+.child-notice h3 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin: 0 0 12px 0;
+	color: #222;
+	border: none; /* 아래 보더 제거 */
+	padding: 0;
+	letter-spacing: -0.02em;
+}
+
+/* 고정 공지사항 영역 */
+.notice-fixed {
+	margin: 0 0 12px 0;
+	border-left: 4px solid #f39c12;
+	padding-left: 12px;
+}
+
+.notice-fixed .notice-card {
+	background: #fffbe6;
+	box-shadow: none;
+	font-weight: 600;
+	margin-bottom: 8px;
+	cursor: default;
+	transition: box-shadow 0.3s ease;
+	border-radius: 0;
+}
+
+.notice-fixed .notice-card:hover {
+	box-shadow: none;
+}
+
+/* 새 알림 영역 */
+.notice-new {
+	margin: 0 0 8px 0;
+}
+
+.notice-card:hover {
+	box-shadow: none;
+	border-bottom: 1px solid #eee;
+}
+
+.notice-text {
+	font-size: 1rem;
+	color: #333;
+	line-height: 1.5;
+	font-weight: 500;
+	margin: 0;
+}
+
+
+
+/* =====================
+   플러스 버튼 - 심플 버전
+===================== */
+.notice-more-btn {
+  margin-top: 8px;
+  width: 36px;
+  height: 36px;
+  background: #ffd700; /* 깔끔한 골드 */
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #222;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.notice-more-btn:hover {
+  background: #e6c200; /* 살짝 진한 골드 */
+  transform: scale(1.05); /* 살짝 커짐 */
+}
+
+
+/* 공지사항 카드 */
+.notice-card {
+	min-height: 10px; /* 세로 길이 확보 */
+	padding: 8px 15px; /* 상하 패딩 증가 */
+	display: flex;
+	align-items: center; /* 텍스트를 세로 가운데 정렬 */
+}
+
+/* 고정 공지사항 카드 */
+.notice-fixed .notice-card {
+	min-height: 30px; /* 고정 공지는 조금 더 길게 */
+	padding: 8px 15px;
+}
+
+/* 텍스트 */
+.notice-text {
+	font-size: 1rem;
+	color: #333;
+	line-height: 1.7; /* 줄 간격 넉넉히 */
+	font-weight: 500;
+	margin: 0;
+}
+
+
+/* =========================
+   부모 꿀팁
+========================= */
+.tips-section {
+    flex: 1;
+}
+
+.tips-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tip-card {
+	background: #fff;
+	   border-radius: 8px;
+	   padding: 5px 16px; /* 위아래 패딩 줄임 */
+	   box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+	   transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tip-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.tip-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111;
+ margin-bottom: 6px; /* 제목과 내용 간격 줄임 */
+}
+
+.tip-card p {
+    font-size: 0.85rem; /* 글자 조금 작게 */
+    color: #555;
+    line-height: 1.4; /* 줄 간격 조금 줄임 */
+}
+
+.tip-more {
+     margin-top: 8px; /* 버튼과 내용 간격 줄임 */
+    padding: 5px 10px; /* 버튼 크기 줄임 */
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.tip-more:hover {
+    background: #0056b3;
+}
+
+
+
+
+
+
+/* =========================
+   부모 공감 스토리 (가운데 아이콘 + 좌우 카드)
+========================= */
+.story-section {
+  max-width: 1400px;
+  margin: 80px auto;
+  text-align: center;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.story-section .section-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 50px;
+  color: #222;
+}
+
+.story-list {
+  display: grid;
+  grid-template-columns: 1fr 280px 1fr; /* 좌-중앙-우 */
+  gap: 40px;
+  align-items: start;
+  justify-items: center;
+  
+}
+
+.story-column {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.story-icon {
+  width: 280px;
+  height: 280px;
+  background: url("/img/familyyong.png") no-repeat center/contain;
+  background-color: #f2f2f2;
+  border-radius: 50%;
+  margin-top: 60px; /* 👈 원하는 만큼 아래로 */
+}
+
+
+
+
+
+
+/* 스토리 카드 */
+.story-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  padding: 24px;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.story-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+.story-header {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.story-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #888;
+}
+
+.story-body p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.story-footer {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+}
+
+/* CTA 버튼 */
+.story-cta {
+  margin-top: 60px;
+}
+
+.cta-start {
+  background: #222;
+  color: #fff;
+  padding: 14px 32px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.cta-start:hover {
+  background: #444;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================
+   성장 & 학습 비용 트래커 (가로형)
+========================= */
+.growth-expense-section {
+  width: 90%;
+  max-width: 1500px;
+  margin: 60px auto;
+  padding: 30px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  border-radius: 12px;
+}
+
+.growth-expense-title {
+  font-size: 1.8rem;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* =========================
+   차트 영역
+========================= */
+.growth-expense-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  position: relative;
+}
+
+.bar-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.bar-label {
+  min-width: 100px;
+  text-align: right;
+  font-weight: 600;
+  color: #555;
+}
+
+.bar {
+  position: relative;
+  height: 40px;
+  width: 0; /* 초기 애니메이션 효과 위해 0 */
+background: linear-gradient(90deg, #a1c4fd, #c2e9fb);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  color: #000;
+  font-weight: 600;
+  transition: width 1.2s ease-out;
+}
+
+/* 애니메이션을 위한 JS */
+.bar span {
+  opacity: 0;
+  transition: opacity 0.5s ease 1.2s;
+}
+
+/* =========================
+   x축
+========================= */
+.x-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* =========================
+   막대 끝 애니메이션
+========================= */
+.bar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.2);
+  animation: shine 1.2s ease forwards;
+}
+
+@keyframes shine {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+
+/* =========================
+   모달
+========================= */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 480px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 12px; right: 16px;
+    font-size: 24px;
+    cursor: pointer;
+}

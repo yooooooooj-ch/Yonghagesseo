@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>교육 효과</title>
+<link rel="stylesheet" th:href="@{/css/learning_outcomes.css}" />
+<!-- 아이콘 라이브러리 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+		
+		<!--section1-->
+		<section class="learning-section1">
+		  <!-- 왼쪽 텍스트 영역 -->
+		  <div class="section1-left">
+		    <h1 class="section1-title">Learning<br> Outcomes</h1>
+		    <p class="section1-desc">
+		      Yongha는 단순한 금융 관리 앱을 넘어, 자녀의 미래를 변화시키는 금융 교육 플랫폼입니다.
+		    </p>
+		    <a href="#learning-cards" class="section1-btn">자세히 보기</a>
+		  </div>
+
+		  <!-- 오른쪽 이미지 영역 -->
+		  <div class="section1-right"></div>
+		</section>
+
+		
+		<!--section2-->
+		<section class="learning-section2">
+			<!-- 섹션 제목 -->
+			<h2 class="learning-title">Learning<br> Outcomes</h2>
+
+			<!-- 카드 컨테이너 -->
+			<div class="learning-grid">
+
+				<div class="learning-card">
+					<div class="card-icon"><i class="fas fa-coins"></i></div>
+					<span class="card-number">01</span>
+					<h3 class="card-title">실질적인 금융 이해력 향상</h3>
+					<p class="card-text">자녀는 용돈을 계획하고 지출하면서 예산 수립, 금융 용어, 지출 항목 구분 등 실질적인 금융 지식을 자연스럽게 체득합니다. 이는 생활 속 체험을 통한 진정한 금융 교육으로 이어집니다.</p>
+				</div>
+
+				<div class="learning-card">
+					<div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+					<span class="card-number">02</span>
+					<h3 class="card-title">책임감 있는 소비 습관 형성</h3>
+					<p class="card-text">소비 내역을 직접 기록하고 되돌아보는 습관을 통해 자녀는 선택의 결과를 스스로 책임지는 태도를 익히며, 즉흥적 소비보다 가치 중심 소비 습관을 기릅니다.</p>
+				</div>
+
+				<div class="learning-card">
+					<div class="card-icon"><i class="fas fa-bullseye"></i></div>
+					<span class="card-number">03</span>
+					<h3 class="card-title">목표 설정 및 자기주도력 향상</h3>
+					<p class="card-text">저축 목표를 세우고 달성 과정을 관리하며 자녀는 계획성과 인내력을 기르게 됩니다. 스스로 계획하고 실행하는 경험은 자기주도 학습 역량을 강화합니다.</p>
+				</div>
+
+				<div class="learning-card">
+					<div class="card-icon"><i class="fas fa-handshake"></i></div>
+					<span class="card-number">04</span>
+					<h3 class="card-title">부모-자녀 간 금융 대화 활성화</h3>
+					<p class="card-text">Yongha는 자녀의 소비 데이터를 기반으로 자연스럽게 금융에 대한 대화가 이뤄지도록 돕습니다. 이는 가족 간 소통을 이끄는 새로운 문화로 확장됩니다.</p>
+				</div>
+
+				<div class="learning-card">
+					<div class="card-icon"><i class="fas fa-laptop"></i></div>
+					<span class="card-number">05</span>
+					<h3 class="card-title">디지털 금융 환경 적응력 향상</h3>
+					<p class="card-text">플랫폼을 통한 실시간 관리 경험은 디지털 기반의 금융 활동에 대한 이해도를 높이며, 미래 사회에서 필수적인 디지털 금융 역량을 자연스럽게 길러줍니다.</p>
+				</div>
+
+				<div class="learning-card">
+					<div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+					<span class="card-number">06</span>
+					<h3 class="card-title">건강한 금융 가치관 정립</h3>
+					<p class="card-text">돈은 단순한 수단이 아니라 책임 있게 다뤄야 할 자원임을 깨달으며, 자녀는 어릴 때부터 바람직한 경제 윤리와 장기적인 재정관을 세워나갑니다.</p>
+				</div>
+
+			</div>
+		</section>
+		
+		<!-- ROI / 교육 가치 섹션 -->
+		<section class="roi-section">
+		  <div class="roi-inner">
+		    <h2 class="roi-title">투자 대비 최고의 교육 가치</h2>
+		    <p class="roi-subtitle">
+		      Yongha는 단순한 앱이 아니라, 자녀의 미래를 위한 금융 투자입니다.<br>
+		      적은 비용으로 장기적인 금융 습관과 자기주도력을 길러보세요.
+		    </p>
+
+		    <div class="roi-cards">
+		      <!-- 카드1 -->
+		      <div class="roi-card">
+		        <div class="roi-icon"><i class="fas fa-wallet"></i></div>
+		        <h3 class="roi-card-title">월 1만원으로 시작하는 금융 습관</h3>
+		        <p class="roi-card-text">
+		          소액 투자를 통해 자녀는 자연스럽게 저축과 소비를 계획하고 관리하는 습관을 기릅니다.
+		        </p>
+		      </div>
+
+		      <!-- 카드2 -->
+		      <div class="roi-card">
+		        <div class="roi-icon"><i class="fas fa-chart-line"></i></div>
+		        <h3 class="roi-card-title">조기 금융 교육으로 미래 준비</h3>
+		        <p class="roi-card-text">
+		          어린 시절부터 금융 교육을 시작하면 자립적이고 책임감 있는 경제적 의사결정 능력을 향상시킵니다.
+		        </p>
+		      </div>
+
+		      <!-- 카드3 -->
+		      <div class="roi-card">
+		        <div class="roi-icon"><i class="fas fa-award"></i></div>
+		        <h3 class="roi-card-title">장기적 투자 효과</h3>
+		        <p class="roi-card-text">
+		          소규모 비용으로 시작해, 자녀의 경제적 이해도와 성취감을 장기적으로 극대화할 수 있습니다.
+		        </p>
+		      </div>
+
+		      <!-- 카드4 -->
+		      <div class="roi-card">
+		        <div class="roi-icon"><i class="fas fa-users"></i></div>
+		        <h3 class="roi-card-title">가족과 함께하는 금융 성장</h3>
+		        <p class="roi-card-text">
+		          부모와 자녀가 함께 금융 활동을 확인하고 목표를 달성하며, 가족 간 대화와 협력 능력을 높입니다.
+		        </p>
+		      </div>
+		    </div>
+
+		    <!-- CTA -->
+		    <div class="roi-cta">
+		      <p>작은 투자로 자녀의 금융 미래를 준비하세요.</p>
+		      <a href="/login" class="roi-btn">체험 시작하기</a>
+		    </div>
+		  </div>
+		</section>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+
+		
+		<script>
+					<!--section2 부분 -->
+					document.addEventListener('DOMContentLoaded', () => {
+					  const cards = document.querySelectorAll('.learning-card');
+
+					  const observerOptions = {
+					    threshold: 0.1
+					  };
+
+			  const observer = new IntersectionObserver((entries, observer) => {
+			    entries.forEach(entry => {
+			      if (entry.isIntersecting) {
+			        entry.target.classList.add('visible');
+			        observer.unobserve(entry.target);
+			      }
+			    });
+			  }, observerOptions);
+
+			  cards.forEach(card => observer.observe(card));
+			});
+
+			
+			
+		
+			document.querySelectorAll('.lo-faq-question').forEach((q) => {
+			  q.addEventListener('click', () => {
+			    q.classList.toggle('active');
+			    const answer = q.nextElementSibling;
+			    answer.classList.toggle('active');
+			  });
+			});
+			
+
+		</script>
+
+	</main>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>메일 설정</title>
+</head>
+<body>
+    <h1>메일 수신 주기 설정</h1>
+
+    <form th:action="@{/parent/mail-settings}" method="post">
+        <label for="mailCycle">메일 주기:</label>
+        <select id="mailCycle" name="mailCycle">
+            <option th:value="0" th:selected="${mailCycle == 0}">매일</option>
+            <option th:value="1" th:selected="${mailCycle == 1}">일주일</option>
+            <option th:value="2" th:selected="${mailCycle == 2}">한달</option>
+            <option th:value="3" th:selected="${mailCycle == 3}">테스트: 매분</option>
+        </select>
+
+        <button type="submit">저장</button>
+    </form>
+
+    <h2>연결된 자녀 목록</h2>
+    <ul>
+        <li th:each="child : ${children}" th:text="${child.user_name}">자녀 이름</li>
+    </ul>
+
+    <p th:if="${msg}" th:text="${msg}"></p>
+</body>
+</html>

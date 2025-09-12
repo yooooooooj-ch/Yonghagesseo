@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ddak.yongha.mapper.ParentMailMapper">
+
+    <!-- 부모의 자녀 목록 조회 -->
+    <select id="findChildrenByParent" resultType="com.ddak.yongha.vo.UsersVO">
+        SELECT u.user_no, u.user_name, u.profile
+        FROM Users u
+        JOIN Family f ON f.child_no = u.user_no
+        WHERE f.parent_no = #{parentNo}
+        ORDER BY u.user_name
+    </select>
+
+    <!-- 부모의 메일 주기 조회 -->
+    <select id="findMailCycleByParentNo" resultType="java.lang.Integer">
+        SELECT mail_cycle
+        FROM Parentuser
+        WHERE parent_no = #{parentNo}
+    </select>
+
+    <!-- 부모 존재 여부 확인 -->
+    <select id="existsParentUser" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM Parentuser WHERE parent_no = #{parentNo}
+    </select>
+
+    <!-- 메일 주기 업데이트 -->
+    <update id="updateMailCycle">
+        UPDATE Parentuser
+        SET mail_cycle = #{mailCycle}
+        WHERE parent_no = #{parentNo}
+    </update>
+
+    <!-- 부모 메일 주기 신규 삽입 -->
+    <insert id="insertParentUser">
+        INSERT INTO Parentuser(parent_no, mail_cycle, last_send_date)
+        VALUES (#{parentNo}, #{mailCycle}, SYSDATE)
+    </insert>
+
+</mapper>

@@ -1,0 +1,303 @@
+/* ================================
+   MyInfo 전용 CSS
+   ================================ */
+:root {
+  --card-border:#eef0f5;
+  --card-radius:14px;
+  --card-shadow:0 10px 26px rgba(15,23,42,.08);
+  --focus-ring:0 0 0 3px rgba(111,174,255,.18);
+
+  --primary-500:#6FAEFF; 
+  --primary-600:#4F8FEF; 
+  --primary-700:#3a7be0;
+  --light-bg:#f7fbff; 
+  --border-blue:#cfe4ff;
+}
+
+/* ================================
+   부모 레이아웃
+   ================================ */
+.parent-mypage-layout {
+  display: flex;
+  align-items: stretch;   /* ✅ 사이드바와 본문 높이 맞춤 */
+  gap: 20px;
+  max-width: 1200px;
+  margin: 40px auto;
+  box-sizing: border-box;
+}
+
+.parent-mypage-sidebar {
+  width: 260px;
+  padding: 20px;
+  background: #fff;
+  border-radius: var(--card-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.parent-mypage-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================
+   프로필 카드
+   ================================ */
+.profile-card {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #f3f9ff, #e0f0ff);
+  border-radius: 16px;
+  padding: 24px 32px;
+  margin-bottom: 15px;
+  border: 1.5px solid rgba(120, 170, 255, 0.3);
+  box-shadow: 0 6px 18px rgba(0, 80, 180, 0.08);
+}
+
+/* 왼쪽 이미지 */
+.profile-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  object-fit: cover;
+}
+
+/* 세로 구분선 */
+.profile-divider {
+  width: 1.5px;
+  height: 90px;
+  background: rgba(0, 80, 180, 0.2);
+  margin: 0 24px;
+  border-radius: 2px;
+}
+
+/* 오른쪽 정보 */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.profile-info h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #222;
+}
+.profile-info p {
+  font-size: 14px;
+  color: #444;
+  margin: 2px 0;
+}
+
+/* ================================
+   가족 프로필 카드
+   ================================ */
+.family-profile-container {
+  background: #fff;
+  border: 2px solid #cfe4ff;  /* 파란 외곽선 */
+  border-radius: 14px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+  padding: 20px 24px;
+  margin-top: 15px;
+}
+.family-profile-container h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #222;
+}
+.family-profile-list {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.family-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+}
+.family-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #d6eaff;
+  object-fit: cover;
+  margin-bottom: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.family-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  text-align: center;
+}
+
+/* ================================
+   본문 카드 (내 정보 수정)
+   ================================ */
+.user-profile-container {
+  flex: 1;
+  background: #fff;
+  border: 2px solid var(--border-blue);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 28px 32px;
+  margin-top: 15px;
+}
+.signup-title {
+  font-size: 20px; 
+  font-weight: 800; 
+  color: #222;
+  margin: 0 0 18px;
+}
+
+/* ================================
+   입력 행
+   ================================ */
+.signup-table { 
+  width: 100%; 
+  border-collapse: separate; 
+  border-spacing: 0 16px; 
+}
+.signup-table td {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.signup-table td::before {
+  flex: 0 0 120px;
+  font-weight: 600;
+  color: #374151;
+  content: attr(data-label);
+  text-align: left;
+}
+
+/* ================================
+   입력 필드
+   ================================ */
+.signup-input {
+  flex: 1;
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid #E5EAF3;
+  border-radius: 12px; 
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+.signup-input:focus {
+  outline: none; 
+  border-color: var(--primary-500); 
+  box-shadow: 0 0 0 3px rgba(111,174,255,.2);
+}
+.signup-input[disabled] { 
+  background: #f6f7f9; 
+  color: #6b7280; 
+}
+
+/* ================================
+   버튼 (전체 통일)
+   ================================ */
+   /* 버튼 (전체 통일) */
+   button, .signup-btn, .small-btn, #btnSave {
+     display: inline-block;
+     padding: 0 16px;
+     height: 40px;
+     min-width: 80px;             /* ✅ 최소 너비 추가 */
+     background: #fff;                         
+     border: 2px solid var(--primary-500);     
+     border-radius: 10px;
+     font-weight: 600;
+     font-size: 14px;
+     color: var(--primary-600);                
+     cursor: pointer;
+     transition: all .2s;
+     box-shadow: 0 3px 6px rgba(111, 174, 255, 0.2);
+     white-space: nowrap;         /* ✅ 글자 줄바꿈 방지 */
+   }
+
+button:hover, .signup-btn:hover, .small-btn:hover, #btnSave:hover {
+  background: var(--primary-500);           
+  color: #fff;                              
+  border-color: var(--primary-600);
+  box-shadow: 0 4px 10px rgba(111, 174, 255, 0.4);
+}
+button:active, .signup-btn:active, .small-btn:active, #btnSave:active {
+  transform: translateY(1px);
+}
+
+/* 수정 버튼만 카드 폭 기준 80% */
+#btnSave {
+  display: block;
+  width: 80%;
+  margin: 24px auto 0;
+  height: 48px;
+  font-size: 16px;
+}
+
+/* ================================
+   인라인 그룹
+   ================================ */
+.signup-inline { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  flex: 1; 
+}
+
+/* ================================
+   토글 스위치
+   ================================ */
+.switch { 
+  position: relative; 
+  display: inline-block; 
+  width: 56px; 
+  height: 30px; 
+}
+.switch input { display: none; }
+.slider {
+  position: absolute; 
+  inset: 0; 
+  background: #e5e7eb;
+  border-radius: 999px; 
+  transition: .2s;
+}
+.slider:before {
+  content: ""; 
+  position: absolute; 
+  left: 3px; 
+  top: 3px;
+  width: 24px; 
+  height: 24px; 
+  background: #fff;
+  border-radius: 50%; 
+  box-shadow: 0 2px 8px rgba(2,6,23,.18);
+  transition: .2s;
+}
+.switch input:checked + .slider { background: var(--primary-600); }
+.switch input:checked + .slider:before { transform: translateX(26px); }
+
+/* ================================
+   반응형
+   ================================ */
+@media (max-width:980px) {
+  .user-profile-container { 
+    margin: 0 0 60px; 
+    padding: 18px; 
+  }
+  .signup-table td { flex-direction: column; align-items: stretch; }
+  .signup-table td::before { margin-bottom: 6px; }
+  .signup-inline { flex-wrap: wrap; }
+  .profile-card { flex-direction: column; align-items: flex-start; }
+}

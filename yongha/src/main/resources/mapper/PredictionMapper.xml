@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ddak.yongha.mapper.PredictionMapper">
+
+    <select id="getUserExpensesByParent" parameterType="int" resultType="map">
+        SELECT 
+            U.USER_NO AS "USER_NO",
+            U.USER_NAME AS "USER_NAME",
+            C.CONS_TYPE AS "CATEGORY",
+            C.AMOUNT AS "AMOUNT",
+            TO_CHAR(C.CONS_DATE,'YYYY-MM-DD') AS "SPEND_DATE"
+        FROM CONSUME C
+        JOIN ACCOUNTS A ON C.ACCOUNT_NO = A.ACCOUNT_NO
+        JOIN FAMILY F ON A.USER_NO = F.CHILD_NO
+        JOIN USERS U ON F.CHILD_NO = U.USER_NO
+        WHERE F.PARENT_NO = #{parentNo}
+        ORDER BY U.USER_NO, C.CONS_DATE
+    </select>
+
+    <select id="getParentsToSend" resultType="map">
+        SELECT U.USER_NO, U.EMAIL
+        FROM PARENTUSER P
+        JOIN USERS U ON U.USER_NO = P.PARENT_NO
+        WHERE
+            (P.MAIL_CYCLE = 0 AND (P.LAST_SEND_DATE IS NULL OR TRUNC(SYSDATE) > TRUNC(P.LAST_SEND_DATE)))
+            OR (P.MAIL_CYCLE = 1 AND (P.LAST_SEND_DATE IS NULL OR TRUNC(SYSDATE) >= TRUNC(P.LAST_SEND_DATE) + 7))
+            OR (P.MAIL_CYCLE = 2 AND (P.LAST_SEND_DATE IS NULL OR TRUNC(SYSDATE) >= ADD_MONTHS(TRUNC(P.LAST_SEND_DATE), 1)))
+            OR (P.MAIL_CYCLE = 3)
+    </select>
+
+	<!-- 이메일 발신 주기 테스트 용 -->
+    <select id="getParentsToSendTest" resultType="map">
+        SELECT U.USER_NO, U.EMAIL
+        FROM PARENTUSER P
+        JOIN USERS U ON U.USER_NO = P.PARENT_NO
+        WHERE
+            (P.MAIL_CYCLE = 0 AND (P.LAST_SEND_DATE IS NULL OR SYSDATE >= P.LAST_SEND_DATE + (1/1440)))
+            OR (P.MAIL_CYCLE = 1 AND (P.LAST_SEND_DATE IS NULL OR TRUNC(SYSDATE) >= TRUNC(P.LAST_SEND_DATE) + 7))
+            OR (P.MAIL_CYCLE = 2 AND (P.LAST_SEND_DATE IS NULL OR TRUNC(SYSDATE) >= ADD_MONTHS(TRUNC(P.LAST_SEND_DATE), 1)))
+    </select>
+
+    <update id="updateParentLastSendDate">
+        UPDATE PARENTUSER
+        SET LAST_SEND_DATE = SYSDATE
+        WHERE PARENT_NO = #{parent_no}
+    </update>
+    
+    <select id="getAutoTransferAmountByChild" resultType="double" parameterType="int">
+        SELECT NVL(SUM(A.amount), 0)
+        FROM AutoTransfer A
+        JOIN Accounts ACC ON A.to_account_no = ACC.account_no
+        WHERE ACC.user_no = #{childNo}
+    </select>
+
+    <select id="getAutoTransferCycleByChild" resultType="int" parameterType="int">
+        SELECT NVL(trans_cycle,1)
+        FROM AutoTransfer A
+        JOIN Accounts ACC ON A.to_account_no = ACC.account_no
+        WHERE ACC.user_no = #{childNo}
+    </select>
+
+    <select id="getAutoTransferLastDateByChild" resultType="java.util.Date" parameterType="int">
+        SELECT last_trans_date
+        FROM AutoTransfer A
+        JOIN Accounts ACC ON A.to_account_no = ACC.account_no
+        WHERE ACC.user_no = #{childNo}
+    </select>
+    
+    <select id="getChildCurrentBalance" resultType="double" parameterType="int">
+        SELECT balance
+        FROM Accounts
+        WHERE user_no = #{childNo}
+    </select>
+
+    <!-- 새로 추가: 진행중인 목표 금액 -->
+    <select id="getChildTargetAmount" resultType="double" parameterType="int">
+        SELECT target_amount
+        FROM GoalHistory
+        WHERE child_no = #{childNo}
+          AND achieved = 0
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+</mapper>

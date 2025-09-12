@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+<meta charset="UTF-8" />
+<title>자녀 소비내역</title>
+<link rel="stylesheet" th:href="@{/css/consume-list.css}" />
+
+</head>
+<body>
+	<main layout:fragment="content" class="content">
+		<!-- 상단 배너 섹션 -->
+				<section class="transfer-banner">
+				  <div class="banner-inner">
+				    <div class="banner-text">
+				      
+						<h2><strong>아이 용돈</strong>, <span>스마트하게 관리</span></h2>
+						<p>지원 내역과 사용 현황을 한눈에 확인하고, 올바른 금융 습관을 길러주세요.</p>
+						<!-- 버튼 누르면 #allowance-section으로 이동 -->
+						      <a href="#allowance-section" class="btn-secondary">목록 보기</a>
+				      
+				    </div>
+				    <div class="banner-img-wrap">
+				      <img src="/img/familyyong.png" alt="캐릭터 이미지" class="banner-img">
+				    </div>
+				  </div>
+				</section>
+				
+				
+				
+				<!-- 중간 타이핑 섹션 -->
+				<section class="mid-section">
+				  <h2><span id="typing"></span></h2>
+				  <p>내 소비 습관을 돌아보고, 더 현명하게 관리하세요.</p>
+				</section>
+
+				<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+				<script>
+				  document.addEventListener("DOMContentLoaded", function() {
+				    new Typed("#typing", {
+				      strings: [
+				        "소비 내역을 한눈에 확인 👀",
+				        "카테고리별로 분석 📂",
+				        "내일은 더 스마트한 소비 💡"
+				      ],
+				      typeSpeed: 60,
+				      backSpeed: 30,
+				      loop: true
+				    });
+				  });
+				</script>
+				
+				
+				<!-- 🔥 Dashboard Cards Section -->
+				  <section class="dashboard-cards">
+				    <div class="cards-inner">
+
+				      <!-- 오늘 지출 내역 (메인 카드) -->
+				      <div class="card main-card">
+				        <h3>오늘 지출 내역</h3>
+				        <ul>
+				          <li th:each="row : ${todayList}">
+				            <span th:text="${#temporals.format(row.cons_date, 'HH:mm')}"></span> ·
+				            <span th:text="${row.cons_desc}"></span> -
+				            <b th:text="${#numbers.formatInteger(row.amount ?: 0, 1, 'COMMA')} + '원'"></b>
+				          </li>
+				          <li th:if="${#lists.isEmpty(todayList)}">오늘 등록된 소비가 없습니다.</li>
+				        </ul>
+				        <a href="#consume-list" class="btn">전체보기</a>
+				      </div>
+
+				      <!-- 바로가기 카드들 -->
+				      <div class="card small-card">
+				        <h4>📊 소비 전체보기</h4>
+				        <p>모든 내역을 한눈에 확인</p>
+				        <a href="#consume-list" class="link">바로가기 →</a>
+				      </div>
+
+				      <div class="card small-card">
+				        <h4>📂 카테고리별 소비</h4>
+				        <p>카테고리별 상세 분석</p>
+				        <a href="#category-section" class="link">확인하기 →</a>
+				      </div>
+
+				      <div class="card small-card">
+				        <h4>💡 소비 피드백</h4>
+				        <p>AI 피드백 & 조언</p>
+				        <a href="#advice-section" class="link">보러가기 →</a>
+				      </div>
+
+				    </div>
+				  </section>
+
+		<!-- 자녀가 없을 때 -->
+		<section th:if="${!hasChildren}" class="dashboard-cards">
+			<div class="card table-card">
+				<h3 class="section-title">📒 소비 내역 확인</h3>
+				<p>등록된 자녀가 없습니다. 먼저 자녀를 추가해주세요.</p>
+			</div>
+		</section>
+
+		<!-- 🔥 리스트 컨테이너 -->
+				   <section th:unless="${!hasChildren}" id="consume-list" class="dashboard-cards">
+				     <div class="card table-card">
+				       <h3 class="section-title">📒 소비 내역 확인</h3>
+<!--필터-->
+			<form method="get" th:action="@{/parent/consume/list}" class="filters">
+				<!-- 자녀 선택 -->
+				<select name="childNo" required>
+					<option value="" th:selected="${childNo == null}">자녀 선택</option>
+					<option th:each="c : ${children}" th:value="${c.user_no}" th:text="${c.user_name}" th:selected="${childNo != null and childNo == c.user_no}"></option>
+				</select>
+
+				<!-- 기존 자녀페이지 필터 그대로 재사용 -->
+				<input type="date" name="fromDate" th:value="${fromDate}"> <input type="date" name="toDate" th:value="${toDate}"> <select name="consType">
+					<option value="" th:selected="${consType == null}">전체</option>
+					<option th:each="c : ${CONS_TYPE_CODES}" th:value="${c.value}" th:text="${(c.desc != null ? c.desc + ' ' : '') + c.label}" th:selected="${consType != null and consType == c.value}"></option>
+				</select> <input type="text" name="keyword" placeholder="설명 검색" th:value="${keyword}">
+				<button type="submit">조회</button>
+			</form>
+
+			<div style="margin: 10px 0; color: #555;">
+				<b th:text="'총 ' + ${total} + '건'">총 0건</b> · 합계 <b th:text="${#numbers.formatInteger(sumAmount ?: 0, 1, 'COMMA')}">0</b>원
+			</div>
+
+			<table>
+				<thead>
+					<tr>
+						<th>날짜</th>
+						<th>타입</th>
+						<th>설명</th>
+						<th>금액</th>
+						<th>사용 포인트</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${#lists.isEmpty(list)}">
+						<td colspan="5">데이터가 없습니다.</td>
+					</tr>
+					<tr th:each="row : ${list}">
+						<td th:text="${#temporals.format(row.cons_date, 'yyyy-MM-dd HH:mm')}">2025-08-18 12:00</td>
+						<td><span th:each="c : ${CONS_TYPE_CODES}" th:if="${c.value == row.cons_type}" th:text="${c.desc}">🔖</span></td>
+						<td th:text="${row.cons_desc}">설명</td>
+						<td th:text="${#numbers.formatInteger(row.amount ?: 0, 1, 'COMMA')}">0</td>
+						<td th:text="${#numbers.formatInteger(row.used_point ?: 0, 1, 'COMMA')}">0</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<!-- 페이징 -->
+			      <div class="paging" th:if="${total > 0}">
+			        <a th:if="${page > 0}"
+			           th:href="@{/parent/consume/list(childNo=${childNo}, page=${page-1}, size=${size}, fromDate=${fromDate}, toDate=${toDate}, consType=${consType}, keyword=${keyword})}">
+			          이전
+			        </a>
+			        <span th:text="${displayPage}">1</span> 
+			        <span th:text="${totalPages}">1</span>
+			        <a th:if="${page + 1 < totalPages}"
+			           th:href="@{/parent/consume/list(childNo=${childNo}, page=${page+1}, size=${size}, fromDate=${fromDate}, toDate=${toDate}, consType=${consType}, keyword=${keyword})}">
+			          다음
+			        </a>
+			      </div>
+			    </div>
+			  </section>
+			  
+			  <!-- 🔥 카테고리별 소비 -->
+			    <section id="category-section" class="category-section">
+			      <div class="category-inner">
+
+			        <!-- 좌측 타이포그래피 -->
+			        <div class="category-text">
+			          <h2>카테고리별 소비</h2>
+			          <p>최근 1주일간 어디에 가장 많이 썼을까요?<br>
+			          한눈에 비율을 확인해 보세요.</p>
+			        </div>
+
+			        <!-- 우측 4개 박스 -->
+			        <div class="category-grid">
+			          <div class="category-box" th:each="row : ${ratioByType7d}">
+			            <div class="percent" th:text="${row.value} + '%'">45%</div>
+			            <div class="label" th:each="c : ${CONS_TYPE_CODES}" th:if="${c.value == row.key}" th:text="${c.label}">식비</div>
+			            <div class="icon" th:each="c : ${CONS_TYPE_CODES}" th:if="${c.value == row.key}" th:text="${c.desc}">🍔</div>
+			          </div>
+<!-- 			           <div class="category-box">  -->
+<!-- 			             <div class="percent">20%</div>  -->
+<!-- 			             <div class="label">교통비</div>  -->
+<!-- 			             <div class="icon">🚌</div>  -->
+<!-- 			           </div>  -->
+<!-- 			           <div class="category-box">  -->
+<!-- 			             <div class="percent">25%</div>  -->
+<!-- 			             <div class="label">취미/여가</div>  -->
+<!-- 			             <div class="icon">🎮</div>  -->
+<!-- 			           </div>  -->
+<!-- 			           <div class="category-box">  -->
+<!-- 			             <div class="percent">10%</div>  -->
+<!-- 			             <div class="label">기타</div>  -->
+<!-- 			             <div class="icon">👜</div>  -->
+<!-- 			           </div>  -->
+			        </div>
+
+			      </div>
+			    </section>
+				
+				
+				
+				
+				<!-- 🔥 절약 / 소비 피드백 섹션 -->
+				<section class="feedback-section">
+				  <div class="feedback-inner">
+				    <h2>📌 절약 / 소비 피드백</h2>
+				    <ul class="dynamic-feedback">
+				      <li>⚠️ 지난 주 식비가 예상보다 <strong>15% 초과</strong>했습니다.</li>
+				      <li>🎮 장난감/게임 구매는 지난 달 대비 <strong>20% 증가</strong>.</li>
+				      <li>💡 간식 지출이 많아 다음 주에는 계획적으로 관리 필요.</li>
+				      <li>🛍️ 외출 시 필요한 금액만 미리 계획하면 남는 용돈 확보 가능!</li>
+				    </ul>
+				  </div>
+				</section>
+				
+				
+	</main>
+</body>
+</html>

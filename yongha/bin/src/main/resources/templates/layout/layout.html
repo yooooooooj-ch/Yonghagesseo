@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title layout:title-pattern="$CONTENT_TITLE | 용하게써">용하게써</title>
+<link rel="stylesheet" th:href="@{/css/common.css}" />
+</head>
+<body>
+	<div class="page-container">
+		<!-- 공통 헤더 -->
+		<div th:replace="fragments/header :: header"></div>
+
+		<!-- 콘텐츠 영역 -->
+		<div class="content-wrapper">
+			<div th:replace="fragments/sidebar :: sidebar"></div>
+			<main class="content" layout:fragment="content"></main>
+		</div>
+
+		<!-- 푸터 -->
+		<div th:replace="fragments/footer :: footer"></div>
+	</div>
+
+
+</body>
+
+</html>

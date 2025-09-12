@@ -1,0 +1,71 @@
+<div class="header" xmlns:th="http://www.thymeleaf.org" th:fragment="header(ut)">
+  <th:block th:switch="${ut}">
+    <!-- 부모(0) -->
+    <header th:case="0">
+      <div class="logo-wrapper">
+        <a th:href="@{/}"><img src="/img/Yongha.png" alt="로고" class="logo-img" /></a>
+        <div class="logo-text-group">
+          <div class="logo-main">Yongha</div>
+          <div class="logo-sub">믿을 수 있는 교육 금융 플랫폼</div>
+        </div>
+      </div>
+      <nav class="gnb">
+        <a th:href="@{/transferAllowance}">용돈 지원실</a>
+        <a th:href="@{/parent/consume/list}">용돈 패밀리</a>
+        <a th:href="@{/goals/parent}">아기용 관리실</a>
+        <a th:href="@{/parent_page}">용맘, 대디존</a>
+      </nav>
+    </header>
+
+    <!-- 자녀(1) -->
+    <header th:case="1">
+      <div class="logo-wrapper">
+        <a th:href="@{/}"><img src="/img/Yongha.png" alt="로고" class="logo-img" /></a>
+        <div class="logo-text-group">
+          <div class="logo-main">Yongha</div>
+          <div class="logo-sub">믿을 수 있는 교육 금융 플랫폼</div>
+        </div>
+      </div>
+      <nav class="gnb">
+        <a th:href="@{/consume/list}">용돈이 흐르는 곳</a>
+        <a th:href="@{/consume}">용돈 어디갔지?</a>
+        <a th:href="@{/goals/child}">꿈 저금통용</a>
+        <a th:href="@{/child_page}">나의 페이지에용</a>
+      </nav>
+    </header>
+
+    <!-- 관리자(2) -->
+    <header th:case="2">
+      <div class="logo-wrapper">
+        <a th:href="@{/}"><img src="/img/Yongha.png" alt="로고" class="logo-img" /></a>
+        <div class="logo-text-group">
+          <div class="logo-main">Yongha</div>
+          <div class="logo-sub">믿을 수 있는 교육 금융 플랫폼</div>
+        </div>
+      </div>
+      <nav class="gnb">
+        <a th:href="@{/admin/users}">회원 목록 & 조회</a>
+        <a th:href="@{/admin/banners}">홍보 & 배너 업로드</a>
+        <a th:href="@{/admin/stats}">회원 관리 통계</a>
+        <a onclick="logout()">로그아웃</a>
+      </nav>
+    </header>
+
+    <!-- 기본(*) -->
+    <header th:case="*">
+      <div class="logo-wrapper">
+        <a th:href="@{/}"><img src="/img/Yongha.png" alt="로고" class="logo-img" /></a>
+        <div class="logo-text-group">
+          <div class="logo-main">Yongha</div>
+          <div class="logo-sub">믿을 수 있는 교육 금융 플랫폼</div>
+        </div>
+      </div>
+      <nav class="gnb">
+        <a th:href="@{/service_explanation}">서비스 소개</a>
+        <a th:href="@{/company_profile}">회사 소개</a>
+        <a th:href="@{/learning_outcomes}">교육 효과</a>
+        <a th:href="@{/faq}">FAQ</a>
+      </nav>
+    </header>
+  </th:block>
+</div>

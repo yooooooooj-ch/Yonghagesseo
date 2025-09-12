@@ -1,0 +1,346 @@
+@charset "UTF-8";
+
+/* ============================================================
+   Yongha Login v2 — 전체 통합 CSS (Fresh Pastel Blue 버전)
+   ============================================================ */
+:root {
+	/* 더 선명한 파스텔 블루 팔레트 */
+	--pastel-blue: #8EC5FF; /* 버튼/기본 파랑 */
+	--pastel-blue-700: #56A0FF; /* 버튼 하단/포커스 진한 파랑 */
+	--pastel-blue-300: #9FD0FF; /* 라인/보더 밝은 파랑 */
+	--yh-yellow: #FEE500;
+	--text: #0f172a;
+	--muted: #64748b;
+	--line: #e5e7eb;
+	--radius: 26px;
+	--shadow: 0 30px 80px rgba(2, 6, 23, .16);
+	--card-w: min(680px, 56vw);
+	--card-pad: 32px;
+	--top-pad: 140px;
+	--gap-after-card: 28px;
+	--logout-lift: 104px;
+}
+
+html, body {
+	height: 100%
+}
+
+* {
+	box-sizing: border-box
+}
+
+body {
+	margin: 0;
+	font-family: "Pretendard", system-ui, "Noto Sans KR", sans-serif;
+	color: var(--text);
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	align-items: start;
+	justify-items: center;
+	/* 좌측 은은한 배경은 유지 */
+	background: radial-gradient(1200px 620px at 15% 5%, #e9fbff, transparent 60%),
+		radial-gradient(950px 520px at 85% 100%, #dff7ff, transparent 60%),
+		#f6f8fb;
+	padding: var(--top-pad) 20px 64px;
+}
+
+/* 좌측 상단 로고 */
+html::before {
+	content: "";
+	position: fixed;
+	top: 16px;
+	left: 20px;
+	z-index: 6;
+	width: min(240px, 23vw);
+	height: 56px;
+	background: url('/img/logov1.png') no-repeat left center/contain;
+	pointer-events: none;
+}
+
+/* 우측 배경/캐릭터 — 더 선명한 파스텔 블루 */
+body::after {
+	content: "";
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 34vw;
+	height: 100%;
+	background: /* 캐릭터는 왼쪽으로 조금 더 붙게 유지 */ url('/img/Yongha.png') right 9vw
+		bottom 6vh/ min( 420px, 27vw) auto no-repeat, linear-gradient( 180deg,
+		rgba( 255, 255, 255, .24), rgba( 255, 255, 255, .10)),
+		radial-gradient( 200px 160px at 70% 25%, rgba( 255, 255, 255, .22),
+		transparent 60%), radial-gradient( 160px 140px at 25% 80%, rgba( 255,
+		255, 255, .18), transparent 60%), /* ▶ 채도 살린 파스텔 블루 그라데이션 */
+    linear-gradient( 135deg, #BFD9FF 0%, #9FCCFF 45%, #87BEFF 100%);
+	box-shadow: -28px 0 60px rgba(2, 6, 23, .08) inset;
+	z-index: 0;
+}
+
+/* 우측 문구 */
+body::before {
+	content: "Hello, Friend!";
+	position: fixed;
+	right: 2vw;
+	top: 15vh;
+	z-index: 1;
+	color: #fff;
+	font-weight: 900;
+	font-size: clamp(30px, 3vw, 56px);
+	text-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+}
+
+/* 상단 '메인으로' 버튼 */
+a[href="/"] {
+	position: fixed;
+	top: 14px;
+	right: 14px;
+	left: auto;
+	z-index: 7;
+	padding: 8px 12px;
+	background: #fff;
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	text-decoration: none;
+	color: #4F8FEF;
+	font-weight: 700;
+	font-size: 13px;
+}
+
+/* 군더더기 */
+br {
+	display: none
+}
+
+h2:has(+form#loginForm) {
+	display: none;
+}
+
+/* ---------- 로그인 카드 ---------- */
+form#loginForm {
+	grid-column: 1;
+	z-index: 2;
+	width: var(--card-w);
+	border-radius: var(--radius);
+	background: #fff;
+	box-shadow: var(--shadow);
+	padding: 36px var(--card-pad) 88px;
+	position: relative;
+	margin-bottom: var(--gap-after-card);
+}
+
+/* 카드 타이틀(카드 내부) */
+form#loginForm>label:first-of-type::before {
+	content: "Welcome to Yongha!";
+	display: block;
+	font-weight: 900;
+	color: var(--text);
+	font-size: clamp(20px, 2.2vw, 28px);
+	margin-bottom: 14px;
+}
+/* 안내 문구 제거 */
+form#loginForm>label:first-of-type::after {
+	display: none;
+}
+
+/* 라벨/인풋 — 기본도 파스텔 블루로, 포커스는 더 진하게 */
+form#loginForm label {
+	display: block;
+	font-size: 14px;
+	font-weight: 800;
+	margin: 6px 0 6px;
+}
+
+form#loginForm input {
+	width: 100%;
+	padding: 12px 14px;
+	border: 1.5px solid var(--pastel-blue-300); /* 밝은 파랑 */
+	border-radius: 12px;
+	font-size: 15px;
+	background: #fff;
+	outline: none;
+	margin-bottom: 10px;
+	transition: border .15s, box-shadow .15s;
+}
+
+form#loginForm input::placeholder {
+	font-size: 15px;
+	color: var(--muted);
+}
+
+form#loginForm input:focus {
+	border-color: var(--pastel-blue-700);
+	box-shadow: 0 0 0 3px rgba(86, 160, 255, .32);
+}
+
+/* 로그인 버튼 — 더 선명한 파스텔 블루 그라데이션 */
+form#loginForm button[type="submit"] {
+	width: 100%;
+	margin-top: 8px;
+	padding: 12px 14px;
+	border: none;
+	border-radius: 12px;
+	font-weight: 900;
+	font-size: 15px;
+	color: #fff;
+	background: linear-gradient(180deg, var(--pastel-blue),
+		var(--pastel-blue-700));
+	box-shadow: 0 10px 18px rgba(142, 197, 255, .35);
+	cursor: pointer;
+	transition: filter .15s, transform .1s;
+}
+
+form#loginForm button[type="submit"]:hover {
+	filter: brightness(1.04)
+}
+
+form#loginForm button[type="submit"]:active {
+	transform: translateY(1px)
+}
+
+/* 카드 아래에 붙는 로그아웃 */
+form#loginForm ~ button[onclick^="logout"] {
+	grid-column: 1;
+	justify-self: center;
+	display: block;
+	width: calc(var(--card-w)- (var(--card-pad)* 2));
+	margin: calc(-1 * var(--logout-lift)) auto calc(var(--gap-after-card)- 4px);
+	padding: 11px 14px;
+	border-radius: 12px;
+	border: 1.5px solid var(--line);
+	background: #fff;
+	color: var(--text);
+	font-weight: 800;
+	font-size: 14px;
+	transition: background .2s, border-color .2s;
+	z-index: 3;
+}
+
+form#loginForm ~ button[onclick^="logout"]:hover {
+	background: #f8fafc;
+	border-color: #cfe3ff;
+}
+
+/* ---------- 소셜 로그인 ---------- */
+h2 {
+	position: absolute !important;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+h2+div {
+	grid-column: 1;
+	z-index: 2;
+	width: var(--card-w);
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	background: #fff;
+	border: 1px solid var(--line);
+	border-radius: 14px;
+	padding: 16px;
+	box-shadow: var(--shadow);
+}
+
+h2+div::before {
+	content: "";
+	display: none;
+}
+
+h2+div button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 520px;
+	padding: 12px 14px;
+	border: none;
+	border-radius: 12px;
+	background: var(--yh-yellow);
+	color: #111;
+	font-weight: 900;
+	font-size: 15px;
+	box-shadow: 0 2px 0 rgba(0, 0, 0, .06) inset, 0 6px 18px
+		rgba(0, 0, 0, .06);
+	cursor: pointer;
+	transition: filter .15s, transform .1s;
+}
+
+h2+div button:hover {
+	filter: brightness(.98)
+}
+
+h2+div button:active {
+	transform: translateY(1px)
+}
+
+h2+div a {
+	font-size: 12px;
+	color: #4F8FEF;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+h2+div a:hover {
+	text-decoration: underline
+}
+
+/* 메시지 */
+#result, #userNoArea {
+	grid-column: 1;
+	width: var(--card-w);
+	margin: 10px auto 0;
+	text-align: center;
+	z-index: 2;
+}
+
+#result {
+	font-size: 13px;
+	color: #e11d48
+}
+
+#userNoArea {
+	font-size: 12px;
+	color: var(--muted)
+}
+
+/* ---------- 반응형 ---------- */
+@media ( max-width :1080px) {
+	:root {
+		--card-w: min(640px, 64vw);
+	}
+	body::after {
+		width: 36vw;
+		background: url('/img/Yongha.png') right 7vw bottom 4vh/min(360px, 30vw)
+			auto no-repeat, linear-gradient(180deg, rgba(255, 255, 255, .24),
+			rgba(255, 255, 255, .10)),
+			radial-gradient(200px 160px at 70% 25%, rgba(255, 255, 255, .22),
+			transparent 60%),
+			radial-gradient(160px 140px at 25% 80%, rgba(255, 255, 255, .18),
+			transparent 60%),
+			linear-gradient(135deg, #BFD9FF 0%, #9FCCFF 45%, #87BEFF 100%);
+	}
+}
+
+@media ( max-width :900px) {
+	body {
+		grid-template-columns: 1fr;
+		padding: 28px 14px 34px;
+	}
+	body::after, body::before {
+		display: none
+	}
+	:root {
+		--card-w: min(560px, 92vw);
+		--card-pad: 22px;
+		--top-pad: 36px;
+		--logout-lift: 64px;
+	}
+	html::before {
+		width: min(180px, 42vw);
+		height: 46px;
+	}
+}

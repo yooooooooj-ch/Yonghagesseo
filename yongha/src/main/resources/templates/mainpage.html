@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+
+<head>
+<meta charset="UTF-8" />
+<title></title>
+<link rel="stylesheet" th:href="@{/css/main.css}" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+</head>
+
+<body>
+	<main layout:fragment="content" class="content">
+		<!-- 🌀 Content 1: Swiper 이벤트 영역 -->
+		<section class="content1">
+
+			<div class="content1-inner1">
+				<div class="main-text">
+					<h2>
+						이미 가족의 금융 교육,<br>지금은 Yongha
+					</h2>
+					<p class="subtitle">가족 모두가 함께 배우고 성장하는 금융 플랫폼</p>
+
+					<button onclick="location.href='/login'">GO →</button>
+				</div>
+			</div>
+			<!-- content1-inner 닫기 -->
+
+
+		</section>
+
+		<!-- 🔐 Content 2: 버튼영역 -->
+		<section class="content2">
+		  <div class="product-title">🚀 'Yongha' 주요 기능</div>
+		  <div class="product-grid">
+		    
+		    <div class="product-card">
+		      <div class="icon-emoji">🤝</div>
+		      <p>나의 금융 친구</p>
+		    </div>
+		    
+		    <div class="product-card">
+				<div class="icon-emoji">💸</div>
+		      <p>용돈 입금</p>
+		    </div>
+		    
+		    <div class="product-card">
+		    <div class="icon-emoji">📈</div>
+		      <p>소비 리포트</p>
+		    </div>
+		    
+		    <div class="product-card">
+		     <div class="icon-emoji">💰</div>
+		      <p>저축 챌린지</p>
+		    </div>
+		    
+		    <div class="product-card">
+		      <div class="icon-emoji">⭐</div>
+		      <p>칭찬과 피드백</p>
+		    </div>
+		    
+		  </div>
+		</section>
+
+		<!-- 💎 content3: 메인 제품 강조 (바나나우유 느낌 → 금융 교육 강조) -->
+		<section class="content3">
+			<!-- 좌측 연도 그래프 -->
+			<div class="year-graph">
+				<ul>
+					<li>2021</li>
+					<li>2022</li>
+					<li>2023</li>
+					<li>2024</li>
+					<li class="active">2025</li>
+				</ul>
+			</div>
+
+			<!-- 메인 콘텐츠 -->
+			<div class="highlight-section">
+				<div class="text-box">
+					<h2>👪 함께 성장하는 금융 교육, Yongha가 만듭니다</h2>
+					<p>
+						<strong>용돈 관리부터 금융 습관까지,<br /> 부모와 자녀가 함께 배우고 소통하는 맞춤형 플랫폼
+						</strong>
+					</p>
+				</div>
+
+				<!-- 연도 텍스트 + 이미지 겹치기 -->
+				<div class="image-wrap">
+					<div class="year-text">2025</div>
+					<div class="image-box">
+						<img src="/img/Yongha.png" alt="로고" />
+					</div>
+				</div>
+
+				<!-- 상세 설명은 원래 위치 유지 -->
+				<div class="desc-small">
+					<p>
+						Yongha는 단순한 핀테크 서비스를 넘어, <br /> 가족 구성원 모두가 함께 참여하는 금융 교육의 장입니다. <br /> 부모는 자녀의 습관을 관리하고, <br /> 자녀는 용돈을 계획하며 책임감을 키웁니다.
+					</p>
+					<span class="year">Since 2025</span>
+				</div>
+			</div>
+
+			<!-- 하단 버튼 -->
+			<div class="year-selector">
+				<button class="year-btn">2021</button>
+				<button class="year-btn">2022</button>
+				<button class="year-btn">2023</button>
+				<button class="year-btn">2024</button>
+				<button class="year-btn active">2025</button>
+			</div>
+		</section>
+
+		<!-- 🍭 content4: 카드형 다양한 콘텐츠 → 주요 기능 안내 -->
+
+		<section class="content4">
+			<h2>주요 기능</h2>
+			<p>'용하게써'를 통해 자녀의 금융 습관을 스마트하게 길러보세요.</p>
+
+			<div class="card-row">
+				<div class="card active">
+					<img src="/img/Yongha.png" alt="자녀 계정 생성 아이콘" class="card-icon" />
+					<h4>자녀 계정 생성</h4>
+					<p>
+						부모가 자녀 계정을 만들고 <br /> 용돈을 입금할 수 있어요.
+					</p>
+				</div>
+				<div class="card">
+					<img src="/img/Yongha.png" alt="저축 목표 설정 아이콘" class="card-icon" />
+					<h4>저축 목표 설정</h4>
+					<p>
+						자녀는 목표를 세우고 <br /> 성취감을 경험해요.
+					</p>
+				</div>
+				<div class="card">
+					<img src="/img/Yongha.png" alt="소비 내역 확인 아이콘" class="card-icon" />
+					<h4>소비 내역 확인</h4>
+					<p>
+						부모는 자녀 소비를 <br /> 실시간으로 확인할 수 있어요.
+					</p>
+				</div>
+				<div class="card">
+					<img src="/img/Yongha.png" alt="칭찬과 피드백 아이콘" class="card-icon" />
+					<h4>칭찬과 피드백</h4>
+					<p>
+						칭찬과 격려로 <br /> 올바른 습관을 길러줘요.
+					</p>
+				</div>
+				<div class="card">
+					<img src="/img/Yongha.png" alt="미션 수행 아이콘" class="card-icon" />
+					<h4>미션 수행</h4>
+					<p>
+						미션을 통해 <br /> 책임감을 키워요.
+					</p>
+				</div>
+				<div class="card">
+					<img src="/img/Yongha.png" alt="가족 피드 아이콘" class="card-icon" />
+					<h4>가족 피드</h4>
+					<p>
+						가족 간 소통을 <br /> 강화할 수 있어요.
+					</p>
+				</div>
+				<div class="card">
+					<img src="/img/Yongha.png" alt="가족 피드 아이콘" class="card-icon" />
+					<h4>가족 피드</h4>
+					<p>
+						가족 간 소통을 <br /> 강화할 수 있어요.
+					</p>
+				</div>
+
+
+			</div>
+		</section>
+		<script>
+			const cards = document.querySelectorAll(".card");
+
+			function activateCard(index) {
+				cards.forEach((card, i) => {
+					card.classList.toggle("active", i === index);
+				});
+				cards[index].scrollIntoView({
+					behavior: "smooth",
+					inline: "center",
+					block: "nearest"   // ✨ block 위치는 변경하지 않도록 설정
+				});
+			}
+
+			cards.forEach((card, index) => {
+				card.addEventListener("click", () => {
+					activateCard(index);
+				});
+			});
+
+			// 초기 가운데 카드 선택
+			window.addEventListener("DOMContentLoaded", () => {
+				const middleIndex = Math.floor(cards.length / 2);
+				activateCard(middleIndex);
+			});
+
+			window.addEventListener("load", function () {
+				setTimeout(() => {
+					window.scrollTo({top: 0, left: 0, behavior: "instant"});
+				}, 10); // 약간의 delay를 줘야 작동이 더 확실해짐
+			});
+		</script>
+
+
+
+
+
+		<!-- 🎀 content5: 하단 공유/후기 갤러리 → Yongha가 만드는 변화 -->
+		<section class="content5">
+			<h2>'용하게써' 사용자 후기</h2>
+			<p>진짜 가족들의 생생한 이야기! 아이와 부모가 함께 느낀 변화들</p>
+
+
+			<div class="testimonial-wrap">
+				<!-- 교차 지그재그 카드 배열: 또렷한 clear + 흐린 faded -->
+
+
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐⭐</div>
+					<p class="text">"용돈을 조금씩 모아서 갖고 싶은 인형을 샀어요! 저금이 이렇게 재밌는 줄 몰랐어요 😊"</p>
+					<div class="info">👧 초2 소연</div>
+					<div class="tag child">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐⭐</div>
+					<p class="text">"딸이 돈의 가치를 스스로 느끼게 됐어요. 매주 저축 목표를 세우는 모습이 대견해요."</p>
+					<div class="info">👩 @소연맘</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"아들과 용돈 계획 세우는 시간이 생겨서, 자연스럽게 대화가 많아졌어요."</p>
+					<div class="info">👨 @민재아빠</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"저는 중학생인데 이제 알바비도 따로 관리해요. 앱으로 목표 설정하니까 진짜 어른된 느낌!"</p>
+					<div class="info">👦 중2 민재</div>
+					<div class="tag teen">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"딸이 가계부 쓰는 모습을 보니, 조기 금융교육이 왜 중요한지 알겠어요."</p>
+					<div class="info">👩 @수빈엄마</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"전 고1인데 이제는 충동구매 줄이고 소비기록 정리하는 게 습관됐어요!"</p>
+					<div class="info">👩 고1 수빈</div>
+					<div class="tag teen">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐⭐</div>
+					<p class="text">"처음으로 예산 세워서 사고 싶은 책을 샀어요. 뿌듯했어요!"</p>
+					<div class="info">👧 초5 나연</div>
+					<div class="tag child">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"예산 안에서 소비하는 습관이 생긴 것 같아요. 너무 뿌듯합니다."</p>
+					<div class="info">👨 @나연아빠</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"아이랑 주간 예산을 정하면서 자연스럽게 돈 이야기를 하게 됐어요."</p>
+					<div class="info">👩 @유진엄마</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐⭐</div>
+					<p class="text">"용돈을 관리하면서 직접 가계부를 쓰는 재미를 느꼈어요!"</p>
+					<div class="info">👧 초4 유진</div>
+					<div class="tag child">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐⭐</div>
+					<p class="text">"동생한테도 추천했어요! 금융 교육 진짜 이 앱으로 시작하면 좋아요."</p>
+					<div class="info">👦 고2 재현</div>
+					<div class="tag teen">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"아이 스스로 저축 이유를 설명해주는 모습에 깜짝 놀랐어요."</p>
+					<div class="info">👩 @재현엄마</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"주말마다 용돈 쓰기 전에 미리 계획 세우는 게 습관이 됐어요!"</p>
+					<div class="info">👦 초6 준호</div>
+					<div class="tag child">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐⭐</div>
+					<p class="text">"아들이 먼저 예산을 짜자고 말해서 깜짝 놀랐어요. 자립심이 자라는 것 같아요."</p>
+					<div class="info">👨 @준호아빠</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+				<div class="testimonial-card faded">
+					<div class="stars">⭐⭐⭐⭐⭐</div>
+					<p class="text">"매주 목표 금액을 채우는 재미에 푹 빠졌어요! 돈 모으는 게 뿌듯해요."</p>
+					<div class="info">👧 중1 다윤</div>
+					<div class="tag teen">자녀 후기</div>
+				</div>
+
+				<div class="testimonial-card clear">
+					<div class="stars">⭐⭐⭐⭐</div>
+					<p class="text">"아이와 함께 가계부 정리하면서 자연스럽게 대화가 늘었어요. 너무 좋아요."</p>
+					<div class="info">👩 @다윤엄마</div>
+					<div class="tag parent">부모 후기</div>
+				</div>
+
+
+			</div>
+
+		</section>
+	</main>
+
+
+</body>
+
+</html>
