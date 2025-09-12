@@ -5,6 +5,24 @@
 미성년 자녀를 둔 가정을 위한 **역할 기반 용돈 관리 시스템**입니다.  
 자녀는 소비와 저축을 직접 계획하고, 부모는 실시간으로 이체 및 소비 현황을 관리할 수 있도록 설계되었습니다.
 
+- 메인화면
+<img width="394" height="285" alt="image" src="https://github.com/user-attachments/assets/71c1d69f-8a06-45b3-8247-a4adc276f7e9" />
+
+- 용돈 이체 기능
+<img width="1095" height="424" alt="image" src="https://github.com/user-attachments/assets/88eac81b-5c12-4cb7-b9f9-8ee1fabe9b80" />
+
+- 용돈 알림 기능
+<img width="416" height="138" alt="image" src="https://github.com/user-attachments/assets/0ff264af-1dc2-4e13-9fe1-b39900a469f4" />
+
+- 소비 등록 기능
+<img width="803" height="861" alt="image" src="https://github.com/user-attachments/assets/c7e378ec-3ada-4bff-bbea-4a2ae94b2b8f" />
+
+- 관리자 페이지
+<img width="1050" height="793" alt="image" src="https://github.com/user-attachments/assets/c5ffe744-42f1-4078-9a71-d04031ddef4d" />
+  
+
+
+
 ---
 
 ## 📅 개발 개요
