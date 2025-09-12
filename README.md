@@ -174,7 +174,7 @@
 ## 🔗 관련 자료
 
 - 📽️ [시연 영상](https://drive.google.com/file/d/1v_ofQf8BtU2o7I6nWWHDFFGkwa5Y4wkG/view?usp=drive_link)
-- 📊 [ERD 및 UML 다이어그램](https://drive.google.com/file/d/132QpqN1jQBxX6j-lW33zoZunctKweCsE/view?usp=drive_link)
+- 🗂️ [ERD 및 UML 다이어그램](https://drive.google.com/file/d/132QpqN1jQBxX6j-lW33zoZunctKweCsE/view?usp=drive_link)
 - 🎨 [화면설계서 및 기능 명세서](https://drive.google.com/file/d/1tTLX7lV96pp2PqpwIX1Ojt-36M783I3q/view?usp=drive_link)
 - 📑 [프로젝트 보고서](https://docs.google.com/document/d/1jUOKOD4LGO2BN7icrXk2yST3crpP1RfS/edit?usp=drive_link&ouid=118138598232317572312&rtpof=true&sd=true)
 - 📊 [발표 자료(PPT)](https://docs.google.com/presentation/d/11N-8t7jHIAEWs2LGAo2LT166PXHpNPcN/edit?usp=sharing&ouid=118138598232317572312&rtpof=true&sd=true)
