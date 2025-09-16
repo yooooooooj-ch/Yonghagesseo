@@ -19,7 +19,23 @@
 
 - 관리자 페이지
 <img width="1050" height="793" alt="image" src="https://github.com/user-attachments/assets/c5ffe744-42f1-4078-9a71-d04031ddef4d" />
-  
+
+
+<details>
+<summary><strong>📸 전체 화면 미리보기</strong> (클릭하여 보기)</summary>
+
+| 구분 | 화면 | 미리보기 |
+|------|------|----------|
+| 공통 | 로그인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/eb962efa-8770-4d1f-9f20-31300461ef0e" /> |
+| 관리자 | 관리자 메인 | <img height="300" alt="관리자페이지" src="https://github.com/user-attachments/assets/e9390e21-fc57-40cf-93fc-450fa8b5bc49" /> |
+| 관리자 | 가게 관리 | <img height="300" alt="가게관리" src="https://github.com/user-attachments/assets/7d6bd95a-baca-4028-9777-993e424b440c" /> |
+| 관리자 | 메뉴 관리 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/398c9fd3-d574-416d-a59c-24f3791d90af" /> |
+| 관리자 | 예약 확인 | <img height="300" alt="예약확인" src="https://github.com/user-attachments/assets/060e4a7d-a70d-4855-9f5f-7a599f55feb9" /> |
+| 사용자 | 유저 메인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/0c799022-c865-41a0-8a1c-3cfa72eaf60e" /> |
+| 사용자 | 예약 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/aa43a009-59de-40aa-adb5-64e45514bc6d" /> |
+| 사용자 | 예약 확인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/69089844-d290-463c-a331-296d40e89f01" /> |
+
+</details>
 
 
 
@@ -49,14 +65,17 @@
 
 ## 🔧 주요 기술 스택
 
-| 분류 | 기술 |
+| 구분 | 기술 |
 |------|------|
-| Back-End | Java, Spring MVC, MyBatis, Oracle, JDBC |
-| Front-End | HTML, CSS, JavaScript, JSP, Ajax |
-| 인증/보안 | OAuth2 (Kakao, Naver), JWT, Email 인증 |
-| DB 관리 | Oracle SQL, ERD 설계, 정규화 |
-| 기타 기술 | FCM (웹푸시), OCR (Tesseract), SweetAlert2 |
-| 협업 도구 | GitHub, Figma, ERDCloud |
+| Language | Java |
+| Backend | Spring Boot, Spring MVC, MyBatis, JDBC |
+| Frontend | HTML, CSS, JavaScript, JSP, Ajax |
+| Database | Oracle 11g |
+| Authentication / Security | OAuth2 (Kakao, Naver), JWT, 이메일 인증 |
+| External APIs | DAUM 주소 검색 API, FCM (웹 푸시), Tesseract OCR |
+| UI Enhancement | SweetAlert2 |
+| IDE | STS4, SQL Developer |
+| 협업 도구 | GitHub, Figma, ERDCloud, PlantUML |
 
 ---
 
@@ -91,67 +110,45 @@
 
 ## 🧩 맡은 역할 상세
 
-- **📅 프로젝트 총괄**
+### 📅 프로젝트 총괄
+- 전체 일정 수립 
+- 팀원별 업무 분배 및 진척 상황 모니터링
+- GitHub 저장소 관리 및 브랜치 전략 운영
 
-  - 전체 일정 수립 
+### 🗂️ DB 설계 (기여도 85%)
+- 프로젝트 전반의 ERD 및 데이터 흐름 설계 주도
+- 주요 테이블 간 관계 정의, 정규화, 시퀀스/트리거 설정
+- 더미 데이터 자동 생성 SQL 작성 및 테스트용 배포
 
-  - 팀원별 업무 분배 및 진척 상황 모니터링
+### 💸 용돈 이체 기능 (기여도 100%)
+- 랜덤 계좌번호 생성 및 사용자별 등록 기능 개발
+- 부모 → 자녀 간 실시간 이체 로직 구현
+- 이체 시 잔액 차감 및 거래 이력 저장 처리
+- 자동이체 스케줄러 설계 및 주기적 실행 로직 구현
 
-  - GitHub 저장소 관리 및 브랜치 전략 운영
+### 🧾 소비 등록 기능 (기여도 75%)
+- 자녀의 소비 내역 등록 폼 및 카테고리 분류 기능 개발
+- 등록된 내역에 따른 잔액 자동 차감 및 소비 이력 저장 처리
 
-- **🗂️ DB 설계 (기여도 85%)**
+### 🔍 소비 확인 기능 (기여도 100%)
+- 자녀: 본인의 소비 내역 일자별 조회
+- 부모: 자녀별로 소비 이력 상세 조회 기능 구현
 
-  - 프로젝트 전반의 ERD 및 데이터 흐름 설계 주도
+### 👨‍👩‍👧 가족 초대 기능 (기여도 100%)
+- 유효 이메일 검증 후 JWT 기반 초대 토큰 생성
+- 해당 토큰을 기반으로 QR 코드 생성 및 출력 기능 구현
 
-  - 주요 테이블 간 관계 정의, 정규화, 시퀀스/트리거 설정
+### 📧 이메일 송신 기능 (기여도 40%)
+- 초대 메일 자동 발송 로직 구현 (JavaMailSender)
+- 멀티 스레딩을 활용한 대량 이메일 병렬 발송 처리
 
-  - 더미 데이터 자동 생성 SQL 작성 및 테스트용 배포
+### 📊 통계 기능 (기여도 5%)
+- 관리자 페이지에서 KPI 지표 기반 사용자 통계 확인 기능 구축
+- 사용자 목록 CRUD 및 기본 필터 검색 기능 구현
 
-- **💸 용돈 이체 기능 (기여도 100%)**
-
-  - 랜덤 계좌번호 생성 및 사용자별 등록 기능 개발
-
-  - 부모 → 자녀 간 실시간 이체 로직 구현
-
-  - 이체 시 잔액 차감 및 거래 이력 저장 처리
-
-  - 자동이체 스케줄러 설계 및 주기적 실행 로직 구현
-
-- **🧾 소비 등록 기능 (기여도 75%)**
-
-  - 자녀의 소비 내역 등록 폼 및 카테고리 분류 기능 개발
-
-  - 등록된 내역에 따른 잔액 자동 차감 및 소비 이력 저장 처리
-
-- **🔍 소비 확인 기능 (기여도 100%)**
-
-  - 자녀: 본인의 소비 내역 일자별 조회
-
-  - 부모: 자녀별로 소비 이력 상세 조회 기능 구현
-
-- **👨‍👩‍👧 가족 초대 기능 (기여도 100%)**
-
-  - 유효 이메일 검증 후 JWT 기반 초대 토큰 생성
-
-  - 해당 토큰을 기반으로 QR 코드 생성 및 출력 기능 구현
-
-- **📧 이메일 송신 기능 (기여도 40%)**
-
-  - 초대 메일 자동 발송 로직 구현 (JavaMailSender)
-
-  - 멀티 스레딩을 활용한 대량 이메일 병렬 발송 처리
-
-- **📊 통계 기능 (기여도 5%)**
-
-  - 관리자 페이지에서 KPI 지표 기반 사용자 통계 확인 기능 구축
-
-  - 사용자 목록 CRUD 및 기본 필터 검색 기능 구현
-
-- **🎯 이벤트 배너 등록 기능 (기여도 5%)**
-
-  - 이미지 파일을 드래그 앤 드롭 방식으로 업로드 가능하게 처리
-
-  - 파일 서버 연동 및 이미지 뷰어 기능 개발
+### 🎯 이벤트 배너 등록 기능 (기여도 5%)
+- 이미지 파일을 드래그 앤 드롭 방식으로 업로드 가능하게 처리
+- 파일 서버 연동 및 이미지 뷰어 기능 개발
 
 ---
 
