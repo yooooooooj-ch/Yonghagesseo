@@ -5,31 +5,6 @@
 미성년 자녀를 둔 가정을 위한 **역할 기반 용돈 관리 시스템**입니다.  
 자녀는 소비와 저축을 직접 계획하고, 부모는 실시간으로 이체 및 소비 현황을 관리할 수 있도록 설계되었습니다.
 
-<details>
-<summary><strong>📸 전체 화면 미리보기</strong> (클릭하여 보기)</summary>
-
-| 구분 | 화면 | 미리보기 |
-|------|------|----------|
-| 공통 | 비회원 메인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/71c1d69f-8a06-45b3-8247-a4adc276f7e9" /> |
-| 공통 | 로그인 및 회원가입 | <img height="240" alt="image" src="https://github.com/user-attachments/assets/ef0a6aa9-48b8-42fe-b524-5f88edcdefd2" /> <img height="240" alt="image" src="https://github.com/user-attachments/assets/a1faba77-8b47-4829-bf41-3be9f1dcac64" /> |
-| 부모 | 부모 메인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/bc59b0f6-14da-43e4-b536-e78601bc9703" /> |
-| 부모 | 용돈 이체 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/88eac81b-5c12-4cb7-b9f9-8ee1fabe9b80" /> |
-| 부모 | 소비 확인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/bdd69b2f-8d14-42b9-933d-83652d003abd" /> |
-| 부모 | 목표 확인 및 알림 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/fdd8ecfc-97c9-4027-8d1d-ac4823249f93" /> <img height="150" alt="image" src="https://github.com/user-attachments/assets/840dbecf-b995-4012-a182-3a035b80e7b2" /> |
-| 부모 | 마이페이지 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/10a63992-67e6-4068-abd7-fdd82aaa752d" /> |
-| 부모 | 가족초대 | <img height="250" alt="image" src="https://github.com/user-attachments/assets/195ce622-2782-4b34-bdc5-cbe1d3522205" /> <img height="250" alt="image" src="https://github.com/user-attachments/assets/6afff9dd-e717-47b7-874f-d0b263cc496c" /> <img height="250" alt="image" src="https://github.com/user-attachments/assets/775fb8ec-e57d-480d-b203-25d2a6e3d720" /> |
-| 부모 | 자녀소비예측 이메일 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/69520029-5638-4000-822e-749c97f4cc5e" /> |
-| 자녀 | 자녀 메인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/70092a44-80b6-4fbe-9074-fe7693646c1a" /> |
-| 자녀 | 용돈 알림 | <img height="150" alt="image" src="https://github.com/user-attachments/assets/ca103890-d668-4e22-99cf-705fed7c443b" /> |
-| 자녀 | 소비 등록 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/3ead2acb-9a0c-4175-9423-24f7b76a88e2" /> |
-| 자녀 | 목표 등록 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/251bda09-378c-4006-8fd0-b75bc7869663" /> <img height="300" alt="image" src="https://github.com/user-attachments/assets/c93dbda7-e7e6-4642-af59-687629620e90" /> |
-| 자녀 | 마이페이지 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/e7911a46-d07a-4863-a040-b5b214e3f53c" /> <img height="300" alt="image" src="https://github.com/user-attachments/assets/42d184f3-f267-4569-8a24-324afb11b043" /> |
-| 관리자 | 회원 목록 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/5e1b7a3c-3280-4235-8f2b-71b05db292b5" /> |
-| 관리자 | 통계 관리 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/91b3f04e-5af1-48e1-bc02-0325fddd67fb" /> |
-| 관리자 | 이벤트배너 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/b6da30ef-0b40-4c49-891f-7a339080c1ab" /> |
-
-</details>
-
 ---
 
 ## 📅 개발 개요
@@ -70,6 +45,32 @@
 ---
 
 ## ✨ 주요 기능
+
+<details>
+<summary><strong>📸 전체 화면 미리보기</strong> (클릭하여 보기)</summary>
+
+| 구분 | 화면 | 미리보기 |
+|------|------|----------|
+| 공통 | 비회원 메인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/71c1d69f-8a06-45b3-8247-a4adc276f7e9" /> |
+| 공통 | 로그인 및 회원가입 | <img height="240" alt="image" src="https://github.com/user-attachments/assets/ef0a6aa9-48b8-42fe-b524-5f88edcdefd2" /> <img height="240" alt="image" src="https://github.com/user-attachments/assets/a1faba77-8b47-4829-bf41-3be9f1dcac64" /> |
+| 부모 | 부모 메인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/bc59b0f6-14da-43e4-b536-e78601bc9703" /> |
+| 부모 | 용돈 이체 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/88eac81b-5c12-4cb7-b9f9-8ee1fabe9b80" /> |
+| 부모 | 소비 확인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/bdd69b2f-8d14-42b9-933d-83652d003abd" /> |
+| 부모 | 목표 확인 및 알림 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/fdd8ecfc-97c9-4027-8d1d-ac4823249f93" /> <img height="150" alt="image" src="https://github.com/user-attachments/assets/840dbecf-b995-4012-a182-3a035b80e7b2" /> |
+| 부모 | 마이페이지 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/10a63992-67e6-4068-abd7-fdd82aaa752d" /> |
+| 부모 | 가족초대 | <img height="250" alt="image" src="https://github.com/user-attachments/assets/195ce622-2782-4b34-bdc5-cbe1d3522205" /> <img height="250" alt="image" src="https://github.com/user-attachments/assets/6afff9dd-e717-47b7-874f-d0b263cc496c" /> <img height="250" alt="image" src="https://github.com/user-attachments/assets/775fb8ec-e57d-480d-b203-25d2a6e3d720" /> |
+| 부모 | 자녀소비예측 이메일 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/69520029-5638-4000-822e-749c97f4cc5e" /> |
+| 자녀 | 자녀 메인 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/70092a44-80b6-4fbe-9074-fe7693646c1a" /> |
+| 자녀 | 용돈 알림 | <img height="150" alt="image" src="https://github.com/user-attachments/assets/ca103890-d668-4e22-99cf-705fed7c443b" /> |
+| 자녀 | 소비 등록 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/3ead2acb-9a0c-4175-9423-24f7b76a88e2" /> |
+| 자녀 | 목표 등록 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/251bda09-378c-4006-8fd0-b75bc7869663" /> <img height="300" alt="image" src="https://github.com/user-attachments/assets/c93dbda7-e7e6-4642-af59-687629620e90" /> |
+| 자녀 | 마이페이지 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/e7911a46-d07a-4863-a040-b5b214e3f53c" /> <img height="300" alt="image" src="https://github.com/user-attachments/assets/42d184f3-f267-4569-8a24-324afb11b043" /> |
+| 관리자 | 회원 목록 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/5e1b7a3c-3280-4235-8f2b-71b05db292b5" /> |
+| 관리자 | 통계 관리 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/91b3f04e-5af1-48e1-bc02-0325fddd67fb" /> |
+| 관리자 | 이벤트배너 | <img height="300" alt="image" src="https://github.com/user-attachments/assets/b6da30ef-0b40-4c49-891f-7a339080c1ab" /> |
+
+</details>
+
 
 ### 👨‍👩‍👧 역할 기반 계정 시스템
 - 부모/자녀 역할 분리 및 맞춤형 대시보드 제공
